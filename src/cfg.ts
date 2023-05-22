@@ -26,7 +26,7 @@ export const Configuration = Helper.SPConfig({
                 {
                     name: "Description",
                     title: "Description",
-                    type: Helper.SPCfgFieldType.Text,
+                    type: Helper.SPCfgFieldType.Note,
                     description: "Description of the project",
                     defaultValue: "",
                     required: true,
@@ -50,7 +50,7 @@ export const Configuration = Helper.SPConfig({
                 {
                     name: "AppVideoURL",
                     title: "App Video URL",
-                    type: Helper.SPCfgFieldType.Text,
+                    type: Helper.SPCfgFieldType.Url,
                     defaultValue: "",
                     required: true,
                 },
