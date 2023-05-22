@@ -28,9 +28,10 @@ export const Configuration = Helper.SPConfig({
                     title: "Description",
                     type: Helper.SPCfgFieldType.Note,
                     description: "Description of the project",
+                    notetype: SPTypes.FieldNoteType.TextOnly,
                     defaultValue: "",
                     required: true,
-                },
+                } as Helper.IFieldInfoNote,
 
                 {
                     name: "AppScreenShot",
