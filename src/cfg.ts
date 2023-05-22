@@ -12,34 +12,54 @@ export const Configuration = Helper.SPConfig({
                 BaseTemplate: SPTypes.ListTemplateType.GenericList
             },
             CustomFields: [
+                
                 {
-                    name: "ItemType",
-                    title: "Item Type",
+                    name: "ProjectName",
+                    title: "Project name",
+                    type: Helper.SPCfgFieldType.Text,
+                    description: "Name of the project",
+                    defaultValue: "",
+                    required: true,
+
+                },
+
+                {
+                    name: "Description",
+                    title: "Description",
+                    type: Helper.SPCfgFieldType.Text,
+                    description: "Description of the project",
+                    defaultValue: "",
+                    required: true,
+                },
+
+                {
+                    name: "AppScreenShot",
+                    title: "App Screenshot",
                     type: Helper.SPCfgFieldType.Choice,
-                    defaultValue: "Type 3",
+                    defaultValue: "",
                     required: true,
                     choices: [
-                        "Type 1", "Type 2", "Type 3", "Type 4", "Type 5"
-                    ]
+                        "Screenshot 1",
+                        "Screenshot 2",
+                        "Screenshot 3",
+                        "Screenshot 4",
+                        "Screenshot 5",
+                    ],
                 } as Helper.IFieldInfoChoice,
+
                 {
-                    name: "Status",
-                    title: "Status",
-                    type: Helper.SPCfgFieldType.Choice,
-                    defaultValue: "Draft",
+                    name: "AppVideoURL",
+                    title: "App Video URL",
+                    type: Helper.SPCfgFieldType.Text,
+                    defaultValue: "",
                     required: true,
-                    showInNewForm: false,
-                    choices: [
-                        "Draft", "Submitted", "Rejected", "Pending Approval",
-                        "Approved", "Archived"
-                    ]
-                }
+                },
             ],
             ViewInformation: [
                 {
                     ViewName: "All Items",
                     ViewFields: [
-                        "LinkTitle", "ItemType", "Status"
+                        "ProjectName", "Description", "AppScreenShot", "AppVideoURL",
                     ]
                 }
             ]

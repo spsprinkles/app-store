@@ -75,7 +75,7 @@ export class DataSource {
                 listName: Strings.Lists.Main,
                 itemQuery: {
                     GetAllItems: true,
-                    OrderBy: ["Title"],
+                    OrderBy: ["ProjectName"],
                     Top: 5000
                 },
                 onInitError: reject,

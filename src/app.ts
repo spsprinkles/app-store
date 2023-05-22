@@ -92,7 +92,7 @@ export class App {
                 columns: [
                     {
                         name: "",
-                        title: "Title",
+                        title: "Name of the Project",
                         onRenderCell: (el, column, item: IListItem) => {
                             // Render a buttons
                             Components.ButtonGroup({
@@ -130,13 +130,18 @@ export class App {
                         }
                     },
                     {
-                        name: "ItemType",
-                        title: "Item Type"
+                        name: "Description",
+                        title: "Description"
                     },
                     {
-                        name: "Status",
-                        title: "Status"
-                    }
+                        name: "AppScreenshots",
+                        title: "App Screenshots"
+                    },
+                    {
+                        name: "AppVideoURL",
+                        title: "App Video URL"
+                    },
+
                 ]
             }
         });
