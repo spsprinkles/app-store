@@ -26,11 +26,12 @@ export const Configuration = Helper.SPConfig({
                 {
                     name: "Description",
                     title: "Description",
-                    type: Helper.SPCfgFieldType.Text,
+                    type: Helper.SPCfgFieldType.Note,
                     description: "Description of the project",
+                    notetype: SPTypes.FieldNoteType.TextOnly,
                     defaultValue: "",
                     required: true,
-                },
+                } as Helper.IFieldInfoNote,
 
                 {
                     name: "AppScreenShot",
@@ -38,7 +39,6 @@ export const Configuration = Helper.SPConfig({
                     type: Helper.SPCfgFieldType.Choice,
                     defaultValue: "",
                     required: true,
-                    showInNewForm: false,
                     choices: [
                         "Screenshot 1",
                         "Screenshot 2",
@@ -51,7 +51,7 @@ export const Configuration = Helper.SPConfig({
                 {
                     name: "AppVideoURL",
                     title: "App Video URL",
-                    type: Helper.SPCfgFieldType.Text,
+                    type: Helper.SPCfgFieldType.Url,
                     defaultValue: "",
                     required: true,
                 },
