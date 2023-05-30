@@ -19,9 +19,9 @@ export class App {
         // Set the control rendering event
         props.onControlRendering = (ctrl, fld) => {
             // See if this is a url field
-            if (fld.FieldTypeKind == SPTypes.FieldType.URL) {
-                // Set the option
-                (ctrl as Components.IFormControlUrlProps).showDescription = false;
+            if (fld.InternalName == "Icon" || fld.InternalName.indexOf("ScreenShot") == 0) {
+                // TODO
+                // Create a custom component for converting images to base64
             }
         }
 
