@@ -19,6 +19,7 @@ export const Configuration = Helper.SPConfig({
                         "TypeOfProject",
                         "Description",
                         "AdditionalInformation",
+                        "Icon",
                         "ScreenShot1",
                         "ScreenShot2",
                         "ScreenShot3",
@@ -42,6 +43,11 @@ export const Configuration = Helper.SPConfig({
                     notetype: SPTypes.FieldNoteType.TextOnly,
                     required: true,
                 } as Helper.IFieldInfoNote,
+                {
+                    name: "Icon",
+                    title: "Icon",
+                    type: Helper.SPCfgFieldType.Url
+                },
                 {
                     name: "ScreenShot1",
                     title: "Screen Shot 1",
