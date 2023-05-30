@@ -3,49 +3,79 @@ import { Components, Types, Web } from "gd-sprest-bs";
 import Strings from "./strings";
 
 /**
- * List Item
- * Add your custom fields here
- * TO DO: Update for intellisense
+ * App Store Item
  */
-export interface IListItem extends Types.SP.ListItem {
-    ItemType: string;
-    Status: string;
+export interface IAppStoreItem extends Types.SP.ListItem {
+    AdditionalInformation?: Types.SP.FieldUrlValue;
+    Description: Types.SP.FieldUrlValue;
+    ScreenShot1: Types.SP.FieldUrlValue;
+    ScreenShot2?: Types.SP.FieldUrlValue;
+    ScreenShot3?: Types.SP.FieldUrlValue;
+    ScreenShot4?: Types.SP.FieldUrlValue;
+    ScreenShot5?: Types.SP.FieldUrlValue;
+    TypeOfProject: string;
+    VideoURL?: Types.SP.FieldUrlValue;
 }
 
 /**
  * Data Source
  */
 export class DataSource {
+    // Filters
+    private static _filtersTypeOfProject: Components.ICheckboxGroupItem[] = null;
+    static get FiltersTypeOfProject(): Components.ICheckboxGroupItem[] { return this._filtersTypeOfProject; }
+    static initFilters() {
+        // Clear the filters
+        this._filtersTypeOfProject = [];
+
+        // Parse the fields
+        let filterField: Types.SP.FieldChoice = null;
+        for (let i = 0; i < this.List.ListFields.length; i++) {
+            let fld = this.List.ListFields[i];
+
+            // See if this is the target field
+            if (fld.InternalName == "") {
+                // Set the field
+                filterField = fld;
+                break;
+            }
+        }
+
+        // See if the field doesn't exists
+        if (filterField == null) { return; }
+
+        // Parse the choices
+        for (let i = 0; i < filterField.Choices.results.length; i++) {
+            // Add an item
+            this._filtersTypeOfProject.push({
+                label: filterField.Choices.results[i],
+                type: Components.CheckboxGroupTypes.Switch
+            });
+        }
+    }
+
     // List
-    private static _list: List<IListItem> = null;
-    static get List(): List<IListItem> { return this._list; }
-
-    // List Items
-    static get ListItems(): IListItem[] { return this.List.Items; }
-
-    // Status Filters
-    private static _statusFilters: Components.ICheckboxGroupItem[] = null;
-    static get StatusFilters(): Components.ICheckboxGroupItem[] { return this._statusFilters; }
-    static loadStatusFilters(): PromiseLike<Components.ICheckboxGroupItem[]> {
+    private static _list: List<IAppStoreItem> = null;
+    static get List(): List<IAppStoreItem> { return this._list; }
+    private static initList(): PromiseLike<void> {
         // Return a promise
         return new Promise((resolve, reject) => {
-            // Get the status field
-            Web(Strings.SourceUrl).Lists(Strings.Lists.Main).Fields("Status").execute((fld: Types.SP.FieldChoice) => {
-                let items: Components.ICheckboxGroupItem[] = [];
+            this._list = new List({
+                listName: Strings.Lists.Main,
+                itemQuery: {
+                    GetAllItems: true,
+                    OrderBy: ["Title"],
+                    Top: 5000
+                },
+                onInitError: reject,
+                onInitialized: () => {
+                    // Initialize the filters
+                    this.initFilters();
 
-                // Parse the choices
-                for (let i = 0; i < fld.Choices.results.length; i++) {
-                    // Add an item
-                    items.push({
-                        label: fld.Choices.results[i],
-                        type: Components.CheckboxGroupTypes.Switch
-                    });
+                    // Resolve the request
+                    resolve();
                 }
-
-                // Set the filters and resolve the promise
-                this._statusFilters = items;
-                resolve(items);
-            }, reject);
+            });
         });
     }
 
@@ -68,35 +98,10 @@ export class DataSource {
     }
 
     // Initializes the application
-    static init(): PromiseLike<void> {
-        // Return a promise
-        return new Promise((resolve, reject) => {
-            // Initialize the list
-            this._list = new List<IListItem>({
-                listName: Strings.Lists.Main,
-                itemQuery: {
-                    GetAllItems: true,
-                    OrderBy: ["ProjectName"],
-                    Top: 5000
-                },
-                onInitError: reject,
-                onInitialized: () => {
-                    // Load the status filters
-                    this.loadStatusFilters().then(() => {
-                        // Resolve the request
-                        resolve();
-                    }, reject);
-                }
-            });
-        });
-    }
-
-    // Refreshes the list data
-    static refresh(): PromiseLike<IListItem[]> {
-        // Return a promise
-        return new Promise((resolve, reject) => {
-            // Refresh the data
-            DataSource.List.refresh().then(resolve, reject);
-        });
+    static init(): PromiseLike<any> {
+        // Execute the required initialization methods
+        return Promise.all([
+            this.initList()
+        ]);
     }
 }

@@ -11,56 +11,85 @@ export const Configuration = Helper.SPConfig({
                 Title: Strings.Lists.Main,
                 BaseTemplate: SPTypes.ListTemplateType.GenericList
             },
-            CustomFields: [
-                
+            ContentTypes: [
                 {
-                    name: "ProjectName",
-                    title: "Project name",
-                    type: Helper.SPCfgFieldType.Text,
-                    description: "Name of the project",
-                    defaultValue: "",
-                    required: true,
-
+                    Name: "Item",
+                    FieldRefs: [
+                        "Title",
+                        "TypeOfProject",
+                        "Description",
+                        "AdditionalInformation",
+                        "ScreenShot1",
+                        "ScreenShot2",
+                        "ScreenShot3",
+                        "ScreenShot4",
+                        "ScreenShot5",
+                        "VideoURL"
+                    ]
+                }
+            ],
+            CustomFields: [
+                {
+                    name: "AdditionalInformation",
+                    title: "Additional Information",
+                    type: Helper.SPCfgFieldType.Url
                 },
-
                 {
                     name: "Description",
                     title: "Description",
                     type: Helper.SPCfgFieldType.Note,
-                    description: "Description of the project",
+                    description: "Description of the app/solution",
                     notetype: SPTypes.FieldNoteType.TextOnly,
-                    defaultValue: "",
                     required: true,
                 } as Helper.IFieldInfoNote,
-
                 {
-                    name: "AppScreenShot",
-                    title: "App Screenshot",
+                    name: "ScreenShot1",
+                    title: "Screen Shot 1",
+                    type: Helper.SPCfgFieldType.Url,
+                    required: true,
+                },
+                {
+                    name: "ScreenShot2",
+                    title: "Screen Shot 2",
+                    type: Helper.SPCfgFieldType.Url
+                },
+                {
+                    name: "ScreenShot3",
+                    title: "Screen Shot 3",
+                    type: Helper.SPCfgFieldType.Url
+                },
+                {
+                    name: "ScreenShot4",
+                    title: "Screen Shot 4",
+                    type: Helper.SPCfgFieldType.Url
+                },
+                {
+                    name: "ScreenShot5",
+                    title: "Screen Shot 5",
+                    type: Helper.SPCfgFieldType.Url
+                },
+                {
+                    name: "TypeOfProject",
+                    title: "Type of Project",
                     type: Helper.SPCfgFieldType.Choice,
-                    defaultValue: "",
                     required: true,
                     choices: [
-                        "Screenshot 1",
-                        "Screenshot 2",
-                        "Screenshot 3",
-                        "Screenshot 4",
-                        "Screenshot 5",
-                    ],
+                        "Power App", "Power Automate", "Power Shell", "SharePoint", "Teams"
+                    ]
                 } as Helper.IFieldInfoChoice,
-
                 {
-                    name: "AppVideoURL",
+                    name: "VideoURL",
                     title: "App Video URL",
                     type: Helper.SPCfgFieldType.Url,
                     defaultValue: "",
-                    required: true,
+                    required: false,
                 },
             ],
             ViewInformation: [
                 {
                     ViewName: "All Items",
                     ViewFields: [
-                        "ProjectName", "Description", "AppScreenShot", "AppVideoURL",
+                        "LinkTitle", "Description"
                     ]
                 }
             ]

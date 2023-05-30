@@ -1,8 +1,8 @@
 import { Dashboard } from "dattatable";
-import { Components } from "gd-sprest-bs";
 import * as jQuery from "jquery";
-import { DataSource, IListItem } from "./ds";
+import { DataSource, IAppStoreItem } from "./ds";
 import Strings from "./strings";
+import { Components } from "gd-sprest-bs";
 
 /**
  * Main Application
@@ -23,11 +23,11 @@ export class App {
             useModal: true,
             filters: {
                 items: [{
-                    header: "By Status",
-                    items: DataSource.StatusFilters,
+                    header: "By Project Type",
+                    items: DataSource.FiltersTypeOfProject,
                     onFilter: (value: string) => {
                         // Filter the table
-                        dashboard.filter(2, value);
+                        dashboard.filter(0, value);
                     }
                 }]
             },
@@ -41,11 +41,11 @@ export class App {
                         onClick: () => {
                             // Show the new form
                             DataSource.List.newForm({
-                                onUpdate: () => {
+                                onUpdate: (item: IAppStoreItem) => {
                                     // Refresh the data
-                                    DataSource.refresh().then(() => {
+                                    DataSource.List.refreshItem(item.Id).then(() => {
                                         // Refresh the table
-                                        dashboard.refresh(DataSource.ListItems);
+                                        dashboard.refresh(DataSource.List.Items);
                                     });
                                 }
                             });
@@ -61,12 +61,12 @@ export class App {
                 ]
             },
             table: {
-                rows: DataSource.ListItems,
+                rows: DataSource.List.Items,
                 dtProps: {
                     dom: 'rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',
                     columnDefs: [
                         {
-                            "targets": 0,
+                            "targets": 4,
                             "orderable": false,
                             "searchable": false
                         }
@@ -91,22 +91,46 @@ export class App {
                 },
                 columns: [
                     {
-                        name: "ProjectName",
-                        title: "Name of the Project",
+                        name: "TypeOfProject",
+                        title: "Project Type"
+                    },
+                    {
+                        name: "Title",
+                        title: "App Name",
                     },
                     {
                         name: "Description",
                         title: "Description"
                     },
                     {
-                        name: "AppScreenshots",
-                        title: "App Screenshots"
+                        name: "AdditionalInformation",
+                        title: "Additional Information"
                     },
                     {
-                        name: "AppVideoURL",
-                        title: "App Video URL"
-                    },
-
+                        name: "",
+                        title: "",
+                        onRenderCell(el, column, item: IAppStoreItem) {
+                            // Render the actions
+                            Components.Button({
+                                el,
+                                text: "Edit",
+                                type: Components.ButtonTypes.OutlinePrimary,
+                                onClick: () => {
+                                    // Edit the item
+                                    DataSource.List.editForm({
+                                        itemId: item.Id,
+                                        onUpdate: (item: IAppStoreItem) => {
+                                            // Refresh the item
+                                            DataSource.List.refreshItem(item.Id).then(() => {
+                                                // Refresh the table
+                                                dashboard.refresh(DataSource.List.Items);
+                                            });
+                                        }
+                                    })
+                                }
+                            })
+                        },
+                    }
                 ]
             }
         });

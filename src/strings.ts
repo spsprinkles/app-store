@@ -17,10 +17,10 @@ const Strings = {
     AppElementId: "app-store",
     GlobalVariable: "AppStore",
     Lists: {
-        Main: "AppStore"
+        Main: "App Store"
     },
     ProjectName: "AppStore",
-    ProjectDescription: "Created using the gd-sprest-bs library.",
+    ProjectDescription: "List that displays the app information in a card view.",
     SourceUrl: ContextInfo.webServerRelativeUrl,
     Version: "0.1"
 };
