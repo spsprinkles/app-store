@@ -135,25 +135,46 @@ export class App {
                         title: "",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             // Render the actions
-                            Components.Button({
+                            Components.TooltipGroup({
                                 el,
-                                text: "Edit",
-                                type: Components.ButtonTypes.OutlinePrimary,
-                                onClick: () => {
-                                    // Edit the item
-                                    DataSource.List.editForm({
-                                        itemId: item.Id,
-                                        onCreateEditForm: this.configureForm,
-                                        onUpdate: (item: IAppStoreItem) => {
-                                            // Refresh the item
-                                            DataSource.List.refreshItem(item.Id).then(() => {
-                                                // Refresh the table
-                                                dashboard.refresh(DataSource.List.Items);
-                                            });
+                                isSmall: true,
+                                tooltips: [
+                                    {
+                                        content: "Click to view the item.",
+                                        btnProps: {
+                                            text: "View",
+                                            type: Components.ButtonTypes.OutlinePrimary,
+                                            onClick: () => {
+                                                // Edit the item
+                                                DataSource.List.viewForm({
+                                                    itemId: item.Id
+                                                });
+                                            }
                                         }
-                                    })
-                                }
-                            })
+                                    },
+                                    {
+                                        content: "Click to edit the item.",
+                                        btnProps: {
+                                            text: "Edit",
+                                            type: Components.ButtonTypes.OutlinePrimary,
+                                            onClick: () => {
+                                                // Edit the item
+                                                DataSource.List.editForm({
+                                                    itemId: item.Id,
+                                                    onCreateEditForm: this.configureForm,
+                                                    onUpdate: (item: IAppStoreItem) => {
+                                                        // Refresh the item
+                                                        DataSource.List.refreshItem(item.Id).then(() => {
+                                                            // Refresh the table
+                                                            dashboard.refresh(DataSource.List.Items);
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }
+                                ]
+                            });
                         },
                     }
                 ]
