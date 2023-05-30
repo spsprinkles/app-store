@@ -2,7 +2,7 @@ import { Dashboard } from "dattatable";
 import * as jQuery from "jquery";
 import { DataSource, IAppStoreItem } from "./ds";
 import Strings from "./strings";
-import { Components } from "gd-sprest-bs";
+import { Components, SPTypes } from "gd-sprest-bs";
 
 /**
  * Main Application
@@ -12,6 +12,21 @@ export class App {
     constructor(el: HTMLElement) {
         // Render the dashboard
         this.render(el);
+    }
+
+    // Configures the form
+    private configureForm(props: Components.IListFormEditProps): Components.IListFormEditProps {
+        // Set the control rendering event
+        props.onControlRendering = (ctrl, fld) => {
+            // See if this is a url field
+            if (fld.FieldTypeKind == SPTypes.FieldType.URL) {
+                // Set the option
+                (ctrl as Components.IFormControlUrlProps).showDescription = false;
+            }
+        }
+
+        // Return the properties
+        return props;
     }
 
     // Renders the dashboard
@@ -41,6 +56,7 @@ export class App {
                         onClick: () => {
                             // Show the new form
                             DataSource.List.newForm({
+                                onCreateEditForm: this.configureForm,
                                 onUpdate: (item: IAppStoreItem) => {
                                     // Refresh the data
                                     DataSource.List.refreshItem(item.Id).then(() => {
@@ -103,13 +119,21 @@ export class App {
                         title: "Description"
                     },
                     {
-                        name: "AdditionalInformation",
-                        title: "Additional Information"
+                        name: "",
+                        title: "Additional Information",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            // Render the link
+                            let elLink = document.createElement("a");
+                            elLink.text = "Additional Information";
+                            elLink.href = item.AdditionalInformation ? item.AdditionalInformation.Url : "";
+                            elLink.target = "_blank";
+                            el.appendChild(elLink);
+                        }
                     },
                     {
                         name: "",
                         title: "",
-                        onRenderCell(el, column, item: IAppStoreItem) {
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
                             // Render the actions
                             Components.Button({
                                 el,
@@ -119,6 +143,7 @@ export class App {
                                     // Edit the item
                                     DataSource.List.editForm({
                                         itemId: item.Id,
+                                        onCreateEditForm: this.configureForm,
                                         onUpdate: (item: IAppStoreItem) => {
                                             // Refresh the item
                                             DataSource.List.refreshItem(item.Id).then(() => {

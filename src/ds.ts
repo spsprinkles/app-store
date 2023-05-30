@@ -34,7 +34,7 @@ export class DataSource {
             let fld = this.List.ListFields[i];
 
             // See if this is the target field
-            if (fld.InternalName == "") {
+            if (fld.InternalName == "TypeOfProject") {
                 // Set the field
                 filterField = fld;
                 break;
