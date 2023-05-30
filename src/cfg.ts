@@ -46,34 +46,46 @@ export const Configuration = Helper.SPConfig({
                 {
                     name: "Icon",
                     title: "Icon",
-                    type: Helper.SPCfgFieldType.Url
-                },
+                    type: Helper.SPCfgFieldType.Note,
+                    description: "The icon for the app/solution.",
+                    notetype: SPTypes.FieldNoteType.TextOnly
+                } as Helper.IFieldInfoNote,
                 {
                     name: "ScreenShot1",
                     title: "Screen Shot 1",
-                    type: Helper.SPCfgFieldType.Url,
-                    required: true,
-                },
+                    type: Helper.SPCfgFieldType.Note,
+                    description: "A screenshot of the app/solution.",
+                    notetype: SPTypes.FieldNoteType.TextOnly,
+                    required: true
+                } as Helper.IFieldInfoNote,
                 {
                     name: "ScreenShot2",
                     title: "Screen Shot 2",
-                    type: Helper.SPCfgFieldType.Url
-                },
+                    type: Helper.SPCfgFieldType.Note,
+                    description: "A screenshot of the app/solution.",
+                    notetype: SPTypes.FieldNoteType.TextOnly
+                } as Helper.IFieldInfoNote,
                 {
                     name: "ScreenShot3",
                     title: "Screen Shot 3",
-                    type: Helper.SPCfgFieldType.Url
-                },
+                    type: Helper.SPCfgFieldType.Note,
+                    description: "A screenshot of the app/solution.",
+                    notetype: SPTypes.FieldNoteType.TextOnly
+                } as Helper.IFieldInfoNote,
                 {
                     name: "ScreenShot4",
                     title: "Screen Shot 4",
-                    type: Helper.SPCfgFieldType.Url
-                },
+                    type: Helper.SPCfgFieldType.Note,
+                    description: "A screenshot of the app/solution.",
+                    notetype: SPTypes.FieldNoteType.TextOnly
+                } as Helper.IFieldInfoNote,
                 {
                     name: "ScreenShot5",
                     title: "Screen Shot 5",
-                    type: Helper.SPCfgFieldType.Url
-                },
+                    type: Helper.SPCfgFieldType.Note,
+                    description: "A screenshot of the app/solution.",
+                    notetype: SPTypes.FieldNoteType.TextOnly
+                } as Helper.IFieldInfoNote,
                 {
                     name: "TypeOfProject",
                     title: "Type of Project",
