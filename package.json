@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "A generic app store that will display project information in a dashboard.",
   "main": "src/index.ts",
-"scripts": {
+  "scripts": {
     "all": "npm run build && npm run prod",
     "build": "webpack --mode=development",
     "prod": "webpack --mode=production"
-},
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/spsprinkles/app-store.git"
@@ -23,7 +23,7 @@
     "datatables.net": "^1.13.4",
     "datatables.net-bs5": "^1.13.4",
     "dattatable": "^2.7.4",
-    "gd-sprest-bs": "^10.10.20",
+    "gd-sprest-bs": "^10.10.21",
     "jquery": "^3.7.0",
     "moment": "^2.29.4"
   },
