@@ -107,7 +107,7 @@ export const Configuration = Helper.SPConfig({
                 {
                     ViewName: "All Items",
                     ViewFields: [
-                        "LinkTitle", "Description"
+                        "LinkTitle", "TypeOfProject", "Description"
                     ]
                 }
             ]
