@@ -26,6 +26,12 @@ export class Forms {
         props.onControlRendered = (ctrl, fld) => {
             // See if this is a url field
             if (fld.InternalName == "Icon" || fld.InternalName.indexOf("ScreenShot") == 0) {
+                // Set a tooltip
+                Components.Tooltip({
+                    content: "Click to upload an image file.",
+                    target: ctrl.textbox.elTextbox
+                });
+
                 // Set a click event
                 ctrl.textbox.elTextbox.addEventListener("click", () => {
                     // Display a file upload dialog
