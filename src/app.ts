@@ -1,5 +1,8 @@
 import { Dashboard } from "dattatable";
 import { Components } from "gd-sprest-bs";
+import { appIndicator } from "gd-sprest-bs/build/icons/svgs/appIndicator";
+import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
+import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
 import * as jQuery from "jquery";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Forms } from "./forms";
@@ -32,27 +35,104 @@ export class App {
                     }
                 }]
             },
-            navigation: {
-                title: Strings.ProjectName,
-                items: [
-                    {
-                        className: "btn-outline-light",
-                        text: "Create Item",
-                        isButton: true,
-                        onClick: () => {
-                            // Show the new form
-                            Forms.new(() => {
-                                // Refresh the table
-                                dashboard.refresh(DataSource.List.Items);
-                            });
-                        }
-                    }
-                ]
-            },
             footer: {
                 itemsEnd: [
                     {
+                        className: "p-0 pe-none text-dark",
                         text: "v" + Strings.Version
+                    }
+                ]
+            },
+            navigation: {
+                // Add the branding icon & text
+                onRendering: (props) => {
+                    // Set the class names
+                    props.className = "bg-sharepoint navbar-expand rounded-top";
+
+                    // Set the brand
+                    let brand = document.createElement("div");
+                    brand.className = "d-flex";
+                    brand.appendChild(appIndicator());
+                    brand.append(Strings.ProjectName);
+                    brand.querySelector("svg").classList.add("me-75");
+                    props.brand = brand;
+                },
+                // Adjust the brand alignment
+                onRendered: (el) => {
+                    el.querySelector("nav div.container-fluid").classList.add("ps-3");
+                    el.querySelector("nav div.container-fluid a.navbar-brand").classList.add("pe-none");
+                },
+                onSearchRendered: (el) => {
+                    el.setAttribute("placeholder", "Find an app");
+                },
+                showFilter: false
+            },
+            subNavigation: {
+                itemsEnd: [
+                    {
+                        text: "Add an App",
+                        onRender: (el, item) => {
+                            // Clear the existing button
+                            el.innerHTML = "";
+                            // Create a span to wrap the icon in
+                            let span = document.createElement("span");
+                            span.className = "bg-white d-inline-flex ms-2 rounded";
+                            el.appendChild(span);
+
+                            // Render a tooltip
+                            Components.Tooltip({
+                                el: span,
+                                content: item.text,
+                                btnProps: {
+                                    // Render the icon button
+                                    className: "p-1 pe-2",
+                                    iconClassName: "me-1",
+                                    iconType: plusSquare,
+                                    iconSize: 24,
+                                    isSmall: true,
+                                    text: "Add",
+                                    type: Components.ButtonTypes.OutlineSecondary,
+                                    onClick: () => {
+                                        // Show the new form
+                                        Forms.new(() => {
+                                            // Refresh the table
+                                            dashboard.refresh(DataSource.List.Items);
+                                        });
+                                    }
+                                },
+                            });
+                        }
+                    },
+                    {
+                        text: "Filters",
+                        onRender: (el, item) => {
+                            // Clear the existing button
+                            el.innerHTML = "";
+                            // Create a span to wrap the icon in
+                            let span = document.createElement("span");
+                            span.className = "bg-white d-inline-flex ms-2 rounded";
+                            el.appendChild(span);
+
+                            // Render a tooltip
+                            Components.Tooltip({
+                                el: span,
+                                content: "Show " + item.text,
+                                btnProps: {
+                                    // Render the icon button
+                                    className: "p-1 pe-2",
+                                    iconClassName: "me-1",
+                                    iconType: filterSquare,
+                                    iconSize: 24,
+                                    isSmall: true,
+                                    text: item.text,
+                                    type: Components.ButtonTypes.OutlineSecondary,
+                                    onClick: () => {
+                                        // Show the filter panel
+                                        dashboard.showFilter();
+                                    }
+                                },
+                            });
+                        }
                     }
                 ]
             },
@@ -114,7 +194,8 @@ export class App {
                         }
                     },
                     {
-                        name: "",
+                        className: "text-end text-nowrap",
+                        name: "Actions",
                         title: "",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             // Render the actions
