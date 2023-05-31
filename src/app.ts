@@ -102,12 +102,15 @@ export class App {
                         name: "",
                         title: "Additional Information",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            // Render the link
-                            let elLink = document.createElement("a");
-                            elLink.text = "Additional Information";
-                            elLink.href = item.AdditionalInformation ? item.AdditionalInformation.Url : "";
-                            elLink.target = "_blank";
-                            el.appendChild(elLink);
+                            // Ensure a value exists
+                            if (item.AdditionalInformation) {
+                                // Render the link
+                                let elLink = document.createElement("a");
+                                elLink.text = "Additional Information";
+                                elLink.href = item.AdditionalInformation ? item.AdditionalInformation.Url : "";
+                                elLink.target = "_blank";
+                                el.appendChild(elLink);
+                            }
                         }
                     },
                     {
@@ -126,7 +129,7 @@ export class App {
                                             type: Components.ButtonTypes.OutlinePrimary,
                                             onClick: () => {
                                                 // View the item
-                                                Forms.view(item.Id);
+                                                Forms.view(item);
                                             }
                                         }
                                     },

@@ -10,13 +10,8 @@ export class Forms {
     private static configureForm(props: Components.IListFormEditProps): Components.IListFormEditProps {
         // Set the control rendering event
         props.onControlRendering = (ctrl, fld) => {
-            // See if this is a url field
-            if (fld.InternalName == "Icon" || fld.InternalName.indexOf("ScreenShot") == 0) {
-                // Make the field read-only
-                ctrl.isReadonly = true;
-            }
-            // Else, see if this is a link
-            else if (fld.InternalName == "AdditionalInformation") {
+            // See if this is a link
+            if (fld.InternalName == "AdditionalInformation" || fld.InternalName == "VideoURL") {
                 // Update the props
                 (ctrl as Components.IFormControlUrlProps).showDescription = false;
             }
@@ -31,6 +26,9 @@ export class Forms {
                     content: "Click to upload an image file.",
                     target: ctrl.textbox.elTextbox
                 });
+
+                // Make this textbox read-only
+                ctrl.textbox.elTextbox.readOnly = true;
 
                 // Set a click event
                 ctrl.textbox.elTextbox.addEventListener("click", () => {
@@ -55,7 +53,7 @@ export class Forms {
                                 let value = reader.result as string;
 
                                 // Set the value
-                                ctrl.textbox.setValue(value.replace("data:", '').replace(/^.+,/, ''));
+                                ctrl.textbox.setValue(value);
 
                                 // Close the dialog
                                 LoadingDialog.hide();
@@ -107,7 +105,31 @@ export class Forms {
     }
 
     // Displays the view form
-    static view(itemId: number) {
-        DataSource.List.viewForm({ itemId });
+    static view(item: IAppStoreItem) {
+        DataSource.List.viewForm({
+            itemId: item.Id,
+            onCreateViewForm: props => {
+                // Customize the screenshots to display the image
+                props.onControlRendered = (ctrl, fld) => {
+                    // See if this is a url field
+                    if (fld.InternalName == "Icon" || fld.InternalName.indexOf("ScreenShot") == 0) {
+                        // Clear the element
+                        while (ctrl.el.firstChild) { ctrl.el.removeChild(ctrl.el.firstChild); }
+
+                        // Ensure a value exists
+                        if (item[fld.InternalName]) {
+                            // Display the image
+                            let elImage = document.createElement("img");
+                            elImage.src = item[fld.InternalName];
+                            elImage.style.maxHeight = "250px";
+                            ctrl.el.appendChild(elImage);
+                        }
+                    }
+                }
+
+                // Return the properties
+                return props;
+            }
+        });
     }
 }
