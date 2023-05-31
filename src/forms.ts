@@ -2,6 +2,9 @@ import { LoadingDialog } from "dattatable";
 import { Components, Helper } from "gd-sprest-bs";
 import { DataSource, IAppStoreItem } from "./ds";
 
+// Acceptable image file types
+const ImageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".svg"];
+
 /**
  * Forms
  */
@@ -33,7 +36,7 @@ export class Forms {
                 // Set a click event
                 ctrl.textbox.elTextbox.addEventListener("click", () => {
                     // Display a file upload dialog
-                    Helper.ListForm.showFileDialog().then(file => {
+                    Helper.ListForm.showFileDialog(ImageExtensions).then(file => {
                         // Clear the value
                         ctrl.textbox.setValue("");
 
@@ -41,7 +44,7 @@ export class Forms {
                         let fileName = file.name.toLowerCase();
 
                         // Validate the file type
-                        if (fileName.endsWith(".png") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".gif") || fileName.endsWith(".svg")) {
+                        if (this.isImageFile(fileName)) {
                             // Show a loading dialog
                             LoadingDialog.setHeader("Reading the File");
                             LoadingDialog.setBody("This will close after the file is converted...");
@@ -50,10 +53,8 @@ export class Forms {
                             // Convert the file
                             let reader = new FileReader();
                             reader.onloadend = () => {
-                                let value = reader.result as string;
-
                                 // Set the value
-                                ctrl.textbox.setValue(value);
+                                ctrl.textbox.setValue(reader.result as string);
 
                                 // Close the dialog
                                 LoadingDialog.hide();
@@ -79,7 +80,7 @@ export class Forms {
     static edit(itemId: number, onUpdate: () => void) {
         DataSource.List.editForm({
             itemId,
-            onCreateEditForm: this.configureForm,
+            onCreateEditForm: props => { return this.configureForm(props); },
             onUpdate: (item: IAppStoreItem) => {
                 // Refresh the item
                 DataSource.List.refreshItem(item.Id).then(() => {
@@ -90,10 +91,28 @@ export class Forms {
         });
     }
 
+    // Determines if the image extension is valid
+    private static isImageFile(fileName: string): boolean {
+        let isValid = false;
+
+        // Parse the valid file extensions
+        for (let i = 0; i < ImageExtensions.length; i++) {
+            // See if this is a valid file extension
+            if (fileName.endsWith(ImageExtensions[i])) {
+                // Set the flag and break from the loop
+                isValid = true;
+                break;
+            }
+        }
+
+        // Return the flag
+        return isValid;
+    }
+
     // Displays the new form
     static new(onUpdate: () => void) {
         DataSource.List.newForm({
-            onCreateEditForm: this.configureForm,
+            onCreateEditForm: props => { return this.configureForm(props); },
             onUpdate: (item: IAppStoreItem) => {
                 // Refresh the data
                 DataSource.List.refreshItem(item.Id).then(() => {
