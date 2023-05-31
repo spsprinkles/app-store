@@ -1,8 +1,9 @@
 import { Dashboard } from "dattatable";
+import { Components } from "gd-sprest-bs";
 import * as jQuery from "jquery";
 import { DataSource, IAppStoreItem } from "./ds";
+import { Forms } from "./forms";
 import Strings from "./strings";
-import { Components, SPTypes } from "gd-sprest-bs";
 
 /**
  * Main Application
@@ -12,21 +13,6 @@ export class App {
     constructor(el: HTMLElement) {
         // Render the dashboard
         this.render(el);
-    }
-
-    // Configures the form
-    private configureForm(props: Components.IListFormEditProps): Components.IListFormEditProps {
-        // Set the control rendering event
-        props.onControlRendering = (ctrl, fld) => {
-            // See if this is a url field
-            if (fld.InternalName == "Icon" || fld.InternalName.indexOf("ScreenShot") == 0) {
-                // TODO
-                // Create a custom component for converting images to base64
-            }
-        }
-
-        // Return the properties
-        return props;
     }
 
     // Renders the dashboard
@@ -55,15 +41,9 @@ export class App {
                         isButton: true,
                         onClick: () => {
                             // Show the new form
-                            DataSource.List.newForm({
-                                onCreateEditForm: this.configureForm,
-                                onUpdate: (item: IAppStoreItem) => {
-                                    // Refresh the data
-                                    DataSource.List.refreshItem(item.Id).then(() => {
-                                        // Refresh the table
-                                        dashboard.refresh(DataSource.List.Items);
-                                    });
-                                }
+                            Forms.new(() => {
+                                // Refresh the table
+                                dashboard.refresh(DataSource.List.Items);
                             });
                         }
                     }
@@ -122,12 +102,15 @@ export class App {
                         name: "",
                         title: "Additional Information",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            // Render the link
-                            let elLink = document.createElement("a");
-                            elLink.text = "Additional Information";
-                            elLink.href = item.AdditionalInformation ? item.AdditionalInformation.Url : "";
-                            elLink.target = "_blank";
-                            el.appendChild(elLink);
+                            // Ensure a value exists
+                            if (item.AdditionalInformation) {
+                                // Render the link
+                                let elLink = document.createElement("a");
+                                elLink.text = "Additional Information";
+                                elLink.href = item.AdditionalInformation ? item.AdditionalInformation.Url : "";
+                                elLink.target = "_blank";
+                                el.appendChild(elLink);
+                            }
                         }
                     },
                     {
@@ -145,10 +128,8 @@ export class App {
                                             text: "View",
                                             type: Components.ButtonTypes.OutlinePrimary,
                                             onClick: () => {
-                                                // Edit the item
-                                                DataSource.List.viewForm({
-                                                    itemId: item.Id
-                                                });
+                                                // View the item
+                                                Forms.view(item);
                                             }
                                         }
                                     },
@@ -159,16 +140,9 @@ export class App {
                                             type: Components.ButtonTypes.OutlinePrimary,
                                             onClick: () => {
                                                 // Edit the item
-                                                DataSource.List.editForm({
-                                                    itemId: item.Id,
-                                                    onCreateEditForm: this.configureForm,
-                                                    onUpdate: (item: IAppStoreItem) => {
-                                                        // Refresh the item
-                                                        DataSource.List.refreshItem(item.Id).then(() => {
-                                                            // Refresh the table
-                                                            dashboard.refresh(DataSource.List.Items);
-                                                        });
-                                                    }
+                                                Forms.edit(item.Id, () => {
+                                                    // Refresh the table
+                                                    dashboard.refresh(DataSource.List.Items);
                                                 });
                                             }
                                         }
