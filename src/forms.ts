@@ -41,7 +41,7 @@ export class Forms {
                         let fileName = file.name.toLowerCase();
 
                         // Validate the file type
-                        if (fileName.endsWith(".png") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".gif")) {
+                        if (fileName.endsWith(".png") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".gif") || fileName.endsWith(".svg")) {
                             // Show a loading dialog
                             LoadingDialog.setHeader("Reading the File");
                             LoadingDialog.setBody("This will close after the file is converted...");
