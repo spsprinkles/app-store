@@ -8,6 +8,7 @@ import Strings from "./strings";
 export interface IAppStoreItem extends Types.SP.ListItem {
     AdditionalInformation?: Types.SP.FieldUrlValue;
     Description: string;
+    Icon: string;
     ScreenShot1: string;
     ScreenShot2?: string;
     ScreenShot3?: string;
