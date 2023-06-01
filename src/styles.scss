@@ -1,1 +1,28 @@
 /** Custom Styles Go Here */
+table.cards tbody tr {
+    float: left;
+    width: 20rem;
+    margin: .5rem .5rem .5rem 0;
+    border: 3px solid #dee2e6;
+    border-radius: var(--bs-border-radius) !important;
+}
+table.cards tbody td {
+    background-color: rgba(0,0,0,.05) !important;
+    display: block;
+    img.icon {
+        max-width: 96px;
+    }
+}
+
+table.cards tbody td:last-child {
+    border: 0;
+}
+
+table.cards tbody label {
+    display: inline;
+    font-weight: 600;
+    float: left;
+    margin-right: .5rem;
+    min-width: 4.5rem;
+    position: relative;
+}

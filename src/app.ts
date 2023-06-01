@@ -142,61 +142,91 @@ export class App {
                     dom: 'rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',
                     columnDefs: [
                         {
-                            "targets": 4,
+                            "targets": '_all',
                             "orderable": false,
+                        },
+                        {
+                            "targets": [0, 5],
                             "searchable": false
                         }
                     ],
-                    createdRow: function (row, data, index) {
-                        jQuery('td', row).addClass('align-middle');
-                    },
                     drawCallback: function (settings) {
                         let api = new jQuery.fn.dataTable.Api(settings) as any;
-                        jQuery(api.context[0].nTable).removeClass('no-footer');
-                        jQuery(api.context[0].nTable).addClass('tbl-footer');
-                        jQuery(api.context[0].nTable).addClass('table-striped');
-                        jQuery(api.context[0].nTableWrapper).find('.dataTables_info').addClass('text-center');
-                        jQuery(api.context[0].nTableWrapper).find('.dataTables_length').addClass('pt-2');
-                        jQuery(api.context[0].nTableWrapper).find('.dataTables_paginate').addClass('pt-03');
-                    },
-                    headerCallback: function (thead, data, start, end, display) {
-                        jQuery('th', thead).addClass('align-middle');
+                        let div = api.table().container() as HTMLDivElement;
+                        let header = api.table().header() as HTMLTableElement;
+                        let table = api.table().node() as HTMLTableElement;
+                        div.querySelector(".dataTables_info").classList.add("text-center");
+                        div.querySelector(".dataTables_length").classList.add("pt-2");
+                        div.querySelector(".dataTables_paginate").classList.add("pt-03");
+                        table.classList.add("cards");
+                        while (header.firstChild) { header.removeChild(header.firstChild); }
                     },
                     // Order by the 1st column by default; ascending
                     order: [[1, "asc"]]
                 },
                 columns: [
                     {
-                        name: "TypeOfProject",
-                        title: "Project Type"
-                    },
-                    {
-                        name: "Title",
-                        title: "App Name",
-                    },
-                    {
-                        name: "Description",
-                        title: "Description"
-                    },
-                    {
-                        name: "",
-                        title: "Additional Information",
+                        className: "text-center",
+                        name: "Icon",
+                        title: "Icon",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            // Ensure a value exists
-                            if (item.AdditionalInformation) {
-                                // Render the link
-                                let elLink = document.createElement("a");
-                                elLink.text = "Additional Information";
-                                elLink.href = item.AdditionalInformation ? item.AdditionalInformation.Url : "";
-                                elLink.target = "_blank";
-                                el.appendChild(elLink);
+                            if (item.Icon) {
+                                // Clear the Icon text
+                                el.innerHTML = "";
+                                // Display the image
+                                let img = document.createElement("img");
+                                img.classList.add("icon");
+                                img.src = item.Icon;
+                                el.appendChild(img);
                             }
                         }
                     },
                     {
-                        className: "text-end text-nowrap",
+                        name: "Title",
+                        title: "App Name",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${ column.title }:</label>${ item.Title }`;
+                            el.setAttribute("data-filter", item.Title);
+                        }
+                    },
+                    {
+                        name: "Description",
+                        title: "Description",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${ column.title }:</label>${ item.Description }`;
+                            el.setAttribute("data-filter", item.Description);
+                        }
+                    },
+                    {
+                        name: "TypeOfProject",
+                        title: "Project Type",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${ column.title }:</label>${ item.TypeOfProject }`;
+                            el.setAttribute("data-filter", item.TypeOfProject);
+                        }
+                    },
+                    {
+                        name: "AdditionalInformation",
+                        title: "Additional Information",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${ column.title }:</label>`;
+                            el.setAttribute("data-filter", item.AdditionalInformation ? item.AdditionalInformation.Url : "");
+                            // Ensure a value exists
+                            if (item.AdditionalInformation) {
+                                // Render the link
+                                let elLink = document.createElement("a");
+                                elLink.text = "Link";
+                                elLink.href = item.AdditionalInformation ? item.AdditionalInformation.Url : "";
+                                elLink.target = "_blank";
+                                el.appendChild(elLink);
+                            } else {
+                                el.innerHTML += "&nbsp;";
+                            }
+                        }
+                    },
+                    {
+                        className: "text-center",
                         name: "Actions",
-                        title: "",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             // Render the actions
                             Components.TooltipGroup({
@@ -230,7 +260,7 @@ export class App {
                                     }
                                 ]
                             });
-                        },
+                        }
                     }
                 ]
             }
