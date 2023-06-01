@@ -36,7 +36,7 @@ export class Forms {
                 // Set a click event
                 ctrl.textbox.elTextbox.addEventListener("click", () => {
                     // Display a file upload dialog
-                    Helper.ListForm.showFileDialog(ImageExtensions).then(file => {
+                    Helper.ListForm.showFileDialog(['image/*']).then(file => {
                         // Clear the value
                         ctrl.textbox.setValue("");
 
