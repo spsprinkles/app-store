@@ -7,12 +7,12 @@ import Strings from "./strings";
  */
 export interface IAppStoreItem extends Types.SP.ListItem {
     AdditionalInformation?: Types.SP.FieldUrlValue;
-    Description: Types.SP.FieldUrlValue;
-    ScreenShot1: Types.SP.FieldUrlValue;
-    ScreenShot2?: Types.SP.FieldUrlValue;
-    ScreenShot3?: Types.SP.FieldUrlValue;
-    ScreenShot4?: Types.SP.FieldUrlValue;
-    ScreenShot5?: Types.SP.FieldUrlValue;
+    Description: string;
+    ScreenShot1: string;
+    ScreenShot2?: string;
+    ScreenShot3?: string;
+    ScreenShot4?: string;
+    ScreenShot5?: string;
     TypeOfProject: string;
     VideoURL?: Types.SP.FieldUrlValue;
 }
