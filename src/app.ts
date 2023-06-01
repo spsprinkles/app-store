@@ -161,6 +161,7 @@ export class App {
                         table.classList.add("cards");
                         while (header.firstChild) { header.removeChild(header.firstChild); }
                     },
+                    lengthMenu: [5, 10, 20, 50],
                     // Order by the 1st column by default; ascending
                     order: [[1, "asc"]]
                 },
