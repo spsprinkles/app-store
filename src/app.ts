@@ -158,8 +158,8 @@ export class App {
                         div.querySelector(".dataTables_info").classList.add("text-center");
                         div.querySelector(".dataTables_length").classList.add("pt-2");
                         div.querySelector(".dataTables_paginate").classList.add("pt-03");
+                        header.classList.add("d-none");
                         table.classList.add("cards");
-                        while (header.firstChild) { header.removeChild(header.firstChild); }
                     },
                     lengthMenu: [5, 10, 20, 50],
                     // Order by the 1st column by default; ascending
