@@ -10,6 +10,7 @@ import "./styles.scss";
 
 // Create the global variable for this solution
 const GlobalVariable = {
+    App: null,
     Configuration,
     render: (el, context?, sourceUrl?: string) => {
         // See if the page context exists
@@ -26,7 +27,7 @@ const GlobalVariable = {
             // Success
             () => {
                 // Create the application
-                new App(el);
+                GlobalVariable.App = new App(el);
             },
 
             // Error
@@ -44,6 +45,9 @@ const GlobalVariable = {
                 });
             }
         );
+    },
+    updateTheme: (themeInfo) => {
+        // TODO
     }
 };
 

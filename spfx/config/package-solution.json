@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "app-store-client-side-solution",
+    "id": "53ee91a7-1302-4b7b-8b93-d0e92057cd4c",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "Dade Register & Gunjan Datta",
+      "websiteUrl": "https://github.com/spsprinkles/app-store",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.16.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "A generic app store that will display project information in a dashboard."
+      },
+      "longDescription": {
+        "default": "A generic app store that will display project information in a dashboard."
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "app-store Feature",
+        "description": "The feature that activates elements of the app-store solution.",
+        "id": "b3959da9-3783-4f00-8dda-9fa5008bab40",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "../../dist/app-store.sppkg"
+  }
+}
