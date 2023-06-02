@@ -1,5 +1,8 @@
 import { Dashboard } from "dattatable";
 import { Components } from "gd-sprest-bs";
+import { appIndicator } from "gd-sprest-bs/build/icons/svgs/appIndicator";
+import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
+import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
 import * as jQuery from "jquery";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Forms } from "./forms";
@@ -32,27 +35,104 @@ export class App {
                     }
                 }]
             },
-            navigation: {
-                title: Strings.ProjectName,
-                items: [
-                    {
-                        className: "btn-outline-light",
-                        text: "Create Item",
-                        isButton: true,
-                        onClick: () => {
-                            // Show the new form
-                            Forms.new(() => {
-                                // Refresh the table
-                                dashboard.refresh(DataSource.List.Items);
-                            });
-                        }
-                    }
-                ]
-            },
             footer: {
                 itemsEnd: [
                     {
+                        className: "p-0 pe-none text-dark",
                         text: "v" + Strings.Version
+                    }
+                ]
+            },
+            navigation: {
+                // Add the branding icon & text
+                onRendering: (props) => {
+                    // Set the class names
+                    props.className = "bg-sharepoint navbar-expand rounded-top";
+
+                    // Set the brand
+                    let brand = document.createElement("div");
+                    brand.className = "d-flex";
+                    brand.appendChild(appIndicator());
+                    brand.append(Strings.ProjectName);
+                    brand.querySelector("svg").classList.add("me-75");
+                    props.brand = brand;
+                },
+                // Adjust the brand alignment
+                onRendered: (el) => {
+                    el.querySelector("nav div.container-fluid").classList.add("ps-3");
+                    el.querySelector("nav div.container-fluid a.navbar-brand").classList.add("pe-none");
+                },
+                onSearchRendered: (el) => {
+                    el.setAttribute("placeholder", "Find an app");
+                },
+                showFilter: false
+            },
+            subNavigation: {
+                itemsEnd: [
+                    {
+                        text: "Add an App",
+                        onRender: (el, item) => {
+                            // Clear the existing button
+                            el.innerHTML = "";
+                            // Create a span to wrap the icon in
+                            let span = document.createElement("span");
+                            span.className = "bg-white d-inline-flex ms-2 rounded";
+                            el.appendChild(span);
+
+                            // Render a tooltip
+                            Components.Tooltip({
+                                el: span,
+                                content: item.text,
+                                btnProps: {
+                                    // Render the icon button
+                                    className: "p-1 pe-2",
+                                    iconClassName: "me-1",
+                                    iconType: plusSquare,
+                                    iconSize: 24,
+                                    isSmall: true,
+                                    text: "Add",
+                                    type: Components.ButtonTypes.OutlineSecondary,
+                                    onClick: () => {
+                                        // Show the new form
+                                        Forms.new(() => {
+                                            // Refresh the table
+                                            dashboard.refresh(DataSource.List.Items);
+                                        });
+                                    }
+                                },
+                            });
+                        }
+                    },
+                    {
+                        text: "Filters",
+                        onRender: (el, item) => {
+                            // Clear the existing button
+                            el.innerHTML = "";
+                            // Create a span to wrap the icon in
+                            let span = document.createElement("span");
+                            span.className = "bg-white d-inline-flex ms-2 rounded";
+                            el.appendChild(span);
+
+                            // Render a tooltip
+                            Components.Tooltip({
+                                el: span,
+                                content: "Show " + item.text,
+                                btnProps: {
+                                    // Render the icon button
+                                    className: "p-1 pe-2",
+                                    iconClassName: "me-1",
+                                    iconType: filterSquare,
+                                    iconSize: 24,
+                                    isSmall: true,
+                                    text: item.text,
+                                    type: Components.ButtonTypes.OutlineSecondary,
+                                    onClick: () => {
+                                        // Show the filter panel
+                                        dashboard.showFilter();
+                                    }
+                                },
+                            });
+                        }
                     }
                 ]
             },
@@ -62,60 +142,92 @@ export class App {
                     dom: 'rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',
                     columnDefs: [
                         {
-                            "targets": 4,
+                            "targets": '_all',
                             "orderable": false,
+                        },
+                        {
+                            "targets": [0, 5],
                             "searchable": false
                         }
                     ],
-                    createdRow: function (row, data, index) {
-                        jQuery('td', row).addClass('align-middle');
-                    },
                     drawCallback: function (settings) {
                         let api = new jQuery.fn.dataTable.Api(settings) as any;
-                        jQuery(api.context[0].nTable).removeClass('no-footer');
-                        jQuery(api.context[0].nTable).addClass('tbl-footer');
-                        jQuery(api.context[0].nTable).addClass('table-striped');
-                        jQuery(api.context[0].nTableWrapper).find('.dataTables_info').addClass('text-center');
-                        jQuery(api.context[0].nTableWrapper).find('.dataTables_length').addClass('pt-2');
-                        jQuery(api.context[0].nTableWrapper).find('.dataTables_paginate').addClass('pt-03');
+                        let div = api.table().container() as HTMLDivElement;
+                        let header = api.table().header() as HTMLTableElement;
+                        let table = api.table().node() as HTMLTableElement;
+                        div.querySelector(".dataTables_info").classList.add("text-center");
+                        div.querySelector(".dataTables_length").classList.add("pt-2");
+                        div.querySelector(".dataTables_paginate").classList.add("pt-03");
+                        table.classList.add("cards");
+                        while (header.firstChild) { header.removeChild(header.firstChild); }
                     },
-                    headerCallback: function (thead, data, start, end, display) {
-                        jQuery('th', thead).addClass('align-middle');
-                    },
+                    lengthMenu: [5, 10, 20, 50],
                     // Order by the 1st column by default; ascending
                     order: [[1, "asc"]]
                 },
                 columns: [
                     {
-                        name: "TypeOfProject",
-                        title: "Project Type"
-                    },
-                    {
-                        name: "Title",
-                        title: "App Name",
-                    },
-                    {
-                        name: "Description",
-                        title: "Description"
-                    },
-                    {
-                        name: "",
-                        title: "Additional Information",
+                        className: "text-center",
+                        name: "Icon",
+                        title: "Icon",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            // Ensure a value exists
-                            if (item.AdditionalInformation) {
-                                // Render the link
-                                let elLink = document.createElement("a");
-                                elLink.text = (item.AdditionalInformation ? item.AdditionalInformation.Description : "") || "Additional Information";
-                                elLink.href = (item.AdditionalInformation ? item.AdditionalInformation.Url : "") || "#";
-                                elLink.target = "_blank";
-                                el.appendChild(elLink);
+                            if (item.Icon) {
+                                // Clear the Icon text
+                                el.innerHTML = "";
+                                // Display the image
+                                let img = document.createElement("img");
+                                img.classList.add("icon");
+                                img.src = item.Icon;
+                                el.appendChild(img);
                             }
                         }
                     },
                     {
-                        name: "",
-                        title: "",
+                        name: "Title",
+                        title: "App Name",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${ column.title }:</label>${ item.Title }`;
+                            el.setAttribute("data-filter", item.Title);
+                        }
+                    },
+                    {
+                        name: "Description",
+                        title: "Description",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${ column.title }:</label>${ item.Description }`;
+                            el.setAttribute("data-filter", item.Description);
+                        }
+                    },
+                    {
+                        name: "TypeOfProject",
+                        title: "Project Type",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${ column.title }:</label>${ item.TypeOfProject }`;
+                            el.setAttribute("data-filter", item.TypeOfProject);
+                        }
+                    },
+                    {
+                        name: "AdditionalInformation",
+                        title: "Additional Information",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${ column.title }:</label>`;
+                            el.setAttribute("data-filter", item.AdditionalInformation ? item.AdditionalInformation.Url : "");
+                            // Ensure a value exists
+                            if (item.AdditionalInformation) {
+                                // Render the link
+                                let elLink = document.createElement("a");
+                                elLink.text = (item.AdditionalInformation ? item.AdditionalInformation.Description : "") || "Link";
+                                elLink.href = (item.AdditionalInformation ? item.AdditionalInformation.Url : "") || "#";
+                                elLink.target = "_blank";
+                                el.appendChild(elLink);                                el.appendChild(elLink);
+                            } else {
+                                el.innerHTML += "&nbsp;";
+                            }
+                        }
+                    },
+                    {
+                        className: "text-center",
+                        name: "Actions",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             // Render the actions
                             Components.TooltipGroup({
@@ -149,7 +261,7 @@ export class App {
                                     }
                                 ]
                             });
-                        },
+                        }
                     }
                 ]
             }

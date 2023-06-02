@@ -1,1 +1,38 @@
 /** Custom Styles Go Here */
+table.cards tbody {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-top: .5rem;
+    width: inherit;
+}
+
+table.cards tbody tr {
+    border: 3px solid #dee2e6;
+    border-radius: var(--bs-border-radius) !important;
+    width: 19rem;
+}
+
+table.cards tbody td {
+    background-color: rgba(0,0,0,.05) !important;
+    display: flex;
+    img.icon {
+        max-height: 70px;
+        max-width: 70px;
+    }
+}
+
+table.cards tbody td:first-child {
+    justify-content: center;
+}
+
+table.cards tbody td:last-child {
+    border: 0;
+    justify-content: center;
+}
+
+table.cards tbody label {
+    font-weight: 600;
+    margin-right: .25rem;
+    min-width: 5rem;
+}

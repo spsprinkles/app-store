@@ -34,7 +34,7 @@ export const Configuration = Helper.SPConfig({
                     name: "AdditionalInformation",
                     title: "Additional Information",
                     type: Helper.SPCfgFieldType.Url
-                },
+                } as Helper.IFieldInfoUrl,
                 {
                     name: "Description",
                     title: "Description",
@@ -101,7 +101,7 @@ export const Configuration = Helper.SPConfig({
                     type: Helper.SPCfgFieldType.Url,
                     defaultValue: "",
                     required: false,
-                },
+                } as Helper.IFieldInfoUrl,
             ],
             ViewInformation: [
                 {
