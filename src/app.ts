@@ -186,7 +186,7 @@ export class App {
                         name: "Title",
                         title: "App Name",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            el.innerHTML = `<label>${ column.title }:</label>${ item.Title }`;
+                            el.innerHTML = `<label>${column.title}:</label>${item.Title}`;
                             el.setAttribute("data-filter", item.Title);
                         }
                     },
@@ -194,7 +194,7 @@ export class App {
                         name: "Description",
                         title: "Description",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            el.innerHTML = `<label>${ column.title }:</label>${ item.Description }`;
+                            el.innerHTML = `<label>${column.title}:</label>${item.Description}`;
                             el.setAttribute("data-filter", item.Description);
                         }
                     },
@@ -202,7 +202,7 @@ export class App {
                         name: "TypeOfProject",
                         title: "Project Type",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            el.innerHTML = `<label>${ column.title }:</label>${ item.TypeOfProject }`;
+                            el.innerHTML = `<label>${column.title}:</label>${item.TypeOfProject}`;
                             el.setAttribute("data-filter", item.TypeOfProject);
                         }
                     },
@@ -210,16 +210,16 @@ export class App {
                         name: "AdditionalInformation",
                         title: "Additional Information",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            el.innerHTML = `<label>${ column.title }:</label>`;
+                            el.innerHTML = `<label>${column.title}:</label>`;
                             el.setAttribute("data-filter", item.AdditionalInformation ? item.AdditionalInformation.Url : "");
                             // Ensure a value exists
                             if (item.AdditionalInformation) {
                                 // Render the link
                                 let elLink = document.createElement("a");
-                                elLink.text = "Link";
-                                elLink.href = item.AdditionalInformation ? item.AdditionalInformation.Url : "";
+                                elLink.text = (item.AdditionalInformation ? item.AdditionalInformation.Description : "") || "Link";
+                                elLink.href = (item.AdditionalInformation ? item.AdditionalInformation.Url : "") || "#";
                                 elLink.target = "_blank";
-                                el.appendChild(elLink);
+                                el.appendChild(elLink); el.appendChild(elLink);
                             } else {
                                 el.innerHTML += "&nbsp;";
                             }
