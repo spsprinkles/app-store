@@ -106,8 +106,8 @@ export class App {
                             if (item.AdditionalInformation) {
                                 // Render the link
                                 let elLink = document.createElement("a");
-                                elLink.text = "Additional Information";
-                                elLink.href = item.AdditionalInformation ? item.AdditionalInformation.Url : "";
+                                elLink.text = (item.AdditionalInformation ? item.AdditionalInformation.Description : "") || "Additional Information";
+                                elLink.href = (item.AdditionalInformation ? item.AdditionalInformation.Url : "") || "#";
                                 elLink.target = "_blank";
                                 el.appendChild(elLink);
                             }

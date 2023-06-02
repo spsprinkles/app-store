@@ -3,7 +3,10 @@ import { Components, Helper } from "gd-sprest-bs";
 import { DataSource, IAppStoreItem } from "./ds";
 
 // Acceptable image file types
-const ImageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".svg"];
+const ImageExtensions = [
+    ".apng", ".avif", ".bmp", ".cur", ".gif", ".jpg", ".jpeg", ".jfif",
+    ".ico", ".pjpeg", ".pjp", ".png", ".svg", ".tif", ".tiff", ".webp"
+];
 
 /**
  * Forms
@@ -11,15 +14,6 @@ const ImageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".svg"];
 export class Forms {
     // Configures the form
     private static configureForm(props: Components.IListFormEditProps): Components.IListFormEditProps {
-        // Set the control rendering event
-        props.onControlRendering = (ctrl, fld) => {
-            // See if this is a link
-            if (fld.InternalName == "AdditionalInformation" || fld.InternalName == "VideoURL") {
-                // Update the props
-                (ctrl as Components.IFormControlUrlProps).showDescription = false;
-            }
-        }
-
         // Set the control rendered event
         props.onControlRendered = (ctrl, fld) => {
             // See if this is a url field
@@ -36,7 +30,7 @@ export class Forms {
                 // Set a click event
                 ctrl.textbox.elTextbox.addEventListener("click", () => {
                     // Display a file upload dialog
-                    Helper.ListForm.showFileDialog(ImageExtensions).then(file => {
+                    Helper.ListForm.showFileDialog(["image/*"]).then(file => {
                         // Clear the value
                         ctrl.textbox.setValue("");
 
