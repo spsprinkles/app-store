@@ -31,7 +31,7 @@ export class App {
                     items: DataSource.FiltersTypeOfProject,
                     onFilter: (value: string) => {
                         // Filter the table
-                        dashboard.filter(0, value);
+                        dashboard.filter(3, value);
                     }
                 }]
             },
