@@ -1,11 +1,13 @@
 import { Dashboard } from "dattatable";
-import { Components } from "gd-sprest-bs";
+import { Components, ContextInfo } from "gd-sprest-bs";
 import { appIndicator } from "gd-sprest-bs/build/icons/svgs/appIndicator";
 import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
 import * as jQuery from "jquery";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Forms } from "./forms";
+import { InstallationModal } from "./install";
+import { Security } from "./security";
 import Strings from "./strings";
 
 /**
@@ -44,6 +46,27 @@ export class App {
                 ]
             },
             navigation: {
+                itemsEnd: !Security.IsAdmin && !Security.IsManager ? null : [
+                    {
+                        text: "Settings",
+                        items: [
+                            {
+                                text: "App Settings",
+                                onClick: () => {
+                                    // Show the install modal
+                                    InstallationModal.show(true);
+                                }
+                            },
+                            {
+                                text: "List Settings",
+                                onClick: () => {
+                                    // Show the settings in a new tab
+                                    window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/listedit.aspx?List=" + DataSource.List.ListInfo.Id);
+                                }
+                            }
+                        ]
+                    }
+                ],
                 // Add the branding icon & text
                 onRendering: (props) => {
                     // Set the class names
