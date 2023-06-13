@@ -21,6 +21,12 @@ const Strings = {
     },
     ProjectName: "AppStore",
     ProjectDescription: "List that displays the app information in a card view.",
+    SecurityGroups: {
+        Managers: {
+            Name: "App Store Managers",
+            Description: "Manages the app store solution."
+        }
+    },
     SourceUrl: ContextInfo.webServerRelativeUrl,
     Version: "0.1"
 };
