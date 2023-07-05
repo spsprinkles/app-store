@@ -1,4 +1,19 @@
 /** Custom Styles Go Here */
+:root {
+    --sp-neutral-dark: #201f1e;
+}
+
+svg.brand {
+    margin-right: .5rem;
+    path {
+        fill: var(--bs-navbar-brand-color);
+    }
+}
+
+svg.icon-svg path {
+    fill: var(--sp-neutral-dark);
+}
+
 table.cards tbody {
     align-items: center;
     display: flex;

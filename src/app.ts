@@ -1,9 +1,9 @@
 import { Dashboard } from "dattatable";
 import { Components, ContextInfo } from "gd-sprest-bs";
-import { appIndicator } from "gd-sprest-bs/build/icons/svgs/appIndicator";
 import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
 import * as jQuery from "jquery";
+import * as Common from "./common";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Forms } from "./forms";
 import { InstallationModal } from "./install";
@@ -74,15 +74,16 @@ export class App {
 
                     // Set the brand
                     let brand = document.createElement("div");
-                    brand.className = "d-flex";
-                    brand.appendChild(appIndicator());
+                    brand.className = "d-flex align-items-center";
+                    brand.appendChild(Common.getIcon(46, 46, 'App Store', 'brand'));
                     brand.append(Strings.ProjectName);
-                    brand.querySelector("svg").classList.add("me-75");
                     props.brand = brand;
                 },
                 // Adjust the brand alignment
                 onRendered: (el) => {
-                    el.querySelector("nav div.container-fluid").classList.add("ps-3");
+                    el.querySelector("nav div.container-fluid").classList.add("ms-1");
+                    el.querySelector("nav div.container-fluid").classList.add("ps-2");
+                    el.querySelector("nav div.container-fluid a.navbar-brand").classList.add("p-0");
                     el.querySelector("nav div.container-fluid a.navbar-brand").classList.add("pe-none");
                 },
                 onSearchRendered: (el) => {
@@ -203,6 +204,12 @@ export class App {
                                 img.classList.add("icon");
                                 img.src = item.Icon;
                                 el.appendChild(img);
+                            } else {
+                                // Clear the Icon text
+                                el.innerHTML = "";
+                                // Get the icon
+                                let icon = Common.getIcon(70, 70, item.TypeOfProject);
+                                el.appendChild(icon);
                             }
                         }
                     },

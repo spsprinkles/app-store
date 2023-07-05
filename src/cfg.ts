@@ -92,7 +92,7 @@ export const Configuration = Helper.SPConfig({
                     type: Helper.SPCfgFieldType.Choice,
                     required: true,
                     choices: [
-                        "Power App", "Power Automate", "Power Shell", "SharePoint", "Teams"
+                        "Power Apps", "Power Automate", "Power BI", "PowerShell", "SharePoint", "Teams"
                     ]
                 } as Helper.IFieldInfoChoice,
                 {
