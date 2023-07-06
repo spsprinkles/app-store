@@ -75,15 +75,13 @@ export class App {
                     // Set the brand
                     let brand = document.createElement("div");
                     brand.className = "d-flex align-items-center";
-                    brand.appendChild(Common.getIcon(46, 46, 'App Store', 'brand'));
+                    brand.appendChild(Common.getIcon(36, 36, 'App Store', 'brand'));
                     brand.append(Strings.ProjectName);
                     props.brand = brand;
                 },
                 // Adjust the brand alignment
                 onRendered: (el) => {
-                    el.querySelector("nav div.container-fluid").classList.add("ms-1");
-                    el.querySelector("nav div.container-fluid").classList.add("ps-2");
-                    el.querySelector("nav div.container-fluid a.navbar-brand").classList.add("p-0");
+                    el.querySelector("nav div.container-fluid").classList.add("ps-3");
                     el.querySelector("nav div.container-fluid a.navbar-brand").classList.add("pe-none");
                 },
                 onSearchRendered: (el) => {
