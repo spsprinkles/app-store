@@ -111,6 +111,40 @@ export const Configuration = Helper.SPConfig({
                     ]
                 }
             ]
+        },
+        {
+            ListInformation: {
+                Title: Strings.Lists.Ratings,
+                BaseTemplate: SPTypes.ListTemplateType.GenericList
+            },
+            ContentTypes: [
+                {
+                    Name: "Item",
+                    FieldRefs: [
+                        "Title",
+                        "AppLU",
+                        "Rating"
+                    ]
+                }
+            ],
+            CustomFields: [
+                {
+                    name: "AppLU",
+                    title: "App",
+                    type: Helper.SPCfgFieldType.Lookup,
+                    indexed: true,
+                    listName: Strings.Lists.Main,
+                    showField: "Title"
+                } as Helper.IFieldInfoLookup,
+                {
+                    name: "Rating",
+                    title: "Rating",
+                    type: Helper.SPCfgFieldType.Number,
+                    min: 0,
+                    max: 5,
+                    numberType: SPTypes.FieldNumberType.Integer
+                } as Helper.IFieldInfoNumber
+            ]
         }
     ]
 });
