@@ -194,17 +194,15 @@ export class App {
                         name: "Icon",
                         title: "Icon",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
+                            // Clear the Icon text
+                            el.innerHTML = "";
                             if (item.Icon) {
-                                // Clear the Icon text
-                                el.innerHTML = "";
                                 // Display the image
                                 let img = document.createElement("img");
                                 img.classList.add("icon");
                                 img.src = item.Icon;
                                 el.appendChild(img);
                             } else {
-                                // Clear the Icon text
-                                el.innerHTML = "";
                                 // Get the icon
                                 let icon = Common.getIcon(70, 70, item.TypeOfProject);
                                 el.appendChild(icon);
