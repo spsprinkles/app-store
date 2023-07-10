@@ -150,6 +150,7 @@ export const Configuration = Helper.SPConfig({
                     type: Helper.SPCfgFieldType.Lookup,
                     indexed: true,
                     listName: Strings.Lists.Main,
+                    required: true,
                     showField: "Title"
                 } as Helper.IFieldInfoLookup,
                 {

@@ -1,5 +1,5 @@
 import { List } from "dattatable";
-import { Components, Types, Web } from "gd-sprest-bs";
+import { Components, Types } from "gd-sprest-bs";
 import Strings from "./strings";
 
 /**
