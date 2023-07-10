@@ -51,6 +51,15 @@ export const Configuration = Helper.SPConfig({
                     notetype: SPTypes.FieldNoteType.TextOnly
                 } as Helper.IFieldInfoNote,
                 {
+                    name: "Rating",
+                    title: "Rating",
+                    type: Helper.SPCfgFieldType.Number,
+                    defaultValue: "0",
+                    min: 0,
+                    max: 5,
+                    numberType: SPTypes.FieldNumberType.Integer
+                } as Helper.IFieldInfoNumber,
+                {
                     name: "ScreenShot1",
                     title: "Screen Shot 1",
                     type: Helper.SPCfgFieldType.Note,

@@ -9,6 +9,7 @@ export interface IAppStoreItem extends Types.SP.ListItem {
     AdditionalInformation?: Types.SP.FieldUrlValue;
     Description: string;
     Icon: string;
+    Rating?: number;
     ScreenShot1: string;
     ScreenShot2?: string;
     ScreenShot3?: string;
