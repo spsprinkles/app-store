@@ -60,6 +60,13 @@ export const Configuration = Helper.SPConfig({
                     numberType: SPTypes.FieldNumberType.Integer
                 } as Helper.IFieldInfoNumber,
                 {
+                    name: "RatingCount",
+                    title: "Rating Count",
+                    type: Helper.SPCfgFieldType.Number,
+                    defaultValue: "0",
+                    numberType: SPTypes.FieldNumberType.Integer
+                } as Helper.IFieldInfoNumber,
+                {
                     name: "ScreenShot1",
                     title: "Screen Shot 1",
                     type: Helper.SPCfgFieldType.Note,

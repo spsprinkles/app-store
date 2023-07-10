@@ -10,6 +10,7 @@ export interface IAppStoreItem extends Types.SP.ListItem {
     Description: string;
     Icon: string;
     Rating?: number;
+    RatingCount?: number;
     ScreenShot1: string;
     ScreenShot2?: string;
     ScreenShot3?: string;
@@ -17,6 +18,14 @@ export interface IAppStoreItem extends Types.SP.ListItem {
     ScreenShot5?: string;
     TypeOfProject: string;
     VideoURL?: Types.SP.FieldUrlValue;
+}
+
+/**
+ * Rating Item
+ */
+export interface IRatingItem extends Types.SP.ListItem {
+    AppLU?: { Id: number; Title: string; }
+    Rating?: number;
 }
 
 /**
