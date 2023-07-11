@@ -139,7 +139,8 @@ export const Configuration = Helper.SPConfig({
                     FieldRefs: [
                         "Title",
                         "AppLU",
-                        "Rating"
+                        "Rating",
+                        "Comment"
                     ]
                 }
             ],
@@ -153,6 +154,11 @@ export const Configuration = Helper.SPConfig({
                     required: true,
                     showField: "Title"
                 } as Helper.IFieldInfoLookup,
+                {
+                    name: "Comment",
+                    title: "Comment",
+                    type: Helper.SPCfgFieldType.Text
+                },
                 {
                     name: "Rating",
                     title: "Rating",

@@ -25,6 +25,7 @@ export interface IAppStoreItem extends Types.SP.ListItem {
  */
 export interface IRatingItem extends Types.SP.ListItem {
     AppLU?: { Id: number; Title: string; }
+    Comment?: string;
     Rating?: number;
 }
 
