@@ -1,5 +1,5 @@
 import { List } from "dattatable";
-import { Components, Types, Web } from "gd-sprest-bs";
+import { Components, Types } from "gd-sprest-bs";
 import Strings from "./strings";
 
 /**
@@ -9,6 +9,8 @@ export interface IAppStoreItem extends Types.SP.ListItem {
     AdditionalInformation?: Types.SP.FieldUrlValue;
     Description: string;
     Icon: string;
+    Rating?: number;
+    RatingCount?: number;
     ScreenShot1: string;
     ScreenShot2?: string;
     ScreenShot3?: string;
@@ -16,6 +18,15 @@ export interface IAppStoreItem extends Types.SP.ListItem {
     ScreenShot5?: string;
     TypeOfProject: string;
     VideoURL?: Types.SP.FieldUrlValue;
+}
+
+/**
+ * Rating Item
+ */
+export interface IRatingItem extends Types.SP.ListItem {
+    AppLU?: { Id: number; Title: string; }
+    Comment?: string;
+    Rating?: number;
 }
 
 /**

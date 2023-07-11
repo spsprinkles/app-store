@@ -51,6 +51,22 @@ export const Configuration = Helper.SPConfig({
                     notetype: SPTypes.FieldNoteType.TextOnly
                 } as Helper.IFieldInfoNote,
                 {
+                    name: "Rating",
+                    title: "Rating",
+                    type: Helper.SPCfgFieldType.Number,
+                    defaultValue: "0",
+                    min: 0,
+                    max: 5,
+                    numberType: SPTypes.FieldNumberType.Integer
+                } as Helper.IFieldInfoNumber,
+                {
+                    name: "RatingCount",
+                    title: "Rating Count",
+                    type: Helper.SPCfgFieldType.Number,
+                    defaultValue: "0",
+                    numberType: SPTypes.FieldNumberType.Integer
+                } as Helper.IFieldInfoNumber,
+                {
                     name: "ScreenShot1",
                     title: "Screen Shot 1",
                     type: Helper.SPCfgFieldType.Note,
@@ -110,6 +126,47 @@ export const Configuration = Helper.SPConfig({
                         "LinkTitle", "TypeOfProject", "Description"
                     ]
                 }
+            ]
+        },
+        {
+            ListInformation: {
+                Title: Strings.Lists.Ratings,
+                BaseTemplate: SPTypes.ListTemplateType.GenericList
+            },
+            ContentTypes: [
+                {
+                    Name: "Item",
+                    FieldRefs: [
+                        "Title",
+                        "AppLU",
+                        "Rating",
+                        "Comment"
+                    ]
+                }
+            ],
+            CustomFields: [
+                {
+                    name: "AppLU",
+                    title: "App",
+                    type: Helper.SPCfgFieldType.Lookup,
+                    indexed: true,
+                    listName: Strings.Lists.Main,
+                    required: true,
+                    showField: "Title"
+                } as Helper.IFieldInfoLookup,
+                {
+                    name: "Comment",
+                    title: "Comment",
+                    type: Helper.SPCfgFieldType.Text
+                },
+                {
+                    name: "Rating",
+                    title: "Rating",
+                    type: Helper.SPCfgFieldType.Number,
+                    min: 0,
+                    max: 5,
+                    numberType: SPTypes.FieldNumberType.Integer
+                } as Helper.IFieldInfoNumber
             ]
         }
     ]

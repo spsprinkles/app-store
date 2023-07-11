@@ -17,7 +17,8 @@ const Strings = {
     AppElementId: "app-store",
     GlobalVariable: "AppStore",
     Lists: {
-        Main: "App Store"
+        Main: "App Store",
+        Ratings: "App Ratings"
     },
     ProjectName: "AppStore",
     ProjectDescription: "List that displays the app information in a card view.",
