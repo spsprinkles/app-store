@@ -3,6 +3,23 @@
     --sp-neutral-dark: #201f1e;
 }
 
+.carousel-control-prev-icon, .carousel-control-next-icon {
+    filter: invert(1);
+}
+
+.carousel-indicators [data-bs-target] {
+    background-color: var(--sp-neutral-dark) !important;
+}
+
+.carousel-caption {
+    color: var(--sp-neutral-dark) !important;
+}
+
+div.fs-6 label {
+    display: contents;
+    font-weight: 600;
+}
+
 svg.brand {
     margin-right: .75rem;
     path {
