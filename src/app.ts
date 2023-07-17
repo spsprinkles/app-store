@@ -238,7 +238,7 @@ export class App {
                         title: "Additional Information",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             el.innerHTML = `<label>${column.title}:</label>`;
-                            el.setAttribute("data-filter", item.AdditionalInformation ? item.AdditionalInformation.Url : "");
+                            el.setAttribute("data-filter", item.AdditionalInformation ? item.AdditionalInformation.Description : "");
                             // Ensure a value exists
                             if (item.AdditionalInformation) {
                                 // Render the link
@@ -246,7 +246,7 @@ export class App {
                                 elLink.text = (item.AdditionalInformation ? item.AdditionalInformation.Description : "") || "Link";
                                 elLink.href = (item.AdditionalInformation ? item.AdditionalInformation.Url : "") || "#";
                                 elLink.target = "_blank";
-                                el.appendChild(elLink); el.appendChild(elLink);
+                                el.appendChild(elLink);
                             } else {
                                 el.innerHTML += "&nbsp;";
                             }
@@ -264,11 +264,11 @@ export class App {
                                     {
                                         content: "Click to view the item.",
                                         btnProps: {
-                                            text: "View",
+                                            text: "Details",
                                             type: Components.ButtonTypes.OutlinePrimary,
                                             onClick: () => {
-                                                // View the item
-                                                Forms.view(item);
+                                                // View the item details
+                                                Forms.detail(item);
                                             }
                                         }
                                     },
