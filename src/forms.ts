@@ -5,8 +5,8 @@ import { DataSource, IAppStoreItem } from "./ds";
 
 // Acceptable image file types
 const ImageExtensions = [
-    ".apng", ".avif", ".bmp", ".cur", ".gif", ".jpg", ".jpeg", ".jfif",
-    ".ico", ".pjpeg", ".pjp", ".png", ".svg", ".tif", ".tiff", ".webp"
+    ".apng", ".avif", ".bmp", ".gif", ".jpg", ".jpeg", ".jfif", ".ico",
+    ".pjpeg", ".pjp", ".png", ".svg", ".svgz", ".tif", ".tiff", ".webp", ".xbm"
 ];
 
 /**
@@ -59,7 +59,7 @@ export class Forms {
                             // Display an error message
                             ctrl.updateValidation(ctrl.el, {
                                 isValid: false,
-                                invalidMessage: "The file must be a valid image file. Valid types: png, jpg, jpeg, gif"
+                                invalidMessage: "The file must be a valid image file. Valid types: png, svg, jpg, gif"
                             });
                         }
                     });
@@ -146,13 +146,13 @@ export class Forms {
                         <div class="col fs-6"><label>App Name:</label> ${item.Title}</div>
                     </div>
                     <div class="row">
-                        <div class="col fs-6"><label>Project Type:</label> ${item.TypeOfProject}</div>
+                        <div class="col fs-6"><label>App Type:</label> ${item.AppType}</div>
                     </div>
                     <div class="row">
                         <div class="col fs-6"><label>Description:</label> ${item.Description}</div>
                     </div>
                     <div class="row">
-                        <div class="col fs-6"><label>Additional Information:</label></div>
+                        <div class="col fs-6"><label>More Info:</label></div>
                     </div>
                 </div>
                 <div class="col-8 screenshots"></div>
@@ -171,21 +171,21 @@ export class Forms {
             icon.src = item.Icon;
         } else {
             // Get the icon by type
-            icon = Common.getIcon(150, 150, item.TypeOfProject);
+            icon = Common.getIcon(150, 150, item.AppType);
         }
         // Add the app icon to the root element
         rootEl.querySelector(".icon") ? rootEl.querySelector(".icon").appendChild(icon) : null;
 
-        // Ensure an Additional Information value exists
-        let addlInfo = rootEl.querySelector("div.col-4 div:last-child div.fs-6");
-        if (item.AdditionalInformation && addlInfo) {
+        // Ensure a more info value exists
+        let moreInfo = rootEl.querySelector("div.col-4 div:last-child div.fs-6");
+        if (item.MoreInfo && moreInfo) {
             // Render the link
             let elLink = document.createElement("a");
-            elLink.text = (item.AdditionalInformation ? item.AdditionalInformation.Description : "") || "Link";
-            elLink.href = (item.AdditionalInformation ? item.AdditionalInformation.Url : "") || "#";
+            elLink.text = (item.MoreInfo ? item.MoreInfo.Description : "") || "Link";
+            elLink.href = (item.MoreInfo ? item.MoreInfo.Url : "") || "#";
             elLink.target = "_blank";
             elLink.classList.add("ms-1");
-            addlInfo.appendChild(elLink);
+            moreInfo.appendChild(elLink);
         }
 
         // Get each ScreenShot item for the carousel

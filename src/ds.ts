@@ -6,9 +6,12 @@ import Strings from "./strings";
  * App Store Item
  */
 export interface IAppStoreItem extends Types.SP.ListItem {
-    AdditionalInformation?: Types.SP.FieldUrlValue;
+    AppType: string;
     Description: string;
+    Developers: { results: { Id: number; EMail: string; Title: string }[] };
     Icon: string;
+    MoreInfo?: Types.SP.FieldUrlValue;
+    Organization: string;
     Rating?: number;
     RatingCount?: number;
     ScreenShot1: string;
@@ -16,7 +19,8 @@ export interface IAppStoreItem extends Types.SP.ListItem {
     ScreenShot3?: string;
     ScreenShot4?: string;
     ScreenShot5?: string;
-    TypeOfProject: string;
+    Status: string;
+    SupportURL?: Types.SP.FieldUrlValue;
     VideoURL?: Types.SP.FieldUrlValue;
 }
 
@@ -34,11 +38,11 @@ export interface IRatingItem extends Types.SP.ListItem {
  */
 export class DataSource {
     // Filters
-    private static _filtersTypeOfProject: Components.ICheckboxGroupItem[] = null;
-    static get FiltersTypeOfProject(): Components.ICheckboxGroupItem[] { return this._filtersTypeOfProject; }
+    private static _filtersAppType: Components.ICheckboxGroupItem[] = null;
+    static get FiltersAppType(): Components.ICheckboxGroupItem[] { return this._filtersAppType; }
     static initFilters() {
         // Clear the filters
-        this._filtersTypeOfProject = [];
+        this._filtersAppType = [];
 
         // Parse the fields
         let filterField: Types.SP.FieldChoice = null;
@@ -46,7 +50,7 @@ export class DataSource {
             let fld = this.List.ListFields[i];
 
             // See if this is the target field
-            if (fld.InternalName == "TypeOfProject") {
+            if (fld.InternalName == "AppType") {
                 // Set the field
                 filterField = fld;
                 break;
@@ -59,7 +63,7 @@ export class DataSource {
         // Parse the choices
         for (let i = 0; i < filterField.Choices.results.length; i++) {
             // Add an item
-            this._filtersTypeOfProject.push({
+            this._filtersAppType.push({
                 label: filterField.Choices.results[i],
                 type: Components.CheckboxGroupTypes.Switch
             });
