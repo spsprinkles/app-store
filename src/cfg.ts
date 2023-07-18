@@ -163,7 +163,7 @@ export const Configuration = Helper.SPConfig({
                 {
                     ViewName: "All Items",
                     ViewFields: [
-                        "LinkTitle", "AppType", "Status", "Description", "MoreInfo", "SupportURL", "Developers", "Organization", "Rating"
+                        "LinkTitle", "AppType", "Status", "Description", "MoreInfo", "SupportURL", "Developers", "Organization"
                     ]
                 }
             ]
