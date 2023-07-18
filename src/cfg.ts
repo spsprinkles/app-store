@@ -23,7 +23,6 @@ export const Configuration = Helper.SPConfig({
                         "SupportURL",
                         "Developers",
                         "Organization",
-                        "Rating",
                         "Icon",
                         "ScreenShot1",
                         "ScreenShot2",
