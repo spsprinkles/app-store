@@ -268,7 +268,7 @@ export class App {
                                             type: Components.ButtonTypes.OutlinePrimary,
                                             onClick: () => {
                                                 // View the item details
-                                                Forms.detail(item);
+                                                Forms.view(item);
                                             }
                                         }
                                     },
