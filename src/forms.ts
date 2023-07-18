@@ -159,7 +159,7 @@ export class Forms {
             </div>`;
 
         // Add the root element to the form
-        Modal.FooterElement.appendChild(rootEl);
+        Modal.BodyElement.appendChild(rootEl);
 
         // Define the app icon
         let icon;
