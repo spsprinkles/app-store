@@ -10,6 +10,7 @@ export interface IAppStoreItem extends Types.SP.ListItem {
     Description: string;
     Developers: { results: { Id: number; EMail: string; Title: string }[] };
     Icon: string;
+    Modified: string;
     MoreInfo?: Types.SP.FieldUrlValue;
     Organization: string;
     Rating?: number;
@@ -79,8 +80,10 @@ export class DataSource {
             this._list = new List({
                 listName: Strings.Lists.Main,
                 itemQuery: {
+                    Expand: ["Developers"],
                     GetAllItems: true,
                     OrderBy: ["Title"],
+                    Select: ["*", "Developers/Id", "Developers/EMail", "Developers/Title",],
                     Top: 5000
                 },
                 onInitError: reject,
