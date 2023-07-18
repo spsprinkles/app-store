@@ -11,6 +11,7 @@ export const Configuration = Helper.SPConfig({
                 Title: Strings.Lists.Main,
                 BaseTemplate: SPTypes.ListTemplateType.GenericList
             },
+            TitleFieldDisplayName: "App Name",
             ContentTypes: [
                 {
                     Name: "Item",
@@ -47,7 +48,7 @@ export const Configuration = Helper.SPConfig({
                     name: "Description",
                     title: "Description",
                     type: Helper.SPCfgFieldType.Note,
-                    description: "The description of the application",
+                    description: "A description of the application and its function and usage",
                     notetype: SPTypes.FieldNoteType.TextOnly,
                     required: true,
                 } as Helper.IFieldInfoNote,
@@ -78,7 +79,7 @@ export const Configuration = Helper.SPConfig({
                     name: "Organization",
                     title: "Organization",
                     type: Helper.SPCfgFieldType.Text,
-                    description: "The organization that owns the application",
+                    description: "The organization that supports the application",
                     required: true
                 },
                 {
@@ -148,15 +149,14 @@ export const Configuration = Helper.SPConfig({
                     name: "SupportURL",
                     title: "Support URL",
                     type: Helper.SPCfgFieldType.Url,
-                    allowDeletion: false
+                    description: "A link to a support page"
                 } as Helper.IFieldInfoUrl,
                 {
                     name: "VideoURL",
                     title: "App Video URL",
                     type: Helper.SPCfgFieldType.Url,
                     defaultValue: "",
-                    description: "A link to a video about the application",
-                    required: false,
+                    description: "A link to a video demo of the application"
                 } as Helper.IFieldInfoUrl,
             ],
             ViewInformation: [
