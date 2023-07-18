@@ -168,7 +168,7 @@ export class App {
                             "orderable": false,
                         },
                         {
-                            "targets": [0, 5],
+                            "targets": [0, 8],
                             "searchable": false
                         }
                     ],
@@ -234,6 +234,32 @@ export class App {
                         }
                     },
                     {
+                        name: "Developers",
+                        title: "Developers",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            let devs = item.Developers && item.Developers.results || [];
+
+                            // Parse the devs
+                            let strDevs = [];
+                            devs.forEach(dev => {
+                                // Append the title
+                                strDevs.push(dev.Title);
+                            });
+
+                            // Display the devs
+                            el.innerHTML = `<label>${column.title}:</label>${strDevs.join("<br/>")}`;
+                            el.setAttribute("data-filter", strDevs.join(","));
+                        }
+                    },
+                    {
+                        name: "Organization",
+                        title: "Organization",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${column.title}:</label>${item.Organization}`;
+                            el.setAttribute("data-filter", item.Organization);
+                        }
+                    },
+                    {
                         name: "MoreInfo",
                         title: "More Info",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
@@ -245,6 +271,25 @@ export class App {
                                 let elLink = document.createElement("a");
                                 elLink.text = (item.MoreInfo ? item.MoreInfo.Description : "") || "Link";
                                 elLink.href = (item.MoreInfo ? item.MoreInfo.Url : "") || "#";
+                                elLink.target = "_blank";
+                                el.appendChild(elLink);
+                            } else {
+                                el.innerHTML += "&nbsp;";
+                            }
+                        }
+                    },
+                    {
+                        name: "SupportURL",
+                        title: "Support",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${column.title}:</label>`;
+                            el.setAttribute("data-filter", item.SupportURL ? item.SupportURL.Description : "");
+                            // Ensure a value exists
+                            if (item.SupportURL) {
+                                // Render the link
+                                let elLink = document.createElement("a");
+                                elLink.text = (item.SupportURL ? item.SupportURL.Description : "") || "Link";
+                                elLink.href = (item.SupportURL ? item.SupportURL.Url : "") || "#";
                                 elLink.target = "_blank";
                                 el.appendChild(elLink);
                             } else {
