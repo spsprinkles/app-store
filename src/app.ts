@@ -29,11 +29,11 @@ export class App {
             useModal: true,
             filters: {
                 items: [{
-                    header: "By Project Type",
-                    items: DataSource.FiltersTypeOfProject,
+                    header: "By App Type",
+                    items: DataSource.FiltersAppType,
                     onFilter: (value: string) => {
                         // Filter the table
-                        dashboard.filter(3, value);
+                        dashboard.filter(2, value);
                     }
                 }]
             },
@@ -168,7 +168,7 @@ export class App {
                             "orderable": false,
                         },
                         {
-                            "targets": [0, 5],
+                            "targets": [0, 8],
                             "searchable": false
                         }
                     ],
@@ -204,7 +204,7 @@ export class App {
                                 el.appendChild(img);
                             } else {
                                 // Get the icon
-                                let icon = Common.getIcon(70, 70, item.TypeOfProject);
+                                let icon = Common.getIcon(70, 70, item.AppType);
                                 el.appendChild(icon);
                             }
                         }
@@ -218,6 +218,14 @@ export class App {
                         }
                     },
                     {
+                        name: "AppType",
+                        title: "App Type",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${column.title}:</label>${item.AppType}`;
+                            el.setAttribute("data-filter", item.AppType);
+                        }
+                    },
+                    {
                         name: "Description",
                         title: "Description",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
@@ -226,25 +234,62 @@ export class App {
                         }
                     },
                     {
-                        name: "TypeOfProject",
-                        title: "Project Type",
+                        name: "Developers",
+                        title: "Developers",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            el.innerHTML = `<label>${column.title}:</label>${item.TypeOfProject}`;
-                            el.setAttribute("data-filter", item.TypeOfProject);
+                            let devs = item.Developers && item.Developers.results || [];
+
+                            // Parse the devs
+                            let strDevs = [];
+                            devs.forEach(dev => {
+                                // Append the title
+                                strDevs.push(dev.Title);
+                            });
+
+                            // Display the devs
+                            el.innerHTML = `<label>${column.title}:</label>${strDevs.join("<br/>")}`;
+                            el.setAttribute("data-filter", strDevs.join(","));
                         }
                     },
                     {
-                        name: "AdditionalInformation",
-                        title: "Additional Information",
+                        name: "Organization",
+                        title: "Organization",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${column.title}:</label>${item.Organization}`;
+                            el.setAttribute("data-filter", item.Organization);
+                        }
+                    },
+                    {
+                        name: "MoreInfo",
+                        title: "More Info",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             el.innerHTML = `<label>${column.title}:</label>`;
-                            el.setAttribute("data-filter", item.AdditionalInformation ? item.AdditionalInformation.Description : "");
+                            el.setAttribute("data-filter", item.MoreInfo ? item.MoreInfo.Description : "");
                             // Ensure a value exists
-                            if (item.AdditionalInformation) {
+                            if (item.MoreInfo) {
                                 // Render the link
                                 let elLink = document.createElement("a");
-                                elLink.text = (item.AdditionalInformation ? item.AdditionalInformation.Description : "") || "Link";
-                                elLink.href = (item.AdditionalInformation ? item.AdditionalInformation.Url : "") || "#";
+                                elLink.text = (item.MoreInfo ? item.MoreInfo.Description : "") || "Link";
+                                elLink.href = (item.MoreInfo ? item.MoreInfo.Url : "") || "#";
+                                elLink.target = "_blank";
+                                el.appendChild(elLink);
+                            } else {
+                                el.innerHTML += "&nbsp;";
+                            }
+                        }
+                    },
+                    {
+                        name: "SupportURL",
+                        title: "Support",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${column.title}:</label>`;
+                            el.setAttribute("data-filter", item.SupportURL ? item.SupportURL.Description : "");
+                            // Ensure a value exists
+                            if (item.SupportURL) {
+                                // Render the link
+                                let elLink = document.createElement("a");
+                                elLink.text = (item.SupportURL ? item.SupportURL.Description : "") || "Link";
+                                elLink.href = (item.SupportURL ? item.SupportURL.Url : "") || "#";
                                 elLink.target = "_blank";
                                 el.appendChild(elLink);
                             } else {

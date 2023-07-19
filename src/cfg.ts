@@ -11,14 +11,19 @@ export const Configuration = Helper.SPConfig({
                 Title: Strings.Lists.Main,
                 BaseTemplate: SPTypes.ListTemplateType.GenericList
             },
+            TitleFieldDisplayName: "App Name",
             ContentTypes: [
                 {
                     Name: "Item",
                     FieldRefs: [
                         "Title",
-                        "TypeOfProject",
+                        "AppType",
+                        "Status",
                         "Description",
-                        "AdditionalInformation",
+                        "MoreInfo",
+                        "SupportURL",
+                        "Developers",
+                        "Organization",
                         "Icon",
                         "ScreenShot1",
                         "ScreenShot2",
@@ -31,25 +36,52 @@ export const Configuration = Helper.SPConfig({
             ],
             CustomFields: [
                 {
-                    name: "AdditionalInformation",
-                    title: "Additional Information",
-                    type: Helper.SPCfgFieldType.Url
-                } as Helper.IFieldInfoUrl,
+                    name: "AppType",
+                    title: "App Type",
+                    type: Helper.SPCfgFieldType.Choice,
+                    required: true,
+                    choices: [
+                        "Power Apps", "Power Automate", "Power BI", "PowerShell", "SharePoint", "Teams"
+                    ]
+                } as Helper.IFieldInfoChoice,
                 {
                     name: "Description",
                     title: "Description",
                     type: Helper.SPCfgFieldType.Note,
-                    description: "Description of the app/solution",
+                    description: "A description of the application and its function and usage",
                     notetype: SPTypes.FieldNoteType.TextOnly,
                     required: true,
                 } as Helper.IFieldInfoNote,
                 {
+                    name: "Developers",
+                    title: "Developers",
+                    type: Helper.SPCfgFieldType.User,
+                    description: "The developers of the application",
+                    multi: true,
+                    required: true,
+                    selectionMode: SPTypes.FieldUserSelectionType.PeopleOnly,
+                    showField: "ImnName"
+                } as Helper.IFieldInfoUser,
+                {
                     name: "Icon",
                     title: "Icon",
                     type: Helper.SPCfgFieldType.Note,
-                    description: "The icon for the app/solution.",
+                    description: "A custom icon for the application",
                     notetype: SPTypes.FieldNoteType.TextOnly
                 } as Helper.IFieldInfoNote,
+                {
+                    name: "MoreInfo",
+                    title: "More Info",
+                    type: Helper.SPCfgFieldType.Url,
+                    description: "A link for more information, or to launch the application"
+                } as Helper.IFieldInfoUrl,
+                {
+                    name: "Organization",
+                    title: "Organization",
+                    type: Helper.SPCfgFieldType.Text,
+                    description: "The organization that supports the application",
+                    required: true
+                },
                 {
                     name: "Rating",
                     title: "Rating",
@@ -70,7 +102,7 @@ export const Configuration = Helper.SPConfig({
                     name: "ScreenShot1",
                     title: "Screen Shot 1",
                     type: Helper.SPCfgFieldType.Note,
-                    description: "A screenshot of the app/solution.",
+                    description: "A screenshot of the application",
                     notetype: SPTypes.FieldNoteType.TextOnly,
                     required: true
                 } as Helper.IFieldInfoNote,
@@ -78,52 +110,60 @@ export const Configuration = Helper.SPConfig({
                     name: "ScreenShot2",
                     title: "Screen Shot 2",
                     type: Helper.SPCfgFieldType.Note,
-                    description: "A screenshot of the app/solution.",
+                    description: "A screenshot of the application",
                     notetype: SPTypes.FieldNoteType.TextOnly
                 } as Helper.IFieldInfoNote,
                 {
                     name: "ScreenShot3",
                     title: "Screen Shot 3",
                     type: Helper.SPCfgFieldType.Note,
-                    description: "A screenshot of the app/solution.",
+                    description: "A screenshot of the application",
                     notetype: SPTypes.FieldNoteType.TextOnly
                 } as Helper.IFieldInfoNote,
                 {
                     name: "ScreenShot4",
                     title: "Screen Shot 4",
                     type: Helper.SPCfgFieldType.Note,
-                    description: "A screenshot of the app/solution.",
+                    description: "A screenshot of the application",
                     notetype: SPTypes.FieldNoteType.TextOnly
                 } as Helper.IFieldInfoNote,
                 {
                     name: "ScreenShot5",
                     title: "Screen Shot 5",
                     type: Helper.SPCfgFieldType.Note,
-                    description: "A screenshot of the app/solution.",
+                    description: "A screenshot of the application",
                     notetype: SPTypes.FieldNoteType.TextOnly
                 } as Helper.IFieldInfoNote,
                 {
-                    name: "TypeOfProject",
-                    title: "Type of Project",
+                    name: "Status",
+                    title: "Status",
                     type: Helper.SPCfgFieldType.Choice,
+                    defaultValue: "New",
                     required: true,
+                    showInNewForm: false,
                     choices: [
-                        "Power Apps", "Power Automate", "Power BI", "PowerShell", "SharePoint", "Teams"
+                        "New", "In Testing", "Approved", "Depricated"
                     ]
                 } as Helper.IFieldInfoChoice,
+                {
+                    name: "SupportURL",
+                    title: "Support URL",
+                    type: Helper.SPCfgFieldType.Url,
+                    description: "A link to a support page"
+                } as Helper.IFieldInfoUrl,
                 {
                     name: "VideoURL",
                     title: "App Video URL",
                     type: Helper.SPCfgFieldType.Url,
                     defaultValue: "",
-                    required: false,
+                    description: "A link to a video demo of the application"
                 } as Helper.IFieldInfoUrl,
             ],
             ViewInformation: [
                 {
                     ViewName: "All Items",
                     ViewFields: [
-                        "LinkTitle", "TypeOfProject", "Description"
+                        "LinkTitle", "AppType", "Status", "Description", "MoreInfo", "SupportURL", "Developers", "Organization"
                     ]
                 }
             ]

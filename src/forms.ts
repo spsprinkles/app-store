@@ -1,12 +1,14 @@
 import { LoadingDialog, Modal } from "dattatable";
 import { Components, Helper } from "gd-sprest-bs";
+import * as moment from "moment";
 import * as Common from "./common";
 import { DataSource, IAppStoreItem } from "./ds";
+import Strings from "./strings";
 
 // Acceptable image file types
 const ImageExtensions = [
-    ".apng", ".avif", ".bmp", ".cur", ".gif", ".jpg", ".jpeg", ".jfif",
-    ".ico", ".pjpeg", ".pjp", ".png", ".svg", ".tif", ".tiff", ".webp"
+    ".apng", ".avif", ".bmp", ".gif", ".jpg", ".jpeg", ".jfif", ".ico",
+    ".pjpeg", ".pjp", ".png", ".svg", ".svgz", ".tif", ".tiff", ".webp", ".xbm"
 ];
 
 /**
@@ -59,7 +61,7 @@ export class Forms {
                             // Display an error message
                             ctrl.updateValidation(ctrl.el, {
                                 isValid: false,
-                                invalidMessage: "The file must be a valid image file. Valid types: png, jpg, jpeg, gif"
+                                invalidMessage: "The file must be a valid image file. Valid types: png, svg, jpg, gif"
                             });
                         }
                     });
@@ -132,34 +134,45 @@ export class Forms {
         // Hide the footer
         Modal.FooterElement.classList.add("d-none");
 
-        // Set the form
-        // Create a new root element
-        let rootEl = document.createElement("div");
-        rootEl.classList.add("container");
-        rootEl.innerHTML = `
+        // Create a new div element
+        let div = document.createElement("div");
+        div.classList.add("container");
+        div.innerHTML = `
             <div class="row align-items-start">
                 <div class="col-4 mt-3">
                     <div class="row mb-3">
                         <div class="col d-flex icon justify-content-center"></div>
                     </div>
                     <div class="row">
-                        <div class="col fs-6"><label>App Name:</label> ${item.Title}</div>
+                        <div class="col fs-6"><label>App Name:</label>&nbsp;${item.Title}</div>
                     </div>
                     <div class="row">
-                        <div class="col fs-6"><label>Project Type:</label> ${item.TypeOfProject}</div>
+                        <div class="col fs-6"><label>App Type:</label>&nbsp;${item.AppType}</div>
                     </div>
                     <div class="row">
-                        <div class="col fs-6"><label>Description:</label> ${item.Description}</div>
+                        <div class="col fs-6"><label>Description:</label>&nbsp;${item.Description}</div>
                     </div>
                     <div class="row">
-                        <div class="col fs-6"><label>Additional Information:</label></div>
+                        <div class="col fs-6 developers"><label>Developers:</label>&nbsp;</div>
+                    </div>
+                    <div class="row">
+                        <div class="col fs-6"><label>Organization:</label>&nbsp;${item.Organization}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col fs-6 more-info"><label>More Info:</label></div>
+                    </div>
+                    <div class="row">
+                        <div class="col fs-6 support"><label>Support:</label></div>
+                    </div>
+                    <div class="row">
+                        <div class="col fs-6"><label>Updated:</label>&nbsp;${moment(item.Modified).format(Strings.DateFormat)}</div>
                     </div>
                 </div>
                 <div class="col-8 screenshots"></div>
             </div>`;
 
-        // Add the root element to the form
-        Modal.BodyElement.appendChild(rootEl);
+        // Add the div element to the form
+        Modal.BodyElement.appendChild(div);
 
         // Define the app icon
         let icon;
@@ -171,21 +184,47 @@ export class Forms {
             icon.src = item.Icon;
         } else {
             // Get the icon by type
-            icon = Common.getIcon(150, 150, item.TypeOfProject);
+            icon = Common.getIcon(150, 150, item.AppType);
         }
-        // Add the app icon to the root element
-        rootEl.querySelector(".icon") ? rootEl.querySelector(".icon").appendChild(icon) : null;
+        // Add the app icon to the div element
+        div.querySelector(".icon") ? div.querySelector(".icon").appendChild(icon) : null;
 
-        // Ensure an Additional Information value exists
-        let addlInfo = rootEl.querySelector("div.col-4 div:last-child div.fs-6");
-        if (item.AdditionalInformation && addlInfo) {
+        // Ensure developers exist
+        let devDiv = div.querySelector("div.developers");
+        if (item.Developers && item.Developers.results && devDiv) {
+            // Parse the devs
+            let strDevs = [];
+            item.Developers.results.forEach(dev => {
+                // Append the title
+                strDevs.push(dev.Title);
+            });
+
+            // Display the devs
+            devDiv.append(strDevs.join(", "));
+        }
+
+        // Ensure a more info value exists
+        let moreInfo = div.querySelector("div.more-info");
+        if (item.MoreInfo && moreInfo) {
             // Render the link
             let elLink = document.createElement("a");
-            elLink.text = (item.AdditionalInformation ? item.AdditionalInformation.Description : "") || "Link";
-            elLink.href = (item.AdditionalInformation ? item.AdditionalInformation.Url : "") || "#";
+            elLink.text = (item.MoreInfo ? item.MoreInfo.Description : "") || "Link";
+            elLink.href = (item.MoreInfo ? item.MoreInfo.Url : "") || "#";
             elLink.target = "_blank";
             elLink.classList.add("ms-1");
-            addlInfo.appendChild(elLink);
+            moreInfo.appendChild(elLink);
+        }
+
+        // Ensure a SupportURL value exists
+        let support = div.querySelector("div.support");
+        if (item.SupportURL && support) {
+            // Render the link
+            let elLink = document.createElement("a");
+            elLink.text = (item.SupportURL ? item.SupportURL.Description : "") || "Link";
+            elLink.href = (item.SupportURL ? item.SupportURL.Url : "") || "#";
+            elLink.target = "_blank";
+            elLink.classList.add("ms-1");
+            support.appendChild(elLink);
         }
 
         // Get each ScreenShot item for the carousel
@@ -199,7 +238,7 @@ export class Forms {
         }
 
         // Create an image carousel
-        let scrEl = rootEl.querySelector(".screenshots") || rootEl;
+        let scrEl = div.querySelector(".screenshots") || div;
         Components.Carousel({
             el: scrEl,
             enableControls: true,

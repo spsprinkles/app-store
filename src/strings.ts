@@ -15,6 +15,7 @@ export const setContext = (context, sourceUrl?: string) => {
  */
 const Strings = {
     AppElementId: "app-store",
+    DateFormat: "YYYY-MMM-DD",
     GlobalVariable: "AppStore",
     Lists: {
         Main: "App Store",
