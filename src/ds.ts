@@ -1,5 +1,5 @@
 import { List } from "dattatable";
-import { Components, Types } from "gd-sprest-bs";
+import { Components, Types, Web } from "gd-sprest-bs";
 import Strings from "./strings";
 
 /**
@@ -38,6 +38,63 @@ export interface IRatingItem extends Types.SP.ListItem {
  * Data Source
  */
 export class DataSource {
+    // App Catalog List
+    private static _appCatalogUrl: string = null;
+    static get AppCatalogUrl(): string { return this._appCatalogUrl; }
+    static set AppCatalogUrl(value: string) { this._appCatalogUrl = value; }
+    private static _appCatalogItems: IAppStoreItem[] = null;
+    static get AppCatalogItems(): IAppStoreItem[] { return this._appCatalogItems; }
+    private static loadAppCatalog(): PromiseLike<void> {
+        // Return a promise
+        return new Promise((resolve) => {
+            // Clear the items
+            this._appCatalogItems = [];
+
+            // See if the app catalog url exist
+            if (this._appCatalogUrl) {
+                // Load the list information
+                Web(this._appCatalogUrl).Lists("Developer Apps").Items().query({
+                    Filter: "ContentType eq 'App'",
+                    GetAllItems: true,
+                    Top: 5000
+                }).execute(items => {
+                    // Parse the items
+                    for (let i = 0; i < items.results.length; i++) {
+                        let item: any = items.results[i];
+
+                        // Add the item
+                        this._appCatalogItems.push({
+                            AdditionalInformation: {
+                                Description: item.AppSupportURL ? item.AppSupportURL.Description : "",
+                                Url: item.AppSupportURL ? item.AppSupportURL.Url : ""
+                            },
+                            AppType: "SharePoint",
+                            Description: item.AppDescription,
+                            Icon: "",
+                            Rating: 0,
+                            RatingCount: 0,
+                            ScreenShot1: "",
+                            ScreenShot2: "",
+                            ScreenShot3: "",
+                            ScreenShot4: "",
+                            ScreenShot5: "",
+                            VideoURL: {
+                                Description: item.AppVideoURL ? item.AppVideoURL.Description : "",
+                                Url: item.AppVideoURL ? item.AppVideoURL.Url : ""
+                            }
+                        } as any)
+                    }
+                }, () => {
+                    // Resolve the request
+                    resolve();
+                })
+            } else {
+                // Resolve the request
+                resolve();
+            }
+        });
+    }
+
     // Filters
     private static _filtersAppType: Components.ICheckboxGroupItem[] = null;
     static get FiltersAppType(): Components.ICheckboxGroupItem[] { return this._filtersAppType; }
@@ -120,7 +177,8 @@ export class DataSource {
     static init(): PromiseLike<any> {
         // Execute the required initialization methods
         return Promise.all([
-            this.initList()
+            this.initList(),
+            this.loadAppCatalog()
         ]);
     }
 }
