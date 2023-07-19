@@ -1,5 +1,6 @@
 import { List } from "dattatable";
 import { Components, Types, Web } from "gd-sprest-bs";
+import { Security } from "./security";
 import Strings from "./strings";
 
 /**
@@ -78,12 +79,16 @@ export class DataSource {
                             ScreenShot3: "",
                             ScreenShot4: "",
                             ScreenShot5: "",
+                            Title: item.Title,
                             VideoURL: {
                                 Description: item.AppVideoURL ? item.AppVideoURL.Description : "",
                                 Url: item.AppVideoURL ? item.AppVideoURL.Url : ""
                             }
                         } as any)
                     }
+
+                    // Resolve the request
+                    resolve();
                 }, () => {
                     // Resolve the request
                     resolve();
@@ -178,7 +183,8 @@ export class DataSource {
         // Execute the required initialization methods
         return Promise.all([
             this.initList(),
-            this.loadAppCatalog()
+            this.loadAppCatalog(),
+            Security.init()
         ]);
     }
 }
