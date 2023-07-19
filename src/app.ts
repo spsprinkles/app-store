@@ -159,7 +159,7 @@ export class App {
                 ]
             },
             table: {
-                rows: DataSource.List.Items,
+                rows: DataSource.List.Items.concat(DataSource.AppCatalogItems),
                 dtProps: {
                     dom: 'rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',
                     columnDefs: [
