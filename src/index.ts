@@ -55,7 +55,7 @@ window[Strings.GlobalVariable] = GlobalVariable;
 let elApp = document.querySelector("#" + Strings.AppElementId) as HTMLElement;
 if (elApp) {
     // Set the app catalog url property
-    DataSource.AppCatalogUrl = elApp.getAttribute("d-appCatalogUrl");
+    DataSource.AppCatalogUrl = elApp.getAttribute("data-appCatalogUrl");
 
     // Render the application
     GlobalVariable.render(elApp);
