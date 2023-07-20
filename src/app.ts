@@ -14,6 +14,9 @@ import Strings from "./strings";
  * Main Application
  */
 export class App {
+    private _dtHideCols = [4, 5, 7];
+    private _dashboard: Dashboard = null;
+
     // Constructor
     constructor(el: HTMLElement) {
         // Render the dashboard
@@ -23,7 +26,7 @@ export class App {
     // Renders the dashboard
     private render(el: HTMLElement) {
         // Create the dashboard
-        let dashboard = new Dashboard({
+        this._dashboard = new Dashboard({
             el,
             hideHeader: true,
             useModal: true,
@@ -33,7 +36,7 @@ export class App {
                     items: DataSource.FiltersAppType,
                     onFilter: (value: string) => {
                         // Filter the table
-                        dashboard.filter(2, value);
+                        this._dashboard.filter(2, value);
                     }
                 }]
             },
@@ -118,7 +121,7 @@ export class App {
                                         // Show the new form
                                         Forms.new(() => {
                                             // Refresh the table
-                                            dashboard.refresh(DataSource.List.Items);
+                                            this._dashboard.refresh(DataSource.List.Items);
                                         });
                                     }
                                 },
@@ -150,7 +153,7 @@ export class App {
                                     type: Components.ButtonTypes.OutlineSecondary,
                                     onClick: () => {
                                         // Show the filter panel
-                                        dashboard.showFilter();
+                                        this._dashboard.showFilter();
                                     }
                                 },
                             });
@@ -170,6 +173,10 @@ export class App {
                         {
                             "targets": [0, 8],
                             "searchable": false
+                        },
+                        {
+                            "targets": this._dtHideCols,
+                            "visible": false
                         }
                     ],
                     drawCallback: function (settings) {
@@ -302,8 +309,9 @@ export class App {
                         name: "Actions",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             // Render the actions
-                            Components.TooltipGroup({
+                            let ttg = Components.TooltipGroup({
                                 el,
+                                className: "shrink",
                                 isSmall: true,
                                 tooltips: [
                                     {
@@ -326,12 +334,29 @@ export class App {
                                                 // Edit the item
                                                 Forms.edit(item.Id, () => {
                                                     // Refresh the table
-                                                    dashboard.refresh(DataSource.List.Items);
+                                                    this._dashboard.refresh(DataSource.List.Items);
                                                 });
                                             }
                                         }
                                     }
                                 ]
+                            });
+
+                            // Add click event to grow/shrink the card
+                            ttg.el.addEventListener("click", () => {
+                                let hide = ttg.el.classList.contains('shrink');
+                                // Update the shrink class on the tooltip group
+                                if (hide) {
+                                    ttg.el.classList.remove('shrink');
+                                } else {
+                                    ttg.el.classList.add('shrink');
+                                }
+
+                                // Get the datatable object
+                                let _dt = this._dashboard.Datatable as any;
+
+                                // Show or Hide the table columns
+                                _dt.datatable.table().columns(this._dtHideCols).visible(hide);
                             });
                         }
                     }
