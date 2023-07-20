@@ -49,6 +49,12 @@ table.cards tbody tr {
 table.cards tbody td {
     background-color: rgba(0,0,0,.05) !important;
     display: flex;
+    div:not(.btn-group).shrink {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
     img.icon {
         max-height: 70px;
         max-width: 70px;

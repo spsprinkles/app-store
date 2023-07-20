@@ -236,7 +236,7 @@ export class App {
                         name: "Description",
                         title: "Description",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            el.innerHTML = `<label>${column.title}:</label>${item.Description}`;
+                            el.innerHTML = `<label>${column.title}:</label><div class="shrink">${item.Description}</div>`;
                             el.setAttribute("data-filter", item.Description);
                         }
                     },
@@ -344,19 +344,28 @@ export class App {
 
                             // Add click event to grow/shrink the card
                             ttg.el.addEventListener("click", () => {
-                                let hide = ttg.el.classList.contains('shrink');
-                                // Update the shrink class on the tooltip group
-                                if (hide) {
-                                    ttg.el.classList.remove('shrink');
-                                } else {
-                                    ttg.el.classList.add('shrink');
-                                }
+                                let _class = 'shrink';
+                                let hide = ttg.el.classList.contains(_class);
 
                                 // Get the datatable object
                                 let _dt = this._dashboard.Datatable as any;
+                                let table = _dt.datatable.table();
+
+                                // Get the description column by id
+                                let el = table.column(3).nodes().to$() as HTMLElement;
+                                let description = el[0].lastChild as HTMLDivElement;
+
+                                // Update the shrink class on description & tooltip group
+                                if (hide) {
+                                    description.classList.remove(_class);
+                                    ttg.el.classList.remove(_class);
+                                } else {
+                                    description.classList.add(_class);
+                                    ttg.el.classList.add(_class);
+                                }
 
                                 // Show or Hide the table columns
-                                _dt.datatable.table().columns(this._dtHideCols).visible(hide);
+                                table.columns(this._dtHideCols).visible(hide);
                             });
                         }
                     }
