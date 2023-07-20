@@ -342,30 +342,36 @@ export class App {
                                 ]
                             });
 
+                            // Cast the toolTipGroup element properly
+                            let ttgEl = ttg.el as HTMLElement;
+                            
                             // Add click event to grow/shrink the card
-                            ttg.el.addEventListener("click", () => {
-                                let _class = 'shrink';
-                                let hide = ttg.el.classList.contains(_class);
+                            ttgEl.addEventListener("click", (e) => {
+                                // Only grow/shrink if the click is outside the button group (::after)
+                                if (e.offsetX > ttgEl.offsetWidth) {
+                                    let _class = 'shrink';
+                                    let hide = ttg.el.classList.contains(_class);
 
-                                // Get the datatable object
-                                let _dt = this._dashboard.Datatable as any;
-                                let table = _dt.datatable.table();
+                                    // Get the datatable object
+                                    let _dt = this._dashboard.Datatable as any;
+                                    let table = _dt.datatable.table();
 
-                                // Get the description column by id
-                                let el = table.column(3).nodes().to$() as HTMLElement;
-                                let description = el[0].lastChild as HTMLDivElement;
+                                    // Get the description column by id
+                                    let el = table.column(3).nodes().to$() as HTMLElement;
+                                    let description = el[0].lastChild as HTMLDivElement;
 
-                                // Update the shrink class on description & tooltip group
-                                if (hide) {
-                                    description.classList.remove(_class);
-                                    ttg.el.classList.remove(_class);
-                                } else {
-                                    description.classList.add(_class);
-                                    ttg.el.classList.add(_class);
+                                    // Update the shrink class on description & tooltip group
+                                    if (hide) {
+                                        description.classList.remove(_class);
+                                        ttg.el.classList.remove(_class);
+                                    } else {
+                                        description.classList.add(_class);
+                                        ttg.el.classList.add(_class);
+                                    }
+
+                                    // Show or Hide the table columns
+                                    table.columns(this._dtHideCols).visible(hide);
                                 }
-
-                                // Show or Hide the table columns
-                                table.columns(this._dtHideCols).visible(hide);
                             });
                         }
                     }
