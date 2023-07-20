@@ -344,13 +344,13 @@ export class App {
 
                             // Cast the toolTipGroup element properly
                             let ttgEl = ttg.el as HTMLElement;
-                            
+
                             // Add click event to grow/shrink the card
                             ttgEl.addEventListener("click", (e) => {
                                 // Only grow/shrink if the click is outside the button group (::after)
                                 if (e.offsetX > ttgEl.offsetWidth) {
                                     let _class = 'shrink';
-                                    let hide = ttg.el.classList.contains(_class);
+                                    let hide = ttgEl.classList.contains(_class);
 
                                     // Get the datatable object
                                     let _dt = this._dashboard.Datatable as any;
@@ -363,10 +363,10 @@ export class App {
                                     // Update the shrink class on description & tooltip group
                                     if (hide) {
                                         description.classList.remove(_class);
-                                        ttg.el.classList.remove(_class);
+                                        ttgEl.classList.remove(_class);
                                     } else {
                                         description.classList.add(_class);
-                                        ttg.el.classList.add(_class);
+                                        ttgEl.classList.add(_class);
                                     }
 
                                     // Show or Hide the table columns
