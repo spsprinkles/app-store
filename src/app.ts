@@ -330,6 +330,7 @@ export class App {
                                         btnProps: {
                                             text: "Edit",
                                             type: Components.ButtonTypes.OutlinePrimary,
+                                            isDisabled: item.IsAppCatalogItem ? true : false,
                                             onClick: () => {
                                                 // Edit the item
                                                 Forms.edit(item.Id, () => {

@@ -13,6 +13,7 @@ export interface IAppStoreItem extends Types.SP.ListItem {
     Icon: string;
     Modified: string;
     MoreInfo?: Types.SP.FieldUrlValue;
+    IsAppCatalogItem?: boolean;
     Organization: string;
     Rating?: number;
     RatingCount?: number;
@@ -72,6 +73,7 @@ export class DataSource {
                             AppType: "SharePoint",
                             Description: item.AppDescription,
                             Icon: item.AppThumbnailURLBase64,
+                            IsAppCatalogItem: true,
                             Rating: 0,
                             RatingCount: 0,
                             ScreenShot1: item.AppImageURL1Base64,
