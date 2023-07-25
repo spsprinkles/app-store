@@ -281,8 +281,8 @@ export class App {
                         name: "Organization",
                         title: "Organization",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            el.innerHTML = `<label>${column.title}:</label>${item.Organization}`;
-                            el.setAttribute("data-filter", item.Organization);
+                            el.innerHTML = `<label>${column.title}:</label>${item.Organization || ""}`;
+                            el.setAttribute("data-filter", item.Organization || "");
                         }
                     },
                     {
