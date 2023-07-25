@@ -1,7 +1,7 @@
 declare interface IAppStoreWebPartStrings {
-  PropertyPaneDescription: string;
+  AppCatalogUrlFieldLabel: string;
+  AppCatalogUrlFieldDescription: string;
   BasicGroupName: string;
-  DescriptionFieldLabel: string;
   AppLocalEnvironmentSharePoint: string;
   AppLocalEnvironmentTeams: string;
   AppLocalEnvironmentOffice: string;

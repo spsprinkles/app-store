@@ -162,7 +162,7 @@ export class App {
                 ]
             },
             table: {
-                rows: DataSource.List.Items,
+                rows: DataSource.List.Items.concat(DataSource.AppCatalogItems),
                 dtProps: {
                     dom: 'rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',
                     columnDefs: [
@@ -330,6 +330,7 @@ export class App {
                                         btnProps: {
                                             text: "Edit",
                                             type: Components.ButtonTypes.OutlinePrimary,
+                                            isDisabled: item.IsAppCatalogItem ? true : false,
                                             onClick: () => {
                                                 // Edit the item
                                                 Forms.edit(item.Id, () => {

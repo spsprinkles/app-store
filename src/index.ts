@@ -12,6 +12,7 @@ import "./styles.scss";
 const GlobalVariable = {
     App: null,
     Configuration,
+    description: Strings.ProjectDescription,
     render: (el, context?, sourceUrl?: string) => {
         // See if the page context exists
         if (context) {
@@ -37,9 +38,14 @@ const GlobalVariable = {
             }
         );
     },
+    setAppCatalogUrl: (url: string) => {
+        // Set the app catalog url
+        DataSource.AppCatalogUrl = url;
+    },
     updateTheme: (themeInfo) => {
         // TODO
-    }
+    },
+    version: Strings.Version
 };
 
 // Make is available in the DOM
@@ -48,6 +54,9 @@ window[Strings.GlobalVariable] = GlobalVariable;
 // Get the element and render the app if it is found
 let elApp = document.querySelector("#" + Strings.AppElementId) as HTMLElement;
 if (elApp) {
+    // Set the app catalog url property
+    DataSource.AppCatalogUrl = elApp.getAttribute("data-appCatalogUrl");
+
     // Render the application
     GlobalVariable.render(elApp);
 }

@@ -1,8 +1,8 @@
 define([], function() {
   return {
-    "PropertyPaneDescription": "Description",
+    "AppCatalogUrlFieldLabel": "App Catalog Url",
+    "AppCatalogUrlFieldDescription": "The url to the web containing the app catalog management tool.",
     "BasicGroupName": "Group Name",
-    "DescriptionFieldLabel": "Description Field",
     "AppLocalEnvironmentSharePoint": "The app is running on your local environment as SharePoint web part",
     "AppLocalEnvironmentTeams": "The app is running on your local environment as Microsoft Teams app",
     "AppLocalEnvironmentOffice": "The app is running on your local environment in office.com",
