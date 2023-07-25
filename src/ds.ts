@@ -56,8 +56,10 @@ export class DataSource {
             if (this._appCatalogUrl) {
                 // Load the list information
                 Web(this._appCatalogUrl).Lists("Developer Apps").Items().query({
-                    Filter: "ContentType eq 'App'",
+                    Expand: ["AppDevelopers"],
+                    Filter: "ContentType eq 'App' and AppStatus eq 'Approved'",
                     GetAllItems: true,
+                    Select: ["*", "AppDevelopers/Title"],
                     Top: 5000
                 }).execute(items => {
                     // Parse the items
@@ -68,6 +70,7 @@ export class DataSource {
                         this._appCatalogItems.push({
                             AppType: "SharePoint",
                             Description: item.AppDescription,
+                            Developers: item.AppDevelopers,
                             Icon: item.AppThumbnailURLBase64,
                             IsAppCatalogItem: true,
                             MoreInfo: {
