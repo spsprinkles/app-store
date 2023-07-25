@@ -1,6 +1,7 @@
 import { Dashboard } from "dattatable";
 import { Components, ContextInfo } from "gd-sprest-bs";
 import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
+import { gearWideConnected } from "gd-sprest-bs/build/icons/svgs/gearWideConnected";
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
 import * as jQuery from "jquery";
 import * as Common from "./common";
@@ -25,6 +26,84 @@ export class App {
 
     // Renders the dashboard
     private render(el: HTMLElement) {
+        // Define the subNav items
+        let subNavItems: Components.INavbarItem[] = [];
+        
+        // Render the Add button if IsAdmin or IsManager
+        if (Security.IsAdmin || Security.IsManager) {
+            subNavItems.push(
+                {
+                    text: "Add an App",
+                    onRender: (el, item) => {
+                        // Clear the existing button
+                        el.innerHTML = "";
+                        // Create a span to wrap the icon in
+                        let span = document.createElement("span");
+                        span.className = "bg-white d-inline-flex ms-2 rounded";
+                        el.appendChild(span);
+    
+                        // Render a tooltip
+                        Components.Tooltip({
+                            el: span,
+                            content: item.text,
+                            btnProps: {
+                                // Render the icon button
+                                className: "p-1 pe-2",
+                                iconClassName: "me-1",
+                                iconType: plusSquare,
+                                iconSize: 24,
+                                isSmall: true,
+                                text: "Add",
+                                type: Components.ButtonTypes.OutlineSecondary,
+                                onClick: () => {
+                                    // Show the new form
+                                    Forms.new(() => {
+                                        // Refresh the table
+                                        this._dashboard.refresh(DataSource.List.Items);
+                                    });
+                                }
+                            },
+                        });
+                    }
+                },
+            );
+        }
+
+        // Render the filters button
+        subNavItems.push(
+            {
+                text: "Filters",
+                onRender: (el, item) => {
+                    // Clear the existing button
+                    el.innerHTML = "";
+                    // Create a span to wrap the icon in
+                    let span = document.createElement("span");
+                    span.className = "bg-white d-inline-flex ms-2 rounded";
+                    el.appendChild(span);
+
+                    // Render a tooltip
+                    Components.Tooltip({
+                        el: span,
+                        content: "Show " + item.text,
+                        btnProps: {
+                            // Render the icon button
+                            className: "p-1 pe-2",
+                            iconClassName: "me-1",
+                            iconType: filterSquare,
+                            iconSize: 24,
+                            isSmall: true,
+                            text: item.text,
+                            type: Components.ButtonTypes.OutlineSecondary,
+                            onClick: () => {
+                                // Show the filter panel
+                                this._dashboard.showFilter();
+                            }
+                        },
+                    });
+                }
+            }
+        );
+        
         // Create the dashboard
         this._dashboard = new Dashboard({
             el,
@@ -49,9 +128,13 @@ export class App {
                 ]
             },
             navigation: {
-                itemsEnd: !Security.IsAdmin && !Security.IsManager ? null : [
+                itemsEnd: Security.IsAdmin || Security.IsManager ? [
                     {
+                        className: "btn-outline-light lh-1 me-2 pt-1",
                         text: "Settings",
+                        iconSize: 22,
+                        iconType: gearWideConnected,
+                        isButton: true,
                         items: [
                             {
                                 text: "App Settings",
@@ -69,7 +152,7 @@ export class App {
                             }
                         ]
                     }
-                ],
+                ] : null,
                 // Add the branding icon & text
                 onRendering: (props) => {
                     // Set the class names
@@ -93,73 +176,7 @@ export class App {
                 showFilter: false
             },
             subNavigation: {
-                itemsEnd: [
-                    {
-                        text: "Add an App",
-                        onRender: (el, item) => {
-                            // Clear the existing button
-                            el.innerHTML = "";
-                            // Create a span to wrap the icon in
-                            let span = document.createElement("span");
-                            span.className = "bg-white d-inline-flex ms-2 rounded";
-                            el.appendChild(span);
-
-                            // Render a tooltip
-                            Components.Tooltip({
-                                el: span,
-                                content: item.text,
-                                btnProps: {
-                                    // Render the icon button
-                                    className: "p-1 pe-2",
-                                    iconClassName: "me-1",
-                                    iconType: plusSquare,
-                                    iconSize: 24,
-                                    isSmall: true,
-                                    text: "Add",
-                                    type: Components.ButtonTypes.OutlineSecondary,
-                                    onClick: () => {
-                                        // Show the new form
-                                        Forms.new(() => {
-                                            // Refresh the table
-                                            this._dashboard.refresh(DataSource.List.Items);
-                                        });
-                                    }
-                                },
-                            });
-                        }
-                    },
-                    {
-                        text: "Filters",
-                        onRender: (el, item) => {
-                            // Clear the existing button
-                            el.innerHTML = "";
-                            // Create a span to wrap the icon in
-                            let span = document.createElement("span");
-                            span.className = "bg-white d-inline-flex ms-2 rounded";
-                            el.appendChild(span);
-
-                            // Render a tooltip
-                            Components.Tooltip({
-                                el: span,
-                                content: "Show " + item.text,
-                                btnProps: {
-                                    // Render the icon button
-                                    className: "p-1 pe-2",
-                                    iconClassName: "me-1",
-                                    iconType: filterSquare,
-                                    iconSize: 24,
-                                    isSmall: true,
-                                    text: item.text,
-                                    type: Components.ButtonTypes.OutlineSecondary,
-                                    onClick: () => {
-                                        // Show the filter panel
-                                        this._dashboard.showFilter();
-                                    }
-                                },
-                            });
-                        }
-                    }
-                ]
+                itemsEnd: subNavItems
             },
             table: {
                 rows: DataSource.List.Items.concat(DataSource.AppCatalogItems),
@@ -308,39 +325,46 @@ export class App {
                         className: "text-center",
                         name: "Actions",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            // Render the actions
+                            let tooltips: Components.ITooltipProps[] = [];
+
+                            // Add the Details button tooltip
+                            tooltips.push({
+                                content: "Click to view the item.",
+                                btnProps: {
+                                    text: "Details",
+                                    type: Components.ButtonTypes.OutlinePrimary,
+                                    onClick: () => {
+                                        // View the item details
+                                        Forms.view(item);
+                                    }
+                                }
+                            });
+
+                            // Add the Edit button tooltip if IsAdmin or IsManager
+                            if (Security.IsAdmin || Security.IsManager) {
+                                tooltips.push({
+                                    content: "Click to edit the item.",
+                                    btnProps: {
+                                        text: "Edit",
+                                        type: Components.ButtonTypes.OutlinePrimary,
+                                        isDisabled: item.IsAppCatalogItem ? true : false,
+                                        onClick: () => {
+                                            // Edit the item
+                                            Forms.edit(item.Id, () => {
+                                                // Refresh the table
+                                                this._dashboard.refresh(DataSource.List.Items);
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+
+                            // Render the action tooltips
                             let ttg = Components.TooltipGroup({
                                 el,
                                 className: "shrink",
                                 isSmall: true,
-                                tooltips: [
-                                    {
-                                        content: "Click to view the item.",
-                                        btnProps: {
-                                            text: "Details",
-                                            type: Components.ButtonTypes.OutlinePrimary,
-                                            onClick: () => {
-                                                // View the item details
-                                                Forms.view(item);
-                                            }
-                                        }
-                                    },
-                                    {
-                                        content: "Click to edit the item.",
-                                        btnProps: {
-                                            text: "Edit",
-                                            type: Components.ButtonTypes.OutlinePrimary,
-                                            isDisabled: item.IsAppCatalogItem ? true : false,
-                                            onClick: () => {
-                                                // Edit the item
-                                                Forms.edit(item.Id, () => {
-                                                    // Refresh the table
-                                                    this._dashboard.refresh(DataSource.List.Items);
-                                                });
-                                            }
-                                        }
-                                    }
-                                ]
+                                tooltips
                             });
 
                             // Cast the toolTipGroup element properly
