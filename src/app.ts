@@ -369,8 +369,6 @@ export class App {
                                     }
                                 });
                                 root.style.setProperty('--shrink-right', '-4rem');
-                            } else {
-                                root.style.setProperty('--shrink-right', '-6rem');
                             }
 
                             // Render the action tooltips
@@ -414,13 +412,7 @@ export class App {
                             });
                         }
                     }
-                ],
-                onRendered: (el, dt) => {
-                    // Get the table object
-                    let table = dt.table();
-                    // Adjust the columns
-                    table.columns.adjust().draw();
-                }
+                ]
             }
         });
     }
