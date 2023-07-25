@@ -2,7 +2,9 @@ import { Dashboard } from "dattatable";
 import { Components, ContextInfo } from "gd-sprest-bs";
 import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
 import { gearWideConnected } from "gd-sprest-bs/build/icons/svgs/gearWideConnected";
+import { pencilSquare } from "gd-sprest-bs/build/icons/svgs/pencilSquare";
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
+import { window_ } from "gd-sprest-bs/build/icons/svgs/window_";
 import * as jQuery from "jquery";
 import * as Common from "./common";
 import { DataSource, IAppStoreItem } from "./ds";
@@ -325,12 +327,17 @@ export class App {
                         className: "text-center",
                         name: "Actions",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
+                            let root = document.querySelector(':root') as HTMLElement;
                             let tooltips: Components.ITooltipProps[] = [];
 
                             // Add the Details button tooltip
                             tooltips.push({
-                                content: "Click to view the item.",
+                                content: "View more details",
                                 btnProps: {
+                                    className: "p-1 pe-2",
+                                    iconClassName: "me-1",
+                                    iconType: window_,
+                                    iconSize: 24,
                                     text: "Details",
                                     type: Components.ButtonTypes.OutlinePrimary,
                                     onClick: () => {
@@ -343,8 +350,12 @@ export class App {
                             // Add the Edit button tooltip if IsAdmin or IsManager
                             if (Security.IsAdmin || Security.IsManager) {
                                 tooltips.push({
-                                    content: "Click to edit the item.",
+                                    content: "Edit the item",
                                     btnProps: {
+                                        className: "p-1 pe-2",
+                                        iconClassName: "me-1",
+                                        iconType: pencilSquare,
+                                        iconSize: 24,
                                         text: "Edit",
                                         type: Components.ButtonTypes.OutlinePrimary,
                                         isDisabled: item.IsAppCatalogItem ? true : false,
@@ -357,6 +368,9 @@ export class App {
                                         }
                                     }
                                 });
+                                root.style.setProperty('--shrink-right', '-4rem');
+                            } else {
+                                root.style.setProperty('--shrink-right', '-6rem');
                             }
 
                             // Render the action tooltips

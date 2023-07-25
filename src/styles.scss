@@ -1,6 +1,12 @@
 /** Custom Styles Go Here */
 :root {
     --sp-neutral-dark: #201f1e;
+    --shrink-right: -6rem;
+}
+
+/* Fix button text size */
+.bs .btn-icon {
+    font-size: 0.875rem;
 }
 
 .carousel-control-prev-icon, .carousel-control-next-icon {
@@ -83,9 +89,9 @@ table.cards tbody td:last-child {
         cursor: pointer;
         flex-shrink: 0;
         height: 1.25rem;
-        margin-left: 12.5rem;
         pointer-events: auto;
         position: absolute;
+        right: var(--shrink-right);
         transition: transform 0.2s ease-in-out;
         width: 1.25rem;
     }
@@ -104,4 +110,33 @@ table.cards tbody label {
 /* Fix icon alignment inside nav item buttons */
 #navbar_content ul.navbar-nav li.nav-item a.btn svg {
     margin: 0.1rem 0.25rem 0.1rem -0.25rem;
+}
+
+/* Remove the extra top padding on the content row */
+#contentRow {
+    padding-top: 0 !important;
+}
+/* Extend the Comments pane full width in a modern page */
+#CommentsWrapper > div:first-child {
+    max-width: none;
+    width: 100%;
+    div[data-sp-feature-tag="Comments"] {
+        max-width: none;
+        padding: 0 24px 20px;
+    }
+    div[data-sp-feature-tag="Comments"]::before {
+        margin: 10px 0 0 0;
+    }
+}
+/* Extend the WebPart full width in a modern page */
+#spPageCanvasContent div.CanvasZone > div:first-child {
+    max-width: none;
+    div.ControlZone {
+        margin: 24px 0 0 0;
+        padding: 0;
+    }
+}
+/* Hide the page title in a modern page */
+div.webPartContainer {
+    display: none;
 }
