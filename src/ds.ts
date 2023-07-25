@@ -81,6 +81,10 @@ export class DataSource {
                             ScreenShot3: item.AppImageURL3Base64,
                             ScreenShot4: item.AppImageURL4Base64,
                             ScreenShot5: item.AppImageURL5Base64,
+                            SupportURL: {
+                                Description: item.AppSupportURL ? item.AppSupportURL.Description : "",
+                                Url: item.AppSupportURL ? item.AppSupportURL.Url : ""
+                            },
                             Title: item.Title,
                             VideoURL: {
                                 Description: item.AppVideoURL ? item.AppVideoURL.Description : "",
