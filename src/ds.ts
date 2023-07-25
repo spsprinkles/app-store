@@ -66,14 +66,14 @@ export class DataSource {
 
                         // Add the item
                         this._appCatalogItems.push({
-                            AdditionalInformation: {
-                                Description: item.AppSupportURL ? item.AppSupportURL.Description : "",
-                                Url: item.AppSupportURL ? item.AppSupportURL.Url : ""
-                            },
                             AppType: "SharePoint",
                             Description: item.AppDescription,
                             Icon: item.AppThumbnailURLBase64,
                             IsAppCatalogItem: true,
+                            MoreInfo: {
+                                Description: item.AppSupportURL ? item.AppSupportURL.Description : "",
+                                Url: item.AppSupportURL ? item.AppSupportURL.Url : ""
+                            },
                             Rating: 0,
                             RatingCount: 0,
                             ScreenShot1: item.AppImageURL1Base64,
