@@ -30,7 +30,7 @@ export class App {
     private render(el: HTMLElement) {
         // Define the subNav items
         let subNavItems: Components.INavbarItem[] = [];
-        
+
         // Render the Add button if IsAdmin or IsManager
         if (Security.IsAdmin || Security.IsManager) {
             subNavItems.push(
@@ -43,7 +43,7 @@ export class App {
                         let span = document.createElement("span");
                         span.className = "bg-white d-inline-flex ms-2 rounded";
                         el.appendChild(span);
-    
+
                         // Render a tooltip
                         Components.Tooltip({
                             el: span,
@@ -61,7 +61,7 @@ export class App {
                                     // Show the new form
                                     Forms.new(() => {
                                         // Refresh the table
-                                        this._dashboard.refresh(DataSource.List.Items);
+                                        this._dashboard.refresh(DataSource.AppItems);
                                     });
                                 }
                             },
@@ -105,7 +105,7 @@ export class App {
                 }
             }
         );
-        
+
         // Create the dashboard
         this._dashboard = new Dashboard({
             el,
@@ -181,7 +181,7 @@ export class App {
                 itemsEnd: subNavItems
             },
             table: {
-                rows: DataSource.List.Items.concat(DataSource.AppCatalogItems),
+                rows: DataSource.AppItems,
                 dtProps: {
                     dom: 'rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',
                     columnDefs: [
@@ -363,7 +363,7 @@ export class App {
                                             // Edit the item
                                             Forms.edit(item.Id, () => {
                                                 // Refresh the table
-                                                this._dashboard.refresh(DataSource.List.Items);
+                                                this._dashboard.refresh(DataSource.AppItems);
                                             });
                                         }
                                     }

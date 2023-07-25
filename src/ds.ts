@@ -109,6 +109,10 @@ export class DataSource {
         });
     }
 
+    // Reference to the app items
+    // This will include both the app catalog and app store items
+    static get AppItems(): IAppStoreItem[] { return this.List.Items.concat(this.AppCatalogItems); }
+
     // Filters
     private static _filtersAppType: Components.ICheckboxGroupItem[] = null;
     static get FiltersAppType(): Components.ICheckboxGroupItem[] { return this._filtersAppType; }
