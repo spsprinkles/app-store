@@ -414,7 +414,13 @@ export class App {
                             });
                         }
                     }
-                ]
+                ],
+                onRendered: (el, dt) => {
+                    // Get the table object
+                    let table = dt.table();
+                    // Adjust the columns
+                    table.columns.adjust().draw();
+                }
             }
         });
     }
