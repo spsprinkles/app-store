@@ -17,7 +17,6 @@ import Strings from "./strings";
  * Main Application
  */
 export class App {
-    private _dtHideCols = [4, 5, 7];
     private _dashboard: Dashboard = null;
 
     // Constructor
@@ -192,10 +191,6 @@ export class App {
                         {
                             "targets": [0, 8],
                             "searchable": false
-                        },
-                        {
-                            "targets": this._dtHideCols,
-                            "visible": false
                         }
                     ],
                     drawCallback: function (settings) {
@@ -262,6 +257,7 @@ export class App {
                     {
                         name: "Developers",
                         title: "Developers",
+                        className: "d-none",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             let devs = item.Developers && item.Developers.results || [];
 
@@ -280,6 +276,7 @@ export class App {
                     {
                         name: "Organization",
                         title: "Organization",
+                        className: "d-none",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             el.innerHTML = `<label>${column.title}:</label>${item.Organization || ""}`;
                             el.setAttribute("data-filter", item.Organization || "");
@@ -307,6 +304,7 @@ export class App {
                     {
                         name: "SupportURL",
                         title: "Support",
+                        className: "d-none",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             el.innerHTML = `<label>${column.title}:</label>`;
                             el.setAttribute("data-filter", item.SupportURL ? item.SupportURL.Description : "");
@@ -384,30 +382,28 @@ export class App {
 
                             // Add click event to grow/shrink the card
                             ttgEl.addEventListener("click", (e) => {
-                                // Only grow/shrink if the click is outside the button group (::after)
-                                if (e.offsetX > ttgEl.offsetWidth) {
+                                let offsetLeft = e.clientX - e.offsetX;
+                                // Only grow/shrink if the click is on the caret button [::after]
+                                if (offsetLeft == ttgEl.offsetLeft) {
                                     let _class = 'shrink';
                                     let hide = ttgEl.classList.contains(_class);
+                                    let tr = ttgEl.closest("tr");
 
-                                    // Get the datatable object
-                                    let _dt = this._dashboard.Datatable as any;
-                                    let table = _dt.datatable.table();
-
-                                    // Get the description column by id
-                                    let el = table.column(3).nodes().to$() as HTMLElement;
-                                    let description = el[0].lastChild as HTMLDivElement;
-
-                                    // Update the shrink class on description & tooltip group
                                     if (hide) {
-                                        description.classList.remove(_class);
+                                        // Remove the shrink class on description inner div
+                                        jQuery("td:nth-child(4) :last-child", tr).removeClass(_class);
+                                        // Show columns [nth-child() is not 0 index based]
+                                        jQuery("td:nth-child(5), td:nth-child(6), td:nth-child(8)", tr).removeClass("d-none");
+                                        // Remove the shrink class on tooltip group
                                         ttgEl.classList.remove(_class);
                                     } else {
-                                        description.classList.add(_class);
+                                        // Add the shrink class on description inner div
+                                        jQuery("td:nth-child(4) :last-child", tr).addClass(_class);
+                                        // Hide columns [nth-child() is not 0 index based]
+                                        jQuery("td:nth-child(5), td:nth-child(6), td:nth-child(8)", tr).addClass("d-none");
+                                        // Add the shrink class on tooltip group
                                         ttgEl.classList.add(_class);
                                     }
-
-                                    // Show or Hide the table columns
-                                    table.columns(this._dtHideCols).visible(hide);
                                 }
                             });
                         }

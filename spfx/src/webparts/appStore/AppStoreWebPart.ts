@@ -38,7 +38,7 @@ export default class AppStoreWebPart extends BaseClientSideWebPart<IAppStoreWebP
   }
 
   protected get dataVersion(): Version {
-    return Version.parse('1.0');
+    return Version.parse(AppStore.version);
   }
 
 
