@@ -56,7 +56,7 @@ export class DataSource {
             if (this._appCatalogUrl) {
                 // Load the list information
                 Web(this._appCatalogUrl).Lists("Developer Apps").Items().query({
-                    Expand: ["AppDevelopers"],
+                    Expand: ["AppDevelopers", "Attachments"],
                     Filter: "ContentType eq 'App' and AppStatus eq 'Approved'",
                     GetAllItems: true,
                     Select: ["*", "AppDevelopers/Title"],
