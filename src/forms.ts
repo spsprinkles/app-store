@@ -1,4 +1,4 @@
-import { LoadingDialog, Modal } from "dattatable";
+import { Documents, LoadingDialog, Modal } from "dattatable";
 import { Components, Helper } from "gd-sprest-bs";
 import * as moment from "moment";
 import * as Common from "./common";
@@ -17,10 +17,13 @@ const ImageExtensions = [
 export class Forms {
     // Configures the form
     private static configureForm(props: Components.IListFormEditProps): Components.IListFormEditProps {
+        // Include the attachments
+        props.displayAttachments = true;
+
         // Set the control rendered event
         props.onControlRendered = (ctrl, fld) => {
             // See if this is a url field
-            if (fld.InternalName == "Icon" || fld.InternalName.indexOf("ScreenShot") == 0) {
+            if (fld.InternalName && (fld.InternalName == "Icon" || fld.InternalName.indexOf("ScreenShot") == 0)) {
                 // Set a tooltip
                 Components.Tooltip({
                     content: "Click to upload an image file.",
@@ -84,6 +87,26 @@ export class Forms {
                     // Call the update event
                     onUpdate();
                 });
+            },
+            tabInfo: {
+                tabs: [
+                    {
+                        title: "App Details",
+                        excludeFields: ["Attachments"]
+                    },
+                    {
+                        title: "Attachments",
+                        fields: [],
+                        onRendered: (el) => {
+                            // Render the attachments
+                            new Documents({
+                                el,
+                                listName: Strings.Lists.Main,
+                                itemId: itemId
+                            });
+                        }
+                    }
+                ]
             }
         });
     }
@@ -116,6 +139,18 @@ export class Forms {
                     // Call the update event
                     onUpdate();
                 });
+            },
+            tabInfo: {
+                tabs: [
+                    {
+                        title: "App Details",
+                        excludeFields: ["Attachments"]
+                    },
+                    {
+                        title: "Attachments",
+                        fields: ["Attachments"]
+                    }
+                ]
             }
         });
     }
