@@ -132,12 +132,12 @@ export class Security {
                         });
                     }
 
-                    // Ensure the ops admin group exists
+                    // Ensure the managers group exists
                     if (this.ManagerGroup) {
                         // Set the list permissions
                         list.RoleAssignments().addRoleAssignment(this.ManagerGroup.Id, permissions[SPTypes.RoleType.Contributor]).execute(() => {
                             // Log
-                            console.log("[" + Strings.Lists[key] + " List] The ops admin permission was added successfully.");
+                            console.log("[" + Strings.Lists[key] + " List] The managers group was added successfully.");
                         });
                     }
 
@@ -215,17 +215,17 @@ export class Security {
             Promise.all([
                 // Load the owners group
                 this.loadOwnersGroup(),
-                // Load the ops admin group
-                this.loadOpsAdminGroup()
+                // Load the managers group
+                this.loadManagersGroup()
             ]).then(resolve, reject);
         });
     }
 
-    // Load the ops admin group
-    private static loadOpsAdminGroup(): PromiseLike<void> {
+    // Load the managers group
+    private static loadManagersGroup(): PromiseLike<void> {
         // Return a Promise
         return new Promise((resolve, reject) => {
-            // Get the ops admin group
+            // Get the managers group
             Web(Strings.SourceUrl).SiteGroups().getByName(Strings.SecurityGroups.Managers.Name).query({
                 Expand: ["Owner", "Users"],
                 Select: ["*", "Owner/Id"]
