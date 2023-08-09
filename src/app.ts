@@ -382,9 +382,8 @@ export class App {
 
                             // Add click event to grow/shrink the card
                             ttgEl.addEventListener("click", (e) => {
-                                let offsetLeft = e.clientX - e.offsetX;
-                                // Only grow/shrink if the click is on the caret button [::after]
-                                if (offsetLeft == ttgEl.offsetLeft) {
+                                // Only grow/shrink if the click is outside the button group [::after]
+                                if (e.offsetX > ttgEl.offsetWidth) {
                                     let _class = 'shrink';
                                     let hide = ttgEl.classList.contains(_class);
                                     let tr = ttgEl.closest("tr");
