@@ -169,6 +169,19 @@ export class Forms {
         // Hide the footer
         Modal.FooterElement.classList.add("d-none");
 
+        // Generate the attachments
+        let attachments = "";
+        if (item.AttachmentFiles && item.AttachmentFiles.results) {
+            // Parse the attachments
+            debugger;
+            for (let i = 0; i < item.AttachmentFiles.results.length; i++) {
+                let attachment = item.AttachmentFiles.results[i];
+
+                // Add the link
+                attachments += `<br/><a href="${attachment.ServerRelativeUrl}">${attachment.FileName}</a>`;
+            }
+        }
+
         // Create a new div element
         let div = document.createElement("div");
         div.classList.add("container");
@@ -201,6 +214,9 @@ export class Forms {
                     </div>
                     <div class="row">
                         <div class="col fs-6"><label>Updated:</label>&nbsp;${moment(item.Modified).format(Strings.DateFormat)}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col fs-6 attachments"><label>Attachments:</label>${attachments}</div>
                     </div>
                 </div>
                 <div class="col-8 screenshots"></div>
