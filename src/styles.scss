@@ -79,7 +79,7 @@ table.cards {
             .btn-group {
                 align-items: center;
                 pointer-events: none;
-                button.btn {
+                button.btn:not([disabled]) {
                     pointer-events: auto;
                 }
             }
