@@ -182,6 +182,13 @@ export class Forms {
             }
         }
 
+        // See if this is from the app catalog
+        let moreInfoLink = "";
+        if (item.IsAppCatalogItem) {
+            // Set the more info link
+            moreInfoLink = `<a target="_blank" href="${DataSource.AppCatalogUrl}?id=${item.Id}">View in App Catalog</a>`;
+        }
+
         // Create a new div element
         let div = document.createElement("div");
         div.classList.add("container");
@@ -207,7 +214,7 @@ export class Forms {
                         <div class="col fs-6"><label>Organization:</label>&nbsp;${item.Organization}</div>
                     </div>
                     <div class="row">
-                        <div class="col fs-6 more-info"><label>More Info:</label></div>
+                        <div class="col fs-6 more-info"><label>More Info:</label>${moreInfoLink}</div>
                     </div>
                     <div class="row">
                         <div class="col fs-6 support"><label>Support:</label></div>
