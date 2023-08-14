@@ -205,7 +205,7 @@ export class Forms {
                 let attachment = item.AttachmentFiles.results[i];
 
                 // Add the link
-                attachments += `<br/><a href="${attachment.ServerRelativeUrl}">${attachment.FileName}</a>`;
+                attachments += Common.isWopi(attachment.FileName) ? `<br/><a href="${Strings.SourceUrl}/_layouts/15/WopiFrame.aspx?sourcedoc=${attachment.ServerRelativeUrl}&action=view" target="_blank">${attachment.FileName}</a>` : `<br/><a href="${attachment.ServerRelativeUrl}" target="_blank">${attachment.FileName}</a>`;
             }
         }
 
