@@ -6,7 +6,7 @@ import Strings from "./strings";
 /**
  * App Store Item
  */
-export interface IAppStoreItem extends Types.SP.ListItem {
+export interface IAppStoreItem extends Types.SP.ListItemOData {
     AppType: string;
     Description: string;
     Developers: { results: { Id: number; EMail: string; Title: string }[] };
@@ -155,7 +155,7 @@ export class DataSource {
             this._list = new List({
                 listName: Strings.Lists.Main,
                 itemQuery: {
-                    Expand: ["Developers"],
+                    Expand: ["Developers", "AttachmentFiles"],
                     GetAllItems: true,
                     OrderBy: ["Title"],
                     Select: ["*", "Developers/Id", "Developers/EMail", "Developers/Title",],

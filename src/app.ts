@@ -27,11 +27,70 @@ export class App {
 
     // Renders the dashboard
     private render(el: HTMLElement) {
-        // Define the subNav items
+        // Define the nav items
+        let navItems: Components.INavbarItem[] = [];
         let subNavItems: Components.INavbarItem[] = [];
 
-        // Render the Add button if IsAdmin or IsManager
+        if (DataSource.AppCatalogUrl) {
+            // Render the App Catalog button
+            navItems.push(
+                {
+                    text: "App Catalog Dashboard",
+                    onRender: (el, item) => {
+                        // Clear the existing button
+                        el.innerHTML = "";
+                        
+                        // Render a tooltip
+                        Components.Tooltip({
+                            el,
+                            content: item.text,
+                            type: Components.TooltipTypes.LightBorder,
+                            btnProps: {
+                                // Render the icon button
+                                className: "p-1 pe-2 me-2",
+                                iconClassName: "me-1",
+                                iconType: (Common.getIcon(25, 25, "App Dashboard", "brand") as any),
+                                text: "App Dashboard",
+                                type: Components.ButtonTypes.OutlineLight,
+                                onClick: () => {
+                                    window.open(DataSource.AppCatalogUrl, "_blank");
+                                }
+                            }
+                        });
+                    }
+                }
+            );
+        }
+
         if (Security.IsAdmin || Security.IsManager) {
+            // Render the settings menu
+            navItems.push(
+                {
+                    className: "btn-outline-light lh-1 me-2 py-1",
+                    text: "Settings",
+                    iconSize: 22,
+                    iconType: gearWideConnected,
+                    isButton: true,
+                    items: [
+                        {
+                            text: "App Settings",
+                            onClick: () => {
+                                // Show the install modal
+                                InstallationModal.show(true);
+                            }
+                        },
+                        {
+                            text: "List Settings",
+                            onClick: () => {
+                                // Show the settings in a new tab
+                                window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/listedit.aspx?List=" + DataSource.List.ListInfo.Id);
+                            }
+                        }
+                    ]
+                }
+            );
+
+            // Render the Add button
             subNavItems.push(
                 {
                     text: "Add an App",
@@ -63,10 +122,10 @@ export class App {
                                         this._dashboard.refresh(DataSource.AppItems);
                                     });
                                 }
-                            },
+                            }
                         });
                     }
-                },
+                }
             );
         }
 
@@ -99,7 +158,7 @@ export class App {
                                 // Show the filter panel
                                 this._dashboard.showFilter();
                             }
-                        },
+                        }
                     });
                 }
             }
@@ -129,31 +188,7 @@ export class App {
                 ]
             },
             navigation: {
-                itemsEnd: Security.IsAdmin || Security.IsManager ? [
-                    {
-                        className: "btn-outline-light lh-1 me-2 pt-1",
-                        text: "Settings",
-                        iconSize: 22,
-                        iconType: gearWideConnected,
-                        isButton: true,
-                        items: [
-                            {
-                                text: "App Settings",
-                                onClick: () => {
-                                    // Show the install modal
-                                    InstallationModal.show(true);
-                                }
-                            },
-                            {
-                                text: "List Settings",
-                                onClick: () => {
-                                    // Show the settings in a new tab
-                                    window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/listedit.aspx?List=" + DataSource.List.ListInfo.Id);
-                                }
-                            }
-                        ]
-                    }
-                ] : null,
+                itemsEnd: navItems,
                 // Add the branding icon & text
                 onRendering: (props) => {
                     // Set the class names
@@ -162,7 +197,7 @@ export class App {
                     // Set the brand
                     let brand = document.createElement("div");
                     brand.className = "d-flex align-items-center";
-                    brand.appendChild(Common.getIcon(36, 36, 'App Store', 'brand'));
+                    brand.appendChild(Common.getIcon(36, 36, 'App Store', 'brand me-2'));
                     brand.append(Strings.ProjectName);
                     props.brand = brand;
                 },
@@ -382,9 +417,8 @@ export class App {
 
                             // Add click event to grow/shrink the card
                             ttgEl.addEventListener("click", (e) => {
-                                let offsetLeft = e.clientX - e.offsetX;
-                                // Only grow/shrink if the click is on the caret button [::after]
-                                if (offsetLeft == ttgEl.offsetLeft) {
+                                // Only grow/shrink if the click is outside the button group [::after]
+                                if (e.offsetX > ttgEl.offsetWidth) {
                                     let _class = 'shrink';
                                     let hide = ttgEl.classList.contains(_class);
                                     let tr = ttgEl.closest("tr");
