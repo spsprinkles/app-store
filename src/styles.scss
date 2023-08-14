@@ -7,6 +7,7 @@
 /* Fix button text size */
 .bs .btn-icon {
     font-size: 0.875rem;
+    line-height: var(--bs-btn-line-height);
 }
 
 .carousel-control-prev-icon, .carousel-control-next-icon {
@@ -27,10 +28,14 @@ div.fs-6 label {
 }
 
 svg.brand {
-    margin-right: .75rem;
+    margin-right: .25rem;
     path {
         fill: var(--bs-navbar-brand-color);
     }
+}
+
+button.btn-outline-light:hover svg.brand path {
+    fill: #000;
 }
 
 svg.icon-svg path {
@@ -107,7 +112,7 @@ table.cards {
 
 /* Fix icon alignment inside nav item buttons */
 #navbar_content ul.navbar-nav li.nav-item a.btn svg {
-    margin: 0.1rem 0.25rem 0.1rem -0.25rem;
+    margin: .1rem .25rem .088rem -.25rem;
 }
 
 /* Remove the extra top padding on the content row */
