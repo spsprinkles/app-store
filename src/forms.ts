@@ -169,6 +169,34 @@ export class Forms {
         // Hide the footer
         Modal.FooterElement.classList.add("d-none");
 
+        // Ensure developers exist
+        let developers = "";
+        if (item.Developers && item.Developers.results) {
+            // Parse the devs
+            let devArr = [];
+            item.Developers.results.forEach(dev => {
+                // Append the title
+                devArr.push(dev.Title);
+            });
+
+            // Display the devs
+            developers = devArr.join(", ");
+        }
+        
+        // See if this is from the app catalog
+        let moreInfo = "";
+        if (item.IsAppCatalogItem) {
+            // Set the more info link
+            moreInfo = `<a href="${DataSource.AppCatalogUrl}?id=${item.Id}" target="_blank">View in App Catalog</a>`;
+        } else {
+            // Render the link
+            item.MoreInfo ? moreInfo = `<a href="${item.MoreInfo.Url}" target="_blank">${item.MoreInfo.Description}</a>` : null;
+        }
+
+        // Ensure a SupportURL value exists
+        let support = "";
+        item.SupportURL ? support = `<a href="${item.SupportURL.Url}" target="_blank">${item.SupportURL.Description}</a>` : null;
+
         // Generate the attachments
         let attachments = "";
         if (item.AttachmentFiles && item.AttachmentFiles.results) {
@@ -181,16 +209,9 @@ export class Forms {
             }
         }
 
-        // See if this is from the app catalog
-        let moreInfoLink = "";
-        if (item.IsAppCatalogItem) {
-            // Set the more info link
-            moreInfoLink = `<a target="_blank" href="${DataSource.AppCatalogUrl}?id=${item.Id}">View in App Catalog</a>`;
-        }
-
         // Create a new div element
         let div = document.createElement("div");
-        div.classList.add("container");
+        div.classList.add("container-fluid");
         div.innerHTML = `
             <div class="row align-items-start">
                 <div class="col-4 mt-3">
@@ -207,29 +228,26 @@ export class Forms {
                         <div class="col fs-6"><label>Description:</label>&nbsp;${item.Description}</div>
                     </div>
                     <div class="row">
-                        <div class="col fs-6 developers"><label>Developers:</label>&nbsp;</div>
+                        <div class="col fs-6"><label>Developers:</label>&nbsp;${developers}</div>
                     </div>
                     <div class="row">
                         <div class="col fs-6"><label>Organization:</label>&nbsp;${item.Organization}</div>
                     </div>
                     <div class="row">
-                        <div class="col fs-6 more-info"><label>More Info:</label>${moreInfoLink}</div>
+                        <div class="col fs-6"><label>More Info:</label>&nbsp;${moreInfo}</div>
                     </div>
                     <div class="row">
-                        <div class="col fs-6 support"><label>Support:</label></div>
+                        <div class="col fs-6"><label>Support:</label>&nbsp;${support}</div>
                     </div>
                     <div class="row">
                         <div class="col fs-6"><label>Updated:</label>&nbsp;${moment(item.Modified).format(Strings.DateFormat)}</div>
                     </div>
                     <div class="row">
-                        <div class="col fs-6 attachments"><label>Attachments:</label>${attachments}</div>
+                        <div class="col fs-6"><label>Attachments:</label>${attachments}</div>
                     </div>
                 </div>
                 <div class="col-8 screenshots"></div>
             </div>`;
-
-        // Add the div element to the form
-        Modal.BodyElement.appendChild(div);
 
         // Define the app icon
         let icon;
@@ -245,44 +263,6 @@ export class Forms {
         }
         // Add the app icon to the div element
         div.querySelector(".icon") ? div.querySelector(".icon").appendChild(icon) : null;
-
-        // Ensure developers exist
-        let devDiv = div.querySelector("div.developers");
-        if (item.Developers && item.Developers.results && devDiv) {
-            // Parse the devs
-            let strDevs = [];
-            item.Developers.results.forEach(dev => {
-                // Append the title
-                strDevs.push(dev.Title);
-            });
-
-            // Display the devs
-            devDiv.append(strDevs.join(", "));
-        }
-
-        // Ensure a more info value exists
-        let moreInfo = div.querySelector("div.more-info");
-        if (item.MoreInfo && moreInfo) {
-            // Render the link
-            let elLink = document.createElement("a");
-            elLink.text = (item.MoreInfo ? item.MoreInfo.Description : "") || "Link";
-            elLink.href = (item.MoreInfo ? item.MoreInfo.Url : "") || "#";
-            elLink.target = "_blank";
-            elLink.classList.add("ms-1");
-            moreInfo.appendChild(elLink);
-        }
-
-        // Ensure a SupportURL value exists
-        let support = div.querySelector("div.support");
-        if (item.SupportURL && support) {
-            // Render the link
-            let elLink = document.createElement("a");
-            elLink.text = (item.SupportURL ? item.SupportURL.Description : "") || "Link";
-            elLink.href = (item.SupportURL ? item.SupportURL.Url : "") || "#";
-            elLink.target = "_blank";
-            elLink.classList.add("ms-1");
-            support.appendChild(elLink);
-        }
 
         // Get each ScreenShot item for the carousel
         let items: Components.ICarouselItem[] = [];
@@ -303,6 +283,9 @@ export class Forms {
             id: "screenshots" + item.Id,
             items
         });
+
+        // Add the div element to the form
+        Modal.BodyElement.appendChild(div);
 
         // Show the modal
         Modal.show();
