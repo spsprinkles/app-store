@@ -49,7 +49,7 @@ export class App {
                                 // Render the icon button
                                 className: "p-1 pe-2 me-2",
                                 iconClassName: "me-1",
-                                iconType: (Common.getIcon(25, 25, "App Dashboard", "brand") as any),
+                                iconType: Common.getIcon(25, 25, "App Dashboard", "brand"),
                                 text: "App Dashboard",
                                 type: Components.ButtonTypes.OutlineLight,
                                 onClick: () => {
