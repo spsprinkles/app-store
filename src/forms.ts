@@ -275,7 +275,7 @@ export class Forms {
         }
 
         // Create an image carousel
-        let scrEl = div.querySelector(".screenshots") || div;
+        let scrEl = (div.querySelector(".screenshots") || div) as HTMLElement;
         Components.Carousel({
             el: scrEl,
             enableControls: true,

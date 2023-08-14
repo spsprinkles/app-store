@@ -412,16 +412,13 @@ export class App {
                                 tooltips
                             });
 
-                            // Cast the toolTipGroup element properly
-                            let ttgEl = ttg.el as HTMLElement;
-
                             // Add click event to grow/shrink the card
-                            ttgEl.addEventListener("click", (e) => {
+                            ttg.el.addEventListener("click", (e) => {
                                 // Only grow/shrink if the click is outside the button group [::after]
-                                if (e.offsetX > ttgEl.offsetWidth) {
+                                if (e.offsetX > ttg.el.offsetWidth) {
                                     let _class = 'shrink';
-                                    let hide = ttgEl.classList.contains(_class);
-                                    let tr = ttgEl.closest("tr");
+                                    let hide = ttg.el.classList.contains(_class);
+                                    let tr = ttg.el.closest("tr");
 
                                     if (hide) {
                                         // Remove the shrink class on description inner div
@@ -429,14 +426,14 @@ export class App {
                                         // Show columns [nth-child() is not 0 index based]
                                         jQuery("td:nth-child(5), td:nth-child(6), td:nth-child(8)", tr).removeClass("d-none");
                                         // Remove the shrink class on tooltip group
-                                        ttgEl.classList.remove(_class);
+                                        ttg.el.classList.remove(_class);
                                     } else {
                                         // Add the shrink class on description inner div
                                         jQuery("td:nth-child(4) :last-child", tr).addClass(_class);
                                         // Hide columns [nth-child() is not 0 index based]
                                         jQuery("td:nth-child(5), td:nth-child(6), td:nth-child(8)", tr).addClass("d-none");
                                         // Add the shrink class on tooltip group
-                                        ttgEl.classList.add(_class);
+                                        ttg.el.classList.add(_class);
                                     }
                                 }
                             });
