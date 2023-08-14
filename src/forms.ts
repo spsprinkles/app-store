@@ -173,7 +173,6 @@ export class Forms {
         let attachments = "";
         if (item.AttachmentFiles && item.AttachmentFiles.results) {
             // Parse the attachments
-            debugger;
             for (let i = 0; i < item.AttachmentFiles.results.length; i++) {
                 let attachment = item.AttachmentFiles.results[i];
 
