@@ -72,11 +72,14 @@ export class DataSource {
                             Description: item.AppDescription,
                             Developers: item.AppDevelopers,
                             Icon: item.AppThumbnailURLBase64,
+                            Id: item.Id,
                             IsAppCatalogItem: true,
+                            Modified: item.Modified,
                             MoreInfo: {
-                                Description: item.AppSupportURL ? item.AppSupportURL.Description : "",
-                                Url: item.AppSupportURL ? item.AppSupportURL.Url : ""
+                                Description: item.AppSourceControl ? item.AppSourceControl.Description : "",
+                                Url: item.AppSourceControl ? item.AppSourceControl.Url : ""
                             },
+                            Organization: item.AppPublisher,
                             Rating: 0,
                             RatingCount: 0,
                             ScreenShot1: item.AppImageURL1Base64,
@@ -84,6 +87,7 @@ export class DataSource {
                             ScreenShot3: item.AppImageURL3Base64,
                             ScreenShot4: item.AppImageURL4Base64,
                             ScreenShot5: item.AppImageURL5Base64,
+                            Status: item.AppStatus,
                             SupportURL: {
                                 Description: item.AppSupportURL ? item.AppSupportURL.Description : "",
                                 Url: item.AppSupportURL ? item.AppSupportURL.Url : ""
