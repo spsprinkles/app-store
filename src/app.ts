@@ -322,16 +322,12 @@ export class App {
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             el.innerHTML = `<label>${column.title}:</label>`;
                             el.setAttribute("data-filter", item.MoreInfo ? item.MoreInfo.Description : "");
-                            // Ensure a value exists
-                            if (item.MoreInfo) {
-                                // Render the link
-                                let elLink = document.createElement("a");
-                                elLink.text = (item.MoreInfo ? item.MoreInfo.Description : "") || "Link";
-                                elLink.href = (item.MoreInfo ? item.MoreInfo.Url : "") || "#";
-                                elLink.target = "_blank";
-                                el.appendChild(elLink);
+                            if (item.IsAppCatalogItem) {
+                                // Set the more info link
+                                el.innerHTML += `<a href="${DataSource.AppCatalogUrl}?id=${item.Id}" target="_blank">View in App Dashboard</a>`;
                             } else {
-                                el.innerHTML += "&nbsp;";
+                                // Render the link
+                                item.MoreInfo ? el.innerHTML += `<a href="${item.MoreInfo.Url}" target="_blank">${item.MoreInfo.Description}</a>` : el.innerHTML += "&nbsp;";
                             }
                         }
                     },
@@ -343,16 +339,7 @@ export class App {
                             el.innerHTML = `<label>${column.title}:</label>`;
                             el.setAttribute("data-filter", item.SupportURL ? item.SupportURL.Description : "");
                             // Ensure a value exists
-                            if (item.SupportURL) {
-                                // Render the link
-                                let elLink = document.createElement("a");
-                                elLink.text = (item.SupportURL ? item.SupportURL.Description : "") || "Link";
-                                elLink.href = (item.SupportURL ? item.SupportURL.Url : "") || "#";
-                                elLink.target = "_blank";
-                                el.appendChild(elLink);
-                            } else {
-                                el.innerHTML += "&nbsp;";
-                            }
+                            item.SupportURL ? el.innerHTML += `<a href="${item.SupportURL.Url}" target="_blank">${item.SupportURL.Description}</a>` : el.innerHTML += "&nbsp;";
                         }
                     },
                     {
