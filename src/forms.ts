@@ -187,7 +187,7 @@ export class Forms {
         let moreInfo = "";
         if (item.IsAppCatalogItem) {
             // Set the more info link
-            moreInfo = `<a href="${DataSource.AppCatalogUrl}?appId=${item.Id}" target="_blank">View in App Dashboard</a>`;
+            moreInfo = `<a href="${DataSource.AppCatalogUrl}?app-id=${item.Id}" target="_blank">View in App Dashboard</a>`;
         } else {
             // Render the link
             item.MoreInfo ? moreInfo = `<a href="${item.MoreInfo.Url}" target="_blank">${item.MoreInfo.Description}</a>` : null;
