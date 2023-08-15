@@ -54,58 +54,60 @@ export class DataSource {
 
             // See if the app catalog url exist
             if (this._appCatalogUrl) {
-                // Load the list information
-                Web(this._appCatalogUrl).Lists("Developer Apps").Items().query({
-                    Expand: ["AppDevelopers"],
-                    Filter: "ContentType eq 'App' and AppStatus eq 'Approved'",
-                    GetAllItems: true,
-                    Select: ["*", "AppDevelopers/Title"],
-                    Top: 5000
-                }).execute(items => {
-                    // Parse the items
-                    for (let i = 0; i < items.results.length; i++) {
-                        let item: any = items.results[i];
+                Web.getWebUrlFromPageUrl(this._appCatalogUrl).execute(webUrl => {
+                    // Load the list information
+                    Web(webUrl.GetWebUrlFromPageUrl).Lists("Developer Apps").Items().query({
+                        Expand: ["AppDevelopers"],
+                        Filter: "ContentType eq 'App' and AppStatus eq 'Approved'",
+                        GetAllItems: true,
+                        Select: ["*", "AppDevelopers/Title"],
+                        Top: 5000
+                    }).execute(items => {
+                        // Parse the items
+                        for (let i = 0; i < items.results.length; i++) {
+                            let item: any = items.results[i];
 
-                        // Add the item
-                        this._appCatalogItems.push({
-                            AppType: "SharePoint",
-                            Description: item.AppDescription,
-                            Developers: item.AppDevelopers,
-                            Icon: item.AppThumbnailURLBase64,
-                            Id: item.Id,
-                            IsAppCatalogItem: true,
-                            Modified: item.Modified,
-                            MoreInfo: {
-                                Description: item.AppSourceControl ? item.AppSourceControl.Description : "",
-                                Url: item.AppSourceControl ? item.AppSourceControl.Url : ""
-                            },
-                            Organization: item.AppPublisher,
-                            Rating: 0,
-                            RatingCount: 0,
-                            ScreenShot1: item.AppImageURL1Base64,
-                            ScreenShot2: item.AppImageURL2Base64,
-                            ScreenShot3: item.AppImageURL3Base64,
-                            ScreenShot4: item.AppImageURL4Base64,
-                            ScreenShot5: item.AppImageURL5Base64,
-                            Status: item.AppStatus,
-                            SupportURL: {
-                                Description: item.AppSupportURL ? item.AppSupportURL.Description : "",
-                                Url: item.AppSupportURL ? item.AppSupportURL.Url : ""
-                            },
-                            Title: item.Title,
-                            VideoURL: {
-                                Description: item.AppVideoURL ? item.AppVideoURL.Description : "",
-                                Url: item.AppVideoURL ? item.AppVideoURL.Url : ""
-                            }
-                        } as any)
-                    }
+                            // Add the item
+                            this._appCatalogItems.push({
+                                AppType: "SharePoint",
+                                Description: item.AppDescription,
+                                Developers: item.AppDevelopers,
+                                Icon: item.AppThumbnailURLBase64,
+                                Id: item.Id,
+                                IsAppCatalogItem: true,
+                                Modified: item.Modified,
+                                MoreInfo: {
+                                    Description: item.AppSourceControl ? item.AppSourceControl.Description : "",
+                                    Url: item.AppSourceControl ? item.AppSourceControl.Url : ""
+                                },
+                                Organization: item.AppPublisher,
+                                Rating: 0,
+                                RatingCount: 0,
+                                ScreenShot1: item.AppImageURL1Base64,
+                                ScreenShot2: item.AppImageURL2Base64,
+                                ScreenShot3: item.AppImageURL3Base64,
+                                ScreenShot4: item.AppImageURL4Base64,
+                                ScreenShot5: item.AppImageURL5Base64,
+                                Status: item.AppStatus,
+                                SupportURL: {
+                                    Description: item.AppSupportURL ? item.AppSupportURL.Description : "",
+                                    Url: item.AppSupportURL ? item.AppSupportURL.Url : ""
+                                },
+                                Title: item.Title,
+                                VideoURL: {
+                                    Description: item.AppVideoURL ? item.AppVideoURL.Description : "",
+                                    Url: item.AppVideoURL ? item.AppVideoURL.Url : ""
+                                }
+                            } as any)
+                        }
 
-                    // Resolve the request
-                    resolve();
-                }, () => {
-                    // Resolve the request
-                    resolve();
-                })
+                        // Resolve the request
+                        resolve();
+                    }, () => {
+                        // Resolve the request
+                        resolve();
+                    });
+                });
             } else {
                 // Resolve the request
                 resolve();
