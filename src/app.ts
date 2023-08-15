@@ -390,10 +390,13 @@ export class App {
                                 root.style.setProperty('--shrink-right', '-4rem');
                             }
 
+                            // Define shrink class
+                            let _class = 'shrink';
+
                             // Render the action tooltips
                             let ttg = Components.TooltipGroup({
                                 el,
-                                className: "shrink",
+                                className: _class,
                                 isSmall: true,
                                 tooltips
                             });
@@ -402,7 +405,6 @@ export class App {
                             ttg.el.addEventListener("click", (e) => {
                                 // Only grow/shrink if the click is outside the button group [::after]
                                 if (e.offsetX > ttg.el.offsetWidth) {
-                                    let _class = 'shrink';
                                     let hide = ttg.el.classList.contains(_class);
                                     let tr = ttg.el.closest("tr");
 
