@@ -9,7 +9,8 @@ export const Configuration = Helper.SPConfig({
         {
             ListInformation: {
                 Title: Strings.Lists.Main,
-                BaseTemplate: SPTypes.ListTemplateType.GenericList
+                BaseTemplate: SPTypes.ListTemplateType.GenericList,
+                ContentTypesEnabled: true
             },
             TitleFieldDisplayName: "App Name",
             ContentTypes: [
@@ -20,10 +21,10 @@ export const Configuration = Helper.SPConfig({
                         "AppType",
                         "Status",
                         "Description",
-                        "MoreInfo",
-                        "SupportURL",
                         "Developers",
                         "Organization",
+                        "MoreInfo",
+                        "SupportURL",
                         "Icon",
                         "ScreenShot1",
                         "ScreenShot2",
@@ -163,7 +164,7 @@ export const Configuration = Helper.SPConfig({
                 {
                     ViewName: "All Items",
                     ViewFields: [
-                        "LinkTitle", "AppType", "Status", "Description", "MoreInfo", "SupportURL", "Developers", "Organization"
+                        "LinkTitle", "AppType", "Status", "Description", "Developers", "Organization", "MoreInfo", "SupportURL"
                     ]
                 }
             ]
