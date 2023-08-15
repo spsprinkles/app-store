@@ -324,7 +324,7 @@ export class App {
                             el.setAttribute("data-filter", item.MoreInfo ? item.MoreInfo.Description : "");
                             if (item.IsAppCatalogItem) {
                                 // Set the more info link
-                                el.innerHTML += `<a href="${DataSource.AppCatalogUrl}?id=${item.Id}" target="_blank">View in App Dashboard</a>`;
+                                el.innerHTML += `<a href="${DataSource.AppCatalogUrl}?appId=${item.Id}" target="_blank">View in App Dashboard</a>`;
                             } else {
                                 // Render the link
                                 item.MoreInfo ? el.innerHTML += `<a href="${item.MoreInfo.Url}" target="_blank">${item.MoreInfo.Description}</a>` : el.innerHTML += "&nbsp;";
