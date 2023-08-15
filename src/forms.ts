@@ -72,6 +72,13 @@ export class Forms {
             }
         }
 
+        props.onFormRendered = (form) => {
+            let col12;
+            let body = form.el.closest(".modal-body");
+            col12 = body.querySelector(".row>.col-12");
+            (body && col12) ? col12.classList.add("mb-3") : null;
+        }
+
         // Return the properties
         return props;
     }
