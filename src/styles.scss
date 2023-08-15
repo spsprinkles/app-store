@@ -69,6 +69,9 @@ table.cards {
                 -webkit-box-orient: vertical;
                 -webkit-line-clamp: 2;
             }
+            div:not(.btn-group).shrink.title {
+                -webkit-line-clamp: 1;
+            }
             img.icon {
                 max-height: 70px;
                 max-width: 70px;

@@ -268,7 +268,7 @@ export class App {
                         name: "Title",
                         title: "App Name",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            el.innerHTML = `<label>${column.title}:</label>${item.Title}`;
+                            el.innerHTML = `<label>${column.title}:</label><div class="shrink title">${item.Title}</div>`;
                             el.setAttribute("data-filter", item.Title);
                         }
                     },
@@ -407,15 +407,15 @@ export class App {
                                     let tr = ttg.el.closest("tr");
 
                                     if (hide) {
-                                        // Remove the shrink class on description inner div
-                                        jQuery("td:nth-child(4) :last-child", tr).removeClass(_class);
+                                        // Remove the shrink class on title & description inner div
+                                        jQuery("td:nth-child(2) :last-child, td:nth-child(4) :last-child", tr).removeClass(_class);
                                         // Show columns [nth-child() is not 0 index based]
                                         jQuery("td:nth-child(5), td:nth-child(6), td:nth-child(8)", tr).removeClass("d-none");
                                         // Remove the shrink class on tooltip group
                                         ttg.el.classList.remove(_class);
                                     } else {
-                                        // Add the shrink class on description inner div
-                                        jQuery("td:nth-child(4) :last-child", tr).addClass(_class);
+                                        // Add the shrink class on title & description inner div
+                                        jQuery("td:nth-child(2) :last-child, td:nth-child(4) :last-child", tr).addClass(_class);
                                         // Hide columns [nth-child() is not 0 index based]
                                         jQuery("td:nth-child(5), td:nth-child(6), td:nth-child(8)", tr).addClass("d-none");
                                         // Add the shrink class on tooltip group
