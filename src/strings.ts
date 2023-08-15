@@ -30,6 +30,6 @@ const Strings = {
         }
     },
     SourceUrl: ContextInfo.webServerRelativeUrl,
-    Version: "0.0.4"
+    Version: "0.0.5"
 };
 export default Strings;
