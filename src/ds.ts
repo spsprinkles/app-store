@@ -58,7 +58,7 @@ export class DataSource {
                     // Load the list information
                     Web(webUrl.GetWebUrlFromPageUrl).Lists("Developer Apps").Items().query({
                         Expand: ["AppDevelopers"],
-                        Filter: "ContentType eq 'App' and AppStatus eq 'Approved'",
+                        Filter: "ContentType eq 'App' and (AppStatus eq 'Approved' or AppIsTenantDeployed eq 1)",
                         GetAllItems: true,
                         Select: ["*", "AppDevelopers/Title"],
                         Top: 5000
