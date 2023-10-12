@@ -8,11 +8,14 @@ import Strings from "./strings";
  */
 export class CopyListModal {
     // Method to copy the list
-    private static copyList(dstListName: string, srcWebUrl: string, srcList: Types.SP.List): PromiseLike<void> {
+    private static copyList(appTitle: string, srcWebUrl: string, srcList: Types.SP.List): PromiseLike<string> {
         // Show a loading dialog
         LoadingDialog.setHeader("Copying the List");
         LoadingDialog.setBody("Initializing the request...");
         LoadingDialog.show();
+
+        // Set the destination list name
+        let dstListName = `${appTitle} ${srcList.Title}`;
 
         // Return a promise
         return new Promise((resolve, reject) => {
@@ -113,12 +116,17 @@ export class CopyListModal {
                                     // Return a promise
                                     return new Promise(resolve => {
                                         // Get the lookup field source list
-                                        Web(srcWebUrl).Lists().getById(lookupField.LookupList).execute(srcList => {
+                                        Web(srcWebUrl).Lists().getById(lookupField.LookupList).execute(srcLookupList => {
+                                            // The lookup list will need to be copied first and should have the same
+                                            // format of the template "[App Title] [List Title]"
+                                            // Set the lookup list name to match
+                                            let dstLookupList = `${appTitle} ${srcLookupList.Title}`;
+
                                             // Get the lookup list in the destination site
-                                            Web(web.ServerRelativeUrl).Lists(srcList.Title).execute(dstList => {
+                                            Web(web.ServerRelativeUrl).Lists(dstLookupList).execute(dstList => {
                                                 // Update the field schema xml
                                                 let fieldDef = lookupField.SchemaXml.replace(`List="${lookupField.LookupList}"`, `List="{${dstList.Id}}"`);
-                                                Web(web.ServerRelativeUrl).Lists(list.ListInfo.Title).Fields(lookupField.InternalName).update({
+                                                Web(web.ServerRelativeUrl).Lists(dstListName).Fields(lookupField.InternalName).update({
                                                     SchemaXml: fieldDef
                                                 }).execute(() => {
                                                     // Updated the lookup list
@@ -147,7 +155,7 @@ export class CopyListModal {
                                     LoadingDialog.hide();
 
                                     // Resolve the request
-                                    resolve();
+                                    resolve(dstListName);
                                 });
                             });
                         }
@@ -278,11 +286,10 @@ export class CopyListModal {
 
                                 // Set the list name
                                 let listData = formValues["SourceList"].data as Types.SP.List;
-                                let listName = `${appItem.Title} ${listData.Title}`;
 
                                 // Copy the list
-                                this.copyList(listName, formValues["WebUrl"], listData).then(
-                                    () => {
+                                this.copyList(appItem.Title, formValues["WebUrl"], listData).then(
+                                    (listName: string) => {
                                         // See if the associated list doesn't exist
                                         let lists = (appItem.AssociatedLists || "").split('\n');
                                         if (lists.indexOf(listName) < 0) {
