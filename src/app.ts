@@ -7,6 +7,7 @@ import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
 import { window_ } from "gd-sprest-bs/build/icons/svgs/window_";
 import * as jQuery from "jquery";
 import * as Common from "./common";
+import { CopyListModal } from "./copyList";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Forms } from "./forms";
 import { InstallationModal } from "./install";
@@ -39,7 +40,7 @@ export class App {
                     onRender: (el, item) => {
                         // Clear the existing button
                         el.innerHTML = "";
-                        
+
                         // Render a tooltip
                         Components.Tooltip({
                             el,
@@ -346,8 +347,20 @@ export class App {
                         className: "text-center",
                         name: "Actions",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
+                            let isAppCatalog = item.AppType == "SharePoint";
                             let root = document.querySelector(':root') as HTMLElement;
                             let tooltips: Components.ITooltipProps[] = [];
+
+                            // Determine if this is one of the developers
+                            let isDeveloper = false;
+                            for (let i = 0; i < item.Developers.results.length; i++) {
+                                // See if this is one of the developers
+                                if (item.Developers.results[i].Id == ContextInfo.userId) {
+                                    // Set the flag
+                                    isDeveloper = true;
+                                    break;
+                                }
+                            }
 
                             // Add the Details button tooltip
                             tooltips.push({
@@ -366,8 +379,29 @@ export class App {
                                 }
                             });
 
+                            // Add the copy list button
+                            if (!isAppCatalog && (Security.IsAdmin || Security.IsManager || isDeveloper)) {
+                                // Add the copy button
+                                tooltips.push({
+                                    content: "Copy a source list for this app",
+                                    btnProps: {
+                                        className: "p-1 pe-2",
+                                        iconClassName: "me-1",
+                                        iconType: window_,
+                                        iconSize: 24,
+                                        text: "Copy List(s)",
+                                        type: Components.ButtonTypes.OutlinePrimary,
+                                        onClick: () => {
+                                            // Display the copy list modal
+                                            CopyListModal.show(item);
+                                        }
+                                    }
+                                })
+                            }
+
                             // Add the Edit button tooltip if IsAdmin or IsManager
                             if (Security.IsAdmin || Security.IsManager) {
+                                // Add the edit button
                                 tooltips.push({
                                     content: "Edit the item",
                                     btnProps: {

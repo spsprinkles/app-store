@@ -46,6 +46,13 @@ export const Configuration = Helper.SPConfig({
                     ]
                 } as Helper.IFieldInfoChoice,
                 {
+                    name: "AssociatedLists",
+                    title: "Associated Lists",
+                    type: Helper.SPCfgFieldType.Note,
+                    description: "The associated lists for the app.",
+                    notetype: SPTypes.FieldNoteType.TextOnly
+                } as Helper.IFieldInfoNote,
+                {
                     name: "Description",
                     title: "Description",
                     type: Helper.SPCfgFieldType.Note,

@@ -21,6 +21,7 @@ const Strings = {
         Main: "App Store",
         Ratings: "App Ratings"
     },
+    ListTemplateUrl: "~site/listtemplates",
     ProjectName: "AppStore",
     ProjectDescription: "List that displays the app information in a card view.",
     SecurityGroups: {
