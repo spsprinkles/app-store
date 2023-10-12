@@ -174,14 +174,8 @@ export class CopyListModal {
         });
     }
 
-    // Displays the modal
-    static show(appItem: IAppStoreItem, webUrl: string = ContextInfo.webServerRelativeUrl) {
-        // Clear the modal
-        Modal.clear();
-
-        // Set the header
-        Modal.setHeader("Copy List");
-
+    // Renders the main form
+    static renderForm(appItem: IAppStoreItem, webUrl: string = ContextInfo.webServerRelativeUrl) {
         // Render a form
         let form = Components.Form({
             el: Modal.BodyElement,
@@ -333,6 +327,18 @@ export class CopyListModal {
                 }
             ]
         });
+    }
+
+    // Displays the modal
+    static show(appItem: IAppStoreItem, webUrl: string = ContextInfo.webServerRelativeUrl) {
+        // Clear the modal
+        Modal.clear();
+
+        // Set the header
+        Modal.setHeader("Copy List");
+
+        // Render the form
+        this.renderForm(appItem, webUrl);
 
         // Show the modal
         Modal.show();
