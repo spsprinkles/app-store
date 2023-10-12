@@ -1,7 +1,7 @@
 import { List, LoadingDialog, Modal } from "dattatable";
 import { Components, ContextInfo, Helper, SPTypes, Types, Web } from "gd-sprest-bs";
 import { IAppStoreItem } from "./ds";
-import Strings from "./strings";
+import { getListTemplateUrl } from "./strings";
 
 /**
  * Copy List Modal
@@ -20,9 +20,7 @@ export class CopyListModal {
         // Return a promise
         return new Promise((resolve, reject) => {
             // Ensure the user has the correct permissions to create the list
-            let dstWebUrl = Strings.ListTemplateUrl
-                .replace("~sitecollection", ContextInfo.siteServerRelativeUrl)
-                .replace("~site", ContextInfo.webServerRelativeUrl);
+            let dstWebUrl = getListTemplateUrl();
             Web(dstWebUrl).query({ Expand: ["EffectiveBasePermissions"] }).execute(
                 // Exists
                 web => {
@@ -46,7 +44,6 @@ export class CopyListModal {
                             // Reject the request
                             reject("Error loading the list information. Please check your permission to the source list.");
                             LoadingDialog.hide();
-                            return;
                         },
                         onInitialized: () => {
                             // Update the loading dialog
@@ -137,7 +134,7 @@ export class CopyListModal {
                                                 })
                                             }, () => {
                                                 // Error getting the lookup list
-                                                console.error(`Error getting the lookup list '${lookupField.LookupList}' from web '${web.ServerRelativeUrl}'.`);
+                                                console.error(`Error getting the lookup list '${dstLookupList}' from web '${web.ServerRelativeUrl}'.`);
 
                                                 // Check the next field
                                                 resolve(null);

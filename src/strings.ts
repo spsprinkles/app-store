@@ -10,6 +10,13 @@ export const setContext = (context, sourceUrl?: string) => {
     Strings.SourceUrl = sourceUrl || ContextInfo.webServerRelativeUrl;
 }
 
+// Gets the list template url
+export const getListTemplateUrl = () => {
+    return Strings.ListTemplateUrl
+        .replace("~sitecollection", ContextInfo.siteServerRelativeUrl)
+        .replace("~site", ContextInfo.webServerRelativeUrl);
+}
+
 /**
  * Global Constants
  */

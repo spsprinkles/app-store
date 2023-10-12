@@ -8,6 +8,7 @@ import { window_ } from "gd-sprest-bs/build/icons/svgs/window_";
 import * as jQuery from "jquery";
 import * as Common from "./common";
 import { CopyListModal } from "./copyList";
+import { CopyListTemplatesModal } from "./copyListTemplates";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Forms } from "./forms";
 import { InstallationModal } from "./install";
@@ -379,8 +380,28 @@ export class App {
                                 }
                             });
 
-                            // Add the copy list button
-                            if (!isAppCatalog && (Security.IsAdmin || Security.IsManager || isDeveloper)) {
+                            // See if this is not an app catalog item
+                            if (!isAppCatalog) {
+                                // Ensure this is an admin, manager or the app developer
+                                if (Security.IsAdmin || Security.IsManager || isDeveloper) {
+                                    // Add the copy button
+                                    tooltips.push({
+                                        content: "Copy a source list for this app",
+                                        btnProps: {
+                                            className: "p-1 pe-2",
+                                            iconClassName: "me-1",
+                                            iconType: window_,
+                                            iconSize: 24,
+                                            text: "Copy List(s)",
+                                            type: Components.ButtonTypes.OutlinePrimary,
+                                            onClick: () => {
+                                                // Display the copy list modal
+                                                CopyListModal.show(item);
+                                            }
+                                        }
+                                    });
+                                }
+
                                 // Add the copy button
                                 tooltips.push({
                                     content: "Copy a source list for this app",
@@ -389,14 +410,17 @@ export class App {
                                         iconClassName: "me-1",
                                         iconType: window_,
                                         iconSize: 24,
-                                        text: "Copy List(s)",
+                                        text: "Copy List Templates(s)",
                                         type: Components.ButtonTypes.OutlinePrimary,
                                         onClick: () => {
+                                            // Get the list templates associated w/ this item
+                                            let listNames = (item.AssociatedLists || "").trim().split('\n');
+
                                             // Display the copy list modal
-                                            CopyListModal.show(item);
+                                            CopyListTemplatesModal.show(item, listNames);
                                         }
                                     }
-                                })
+                                });
                             }
 
                             // Add the Edit button tooltip if IsAdmin or IsManager
