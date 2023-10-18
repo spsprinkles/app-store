@@ -8,7 +8,6 @@ import { window_ } from "gd-sprest-bs/build/icons/svgs/window_";
 import * as jQuery from "jquery";
 import * as Common from "./common";
 import { CopyListModal } from "./copyList";
-import { CopyListTemplatesModal } from "./copyListTemplates";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Forms } from "./forms";
 import { InstallationModal } from "./install";
@@ -352,17 +351,6 @@ export class App {
                             let root = document.querySelector(':root') as HTMLElement;
                             let tooltips: Components.ITooltipProps[] = [];
 
-                            // Determine if this is one of the developers
-                            let isDeveloper = false;
-                            for (let i = 0; i < item.Developers.results.length; i++) {
-                                // See if this is one of the developers
-                                if (item.Developers.results[i].Id == ContextInfo.userId) {
-                                    // Set the flag
-                                    isDeveloper = true;
-                                    break;
-                                }
-                            }
-
                             // Add the Details button tooltip
                             tooltips.push({
                                 content: "View more details",
@@ -382,42 +370,22 @@ export class App {
 
                             // See if this is not an app catalog item
                             if (!isAppCatalog) {
-                                // Ensure this is an admin, manager or the app developer
-                                if (Security.IsAdmin || Security.IsManager || isDeveloper) {
-                                    // Add the copy button
-                                    tooltips.push({
-                                        content: "Copy a source list for this app",
-                                        btnProps: {
-                                            className: "p-1 pe-2",
-                                            iconClassName: "me-1",
-                                            iconType: window_,
-                                            iconSize: 24,
-                                            text: "Copy List(s)",
-                                            type: Components.ButtonTypes.OutlinePrimary,
-                                            onClick: () => {
-                                                // Display the copy list modal
-                                                CopyListModal.show(item);
-                                            }
-                                        }
-                                    });
-                                }
-
                                 // Add the copy button
                                 tooltips.push({
-                                    content: "Copy a source list for this app",
+                                    content: "Click to copy the associated lists for this solution.",
                                     btnProps: {
                                         className: "p-1 pe-2",
                                         iconClassName: "me-1",
                                         iconType: window_,
                                         iconSize: 24,
-                                        text: "Copy List Templates(s)",
+                                        text: "Copy List(s)",
                                         type: Components.ButtonTypes.OutlinePrimary,
                                         onClick: () => {
                                             // Get the list templates associated w/ this item
                                             let listNames = (item.AssociatedLists || "").trim().split('\n');
 
                                             // Display the copy list modal
-                                            CopyListTemplatesModal.show(item, listNames);
+                                            CopyListModal.show(item, listNames);
                                         }
                                     }
                                 });
