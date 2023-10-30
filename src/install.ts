@@ -44,16 +44,8 @@ export class InstallationModal {
                                     text: "Security",
                                     isDisabled: !InstallationRequired.ListsExist,
                                     onClick: () => {
-                                        // Show a loading dialog
-                                        LoadingDialog.setHeader("Security Groups");
-                                        LoadingDialog.setBody("Creating the security groups. This dialog will close after it completes.");
-                                        LoadingDialog.show();
-
                                         // Create the security groups
-                                        Security.create().then(() => {
-                                            // Close the dialog
-                                            LoadingDialog.hide();
-
+                                        Security.show(() => {
                                             // Refresh the page
                                             window.location.reload();
                                         });
