@@ -32,6 +32,10 @@ const Strings = {
     ProjectName: "AppStore",
     ProjectDescription: "List that displays the app information in a card view.",
     SecurityGroups: {
+        Developers: {
+            Name: "App Store Developers",
+            Description: "Contributors to the app store solution."
+        },
         Managers: {
             Name: "App Store Managers",
             Description: "Manages the app store solution."

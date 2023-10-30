@@ -1,5 +1,5 @@
 import { ListSecurity, ListSecurityDefaultGroups } from "dattatable";
-import { ContextInfo, Helper, SPTypes, Types, Web } from "gd-sprest-bs";
+import { ContextInfo, Helper, SPTypes, Types } from "gd-sprest-bs";
 import Strings from "./strings";
 
 /**
@@ -21,8 +21,8 @@ export class Security {
     private static _developerGroupInfo: Types.SP.GroupCreationInformation = {
         AllowMembersEditMembership: false,
         AutoAcceptRequestToJoinLeave: true,
-        Description: Strings.SecurityGroups.Managers.Description,
-        Title: Strings.SecurityGroups.Managers.Name,
+        Description: Strings.SecurityGroups.Developers.Description,
+        Title: Strings.SecurityGroups.Developers.Name,
         OnlyAllowMembersViewMembership: false
     };
     private static _developerGroup: Types.SP.Group = null;
@@ -44,8 +44,14 @@ export class Security {
     private static _securityGroupUrl = ContextInfo.webServerRelativeUrl + "/_layouts/15/people.aspx?MembershipGroupId=";
     static get SecurityGroupUrl(): string { return this._securityGroupUrl };
 
+    // Adds a user to the developer group
+    static addDeveloper(userId: number): PromiseLike<void> {
+        // Add the user to the group
+        return this._listSecurity.addToGroup(userId, this._developerGroupInfo.Title);
+    }
+
     // Initialization
-    static init(): PromiseLike<void | any> {
+    static init(): PromiseLike<void> {
         // Return a promise
         return new Promise((resolve, reject) => {
             // Create the list security
@@ -95,6 +101,16 @@ export class Security {
                         permission: SPTypes.RoleType.Contributor
                     },
                 ],
+                onGroupCreated: group => {
+                    // Set the group owner
+                    Helper.setGroupOwner(group.Title, this._adminGroup.Title).then(() => {
+                        // Log
+                        console.log(`[${group.Title} + " Group] The owner was updated successfully to ${this._adminGroup.Title}.`);
+                    }, () => {
+                        // Log
+                        console.error(`[${group.Title} + " Group] The owner failed to update to: ${this._adminGroup.Title}`);
+                    });
+                },
                 onGroupsLoaded: () => {
                     // Set the groups
                     this._adminGroup = this._listSecurity.getGroup(ListSecurityDefaultGroups.Owners);
@@ -108,11 +124,8 @@ export class Security {
 
                     // Ensure all of the groups exist
                     if (this._adminGroup && this._developerGroup && this._managerGroup) {
-                        // Validate the owners
-                        Promise.all([
-                            this.validateOwner(this._developerGroup),
-                            this.validateOwner(this._managerGroup)
-                        ]).then(resolve, reject);
+                        // Resolve the request
+                        resolve();
                     } else {
                         // Reject the request
                         reject();
@@ -129,32 +142,5 @@ export class Security {
     static show(onComplete: () => void) {
         // Create the groups
         this._listSecurity.show(true, onComplete);
-    }
-
-    // Validates the owner of a group to be the admin group
-    private static validateOwner(group: Types.SP.Group): PromiseLike<void> {
-        // Return a promise
-        return new Promise((resolve, reject) => {
-            // Get the owner
-            group.Owner().execute(owner => {
-                // See if they are the admin group
-                if (owner.Id != this._adminGroup.Id) {
-                    // Log
-                    console.log(`[${this.ManagerGroup.Title} Group] The owner is not correct. Updating it now.`);
-
-                    // Set the group owner
-                    Helper.setGroupOwner(this._managerGroup.Title, this._adminGroup.Title).then(() => {
-                        // Log
-                        console.log(`[${this._managerGroup.Title} + " Group] The owner was updated successfully to ${this._adminGroup.Title}.`);
-
-                        // Resolve the request
-                        resolve();
-                    }, resolve);
-                } else {
-                    // Resolve the request
-                    resolve();
-                }
-            }, reject);
-        });
     }
 }

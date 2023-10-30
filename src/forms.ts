@@ -20,19 +20,16 @@ export class Forms {
     private static addDevelopers(item: IAppStoreItem) {
         // Return a promise
         return new Promise((resolve, reject) => {
-            let group = Web().SiteGroups().getById(Security.DeveloperGroup.Id);
+            let requests = [];
 
             // Parse the owners and add them to the developers group
             Helper.Executor(item.Developers.results, user => {
-                // See if the user is not in the group
-                if (!Security.isDeveloper(user.Id)) {
-                    // Add them to the group
-                    group.Users().addUserById(user.Id).batch();
-                }
-            }).then(() => {
-                // Execute the batch request
-                group.execute(resolve, reject);
+                // Add the developer
+                requests.push(Security.addDeveloper(user.Id));
             });
+
+            // Wait for the requests to complete
+            Promise.all(requests).then(resolve, reject);
         });
     }
 
