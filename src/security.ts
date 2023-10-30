@@ -66,6 +66,11 @@ export class Security {
                     },
                     {
                         listName: Strings.Lists.Main,
+                        groupName: this._developerGroupInfo.Title,
+                        permission: SPTypes.RoleType.Reader
+                    },
+                    {
+                        listName: Strings.Lists.Main,
                         groupName: this._managerGroupInfo.Title,
                         permission: SPTypes.RoleType.Contributor
                     },
@@ -81,6 +86,11 @@ export class Security {
                     },
                     {
                         listName: Strings.Lists.Ratings,
+                        groupName: this._developerGroupInfo.Title,
+                        permission: SPTypes.RoleType.Reader
+                    },
+                    {
+                        listName: Strings.Lists.Ratings,
                         groupName: this._managerGroupInfo.Title,
                         permission: SPTypes.RoleType.Contributor
                     },
@@ -88,14 +98,16 @@ export class Security {
                 onGroupsLoaded: () => {
                     // Set the groups
                     this._adminGroup = this._listSecurity.getGroup(ListSecurityDefaultGroups.Owners);
+                    this._developerGroup = this._listSecurity.getGroup(this._developerGroupInfo.Title);
                     this._managerGroup = this._listSecurity.getGroup(this._managerGroupInfo.Title);
 
                     // See if the user belongs to the group
                     this._isAdmin = this._listSecurity.CurrentUser.IsSiteAdmin || this._listSecurity.isInGroup(ContextInfo.userId, ListSecurityDefaultGroups.Owners);
+                    this._isDeveloper = this._listSecurity.isInGroup(ContextInfo.userId, this._developerGroupInfo.Title);
                     this._isManager = this._listSecurity.isInGroup(ContextInfo.userId, this._managerGroupInfo.Title);
 
                     // Ensure all of the groups exist
-                    if (this._adminGroup && this._managerGroup) {
+                    if (this._adminGroup && this._developerGroup && this._managerGroup) {
                         // Get the owner
                         this._managerGroup.Owner().execute(owner => {
                             // See if they are the admin group

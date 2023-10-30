@@ -16,7 +16,7 @@ export class InstallationModal {
 
             // See if the security groups exist
             let securityGroupsExist = true;
-            if (Security.ManagerGroup == null) {
+            if (Security.DeveloperGroup == null || Security.ManagerGroup == null) {
                 // Set the flag
                 securityGroupsExist = false;
 
