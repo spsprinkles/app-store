@@ -15,6 +15,19 @@ export class Security {
     private static _adminGroup: Types.SP.Group = null;
     static get AdminGroup(): Types.SP.Group { return this._adminGroup; }
 
+    // Developers
+    private static _isDeveloper: boolean = false;
+    static get IsDeveloper(): boolean { return this._isDeveloper; }
+    private static _developerGroupInfo: Types.SP.GroupCreationInformation = {
+        AllowMembersEditMembership: false,
+        AutoAcceptRequestToJoinLeave: true,
+        Description: Strings.SecurityGroups.Managers.Description,
+        Title: Strings.SecurityGroups.Managers.Name,
+        OnlyAllowMembersViewMembership: false
+    };
+    private static _developerGroup: Types.SP.Group = null;
+    static get DeveloperGroup(): Types.SP.Group { return this._developerGroup; }
+
     // Manager
     private static _isManager: boolean = false;
     static get IsManager(): boolean { return this._isManager; }
@@ -38,7 +51,7 @@ export class Security {
             // Create the list security
             this._listSecurity = new ListSecurity({
                 groups: [
-                    this._managerGroupInfo
+                    this._developerGroupInfo, this._managerGroupInfo
                 ],
                 listItems: [
                     {
