@@ -45,7 +45,7 @@ export class Security {
     static get SecurityGroupUrl(): string { return this._securityGroupUrl };
 
     // Initialization
-    static init(): PromiseLike<void> {
+    static init(): PromiseLike<void | any> {
         // Return a promise
         return new Promise((resolve, reject) => {
             // Create the list security
@@ -108,26 +108,11 @@ export class Security {
 
                     // Ensure all of the groups exist
                     if (this._adminGroup && this._developerGroup && this._managerGroup) {
-                        // Get the owner
-                        this._managerGroup.Owner().execute(owner => {
-                            // See if they are the admin group
-                            if (owner.Id != this._adminGroup.Id) {
-                                // Log
-                                console.log(`[${this.ManagerGroup.Title} Group] The owner is not correct. Updating it now.`);
-
-                                // Set the group owner
-                                Helper.setGroupOwner(this._managerGroup.Title, this._adminGroup.Title).then(() => {
-                                    // Log
-                                    console.log(`[${this._managerGroup.Title} + " Group] The owner was updated successfully to ${this._adminGroup.Title}.`);
-
-                                    // Resolve the request
-                                    resolve();
-                                }, resolve);
-                            } else {
-                                // Resolve the request
-                                resolve();
-                            }
-                        }, reject);
+                        // Validate the owners
+                        Promise.all([
+                            this.validateOwner(this._developerGroup),
+                            this.validateOwner(this._managerGroup)
+                        ]).then(resolve, reject);
                     } else {
                         // Reject the request
                         reject();
@@ -141,5 +126,32 @@ export class Security {
     static show(onComplete: () => void) {
         // Create the groups
         this._listSecurity.show(true, onComplete);
+    }
+
+    // Validates the owner of a group to be the admin group
+    private static validateOwner(group: Types.SP.Group): PromiseLike<void> {
+        // Return a promise
+        return new Promise((resolve, reject) => {
+            // Get the owner
+            group.Owner().execute(owner => {
+                // See if they are the admin group
+                if (owner.Id != this._adminGroup.Id) {
+                    // Log
+                    console.log(`[${this.ManagerGroup.Title} Group] The owner is not correct. Updating it now.`);
+
+                    // Set the group owner
+                    Helper.setGroupOwner(this._managerGroup.Title, this._adminGroup.Title).then(() => {
+                        // Log
+                        console.log(`[${this._managerGroup.Title} + " Group] The owner was updated successfully to ${this._adminGroup.Title}.`);
+
+                        // Resolve the request
+                        resolve();
+                    }, resolve);
+                } else {
+                    // Resolve the request
+                    resolve();
+                }
+            }, reject);
+        });
     }
 }
