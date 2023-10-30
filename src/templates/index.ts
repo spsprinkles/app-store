@@ -2,13 +2,13 @@ import { Modal } from "dattatable";
 import { Components, ContextInfo } from "gd-sprest-bs";
 import { IAppStoreItem } from "../ds";
 import { Security } from "../security";
-import { CreateTemplates } from "./createTemplate";
-import { CopyTemplates } from "./copyLists";
+import { CreateTemplates } from "./createTemplates";
+import { CopyTemplates } from "./copyTemplates";
 
 /**
- * Copy List Modal
+ * Templates Modal
  */
-export class CopyListModal {
+export class TemplatesModal {
     // Renders the main form for the modal
     static show(appItem: IAppStoreItem, listNames: string[] = [], webUrl: string = ContextInfo.webServerRelativeUrl) {
         // Clear the modal
