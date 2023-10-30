@@ -1,8 +1,9 @@
 import { Documents, LoadingDialog, Modal } from "dattatable";
-import { Components, Helper } from "gd-sprest-bs";
+import { Components, Helper, Web } from "gd-sprest-bs";
 import * as moment from "moment";
 import * as Common from "./common";
 import { DataSource, IAppStoreItem } from "./ds";
+import { Security } from "./security";
 import Strings from "./strings";
 
 // Acceptable image file types
@@ -15,6 +16,26 @@ const ImageExtensions = [
  * Forms
  */
 export class Forms {
+    // Adds the developers to the group
+    private static addDevelopers(item: IAppStoreItem) {
+        // Return a promise
+        return new Promise((resolve, reject) => {
+            let group = Web().SiteGroups().getById(Security.DeveloperGroup.Id);
+
+            // Parse the owners and add them to the developers group
+            Helper.Executor(item.Developers.results, user => {
+                // See if the user is not in the group
+                if (!Security.isDeveloper(user.Id)) {
+                    // Add them to the group
+                    group.Users().addUserById(user.Id).batch();
+                }
+            }).then(() => {
+                // Execute the batch request
+                group.execute(resolve, reject);
+            });
+        });
+    }
+
     // Configures the form
     private static configureForm(props: Components.IListFormEditProps): Components.IListFormEditProps {
         // Include the attachments
@@ -90,9 +111,9 @@ export class Forms {
             onCreateEditForm: props => { return this.configureForm(props); },
             onUpdate: (item: IAppStoreItem) => {
                 // Refresh the item
-                DataSource.List.refreshItem(item.Id).then(() => {
-                    // Call the update event
-                    onUpdate();
+                DataSource.List.refreshItem(item.Id).then(updatedItem => {
+                    // Add the developers
+                    this.addDevelopers(updatedItem).then(onUpdate);
                 });
             },
             tabInfo: {
@@ -142,9 +163,9 @@ export class Forms {
             onCreateEditForm: props => { return this.configureForm(props); },
             onUpdate: (item: IAppStoreItem) => {
                 // Refresh the data
-                DataSource.List.refreshItem(item.Id).then(() => {
-                    // Call the update event
-                    onUpdate();
+                DataSource.List.refreshItem(item.Id).then(newItem => {
+                    // Add the developers
+                    this.addDevelopers(newItem).then(onUpdate);
                 });
             },
             tabInfo: {
@@ -189,7 +210,7 @@ export class Forms {
             // Display the devs
             developers = devArr.join(", ");
         }
-        
+
         // See if this is from the app catalog
         let moreInfo = "";
         if (item.IsAppCatalogItem) {

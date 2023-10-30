@@ -118,9 +118,12 @@ export class Security {
                         reject();
                     }
                 }
-            })
+            });
         });
     }
+
+    // Determines if a user is a developer
+    static isDeveloper(userId: number) { return this._listSecurity.isInGroup(userId, this._developerGroup.Title); }
 
     // Displays the security group configuration
     static show(onComplete: () => void) {
