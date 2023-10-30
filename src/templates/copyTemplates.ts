@@ -1,12 +1,14 @@
 import { List, LoadingDialog, Modal } from "dattatable";
-import { Components, ContextInfo, Helper, SPTypes, Types, Web } from "gd-sprest-bs";
-import { IAppStoreItem } from "./ds";
-import { getListTemplateUrl } from "./strings";
+import { Components, Helper, SPTypes, Types, Web } from "gd-sprest-bs";
+import { IAppStoreItem } from "../ds";
+import { getListTemplateUrl } from "../strings";
 
 /**
- * Copy List Modal
+ * Copy Templates
  */
-export class CopyListModal {
+export class CopyTemplates {
+    private static _form: Components.IForm = null;
+
     // Method to copy the list
     private static copyList(appTitle: string, srcWebUrl: string, srcList: Types.SP.List): PromiseLike<string> {
         // Show a loading dialog
@@ -27,7 +29,7 @@ export class CopyListModal {
                     // Ensure the user doesn't have permission to manage lists
                     if (!Helper.hasPermissions(web.EffectiveBasePermissions, [SPTypes.BasePermissionTypes.ManageLists])) {
                         // Reject the request
-                        reject("You do not have permission to create lists on this web.");
+                        reject("You do not have permission to copy templates on this web.");
                         LoadingDialog.hide();
                         return;
                     }
@@ -171,35 +173,14 @@ export class CopyListModal {
         });
     }
 
-    // Renders the main form
-    static renderForm(appItem: IAppStoreItem, webUrl: string = ContextInfo.webServerRelativeUrl) {
-        // Render a form
-        let form = Components.Form({
-            el: Modal.BodyElement,
-            controls: [
-                {
-                    name: "WebUrl",
-                    title: "Source Web Url",
-                    type: Components.FormControlTypes.TextField,
-                    description: "The source web containing the list.",
-                    required: true,
-                    errorMessage: "A relative web url is required. (Ex. /sites/dev)",
-                    value: webUrl
-                },
-                {
-                    name: "SourceList",
-                    title: "Select a List",
-                    type: Components.FormControlTypes.Dropdown,
-                    description: "Select the list to copy.",
-                    required: true,
-                    errorMessage: "A list is required."
-                }
-            ]
-        });
+    // Renders the footer
+    static renderFooter(el: HTMLElement, appItem: IAppStoreItem) {
+        // Clear the footer
+        while (el.firstChild) { el.removeChild(el.firstChild); }
 
         // Set the footer
         Components.TooltipGroup({
-            el: Modal.FooterElement,
+            el,
             tooltips: [
                 {
                     content: "Loads the lists from the selected web.",
@@ -208,12 +189,12 @@ export class CopyListModal {
                         type: Components.ButtonTypes.OutlinePrimary,
                         onClick: () => {
                             // Get the web url control
-                            let ctrlWeb = form.getControl("WebUrl");
+                            let ctrlWeb = this._form.getControl("WebUrl");
 
                             // Validate the control
                             if (ctrlWeb.isValid) {
                                 // Get the dropdown control
-                                let ctrlLists = form.getControl("SourceList");
+                                let ctrlLists = this._form.getControl("SourceList");
 
                                 // Show a loading dialog
                                 LoadingDialog.setHeader("Loading Lists");
@@ -271,9 +252,9 @@ export class CopyListModal {
                         type: Components.ButtonTypes.OutlinePrimary,
                         onClick: () => {
                             // Validate the form
-                            if (form.isValid()) {
-                                let ctrlLists = form.getControl("SourceList");
-                                let formValues = form.getValues();
+                            if (this._form.isValid()) {
+                                let ctrlLists = this._form.getControl("SourceList");
+                                let formValues = this._form.getValues();
 
                                 // Set the list name
                                 let listData = formValues["SourceList"].data as Types.SP.List;
@@ -326,18 +307,33 @@ export class CopyListModal {
         });
     }
 
-    // Displays the modal
-    static show(appItem: IAppStoreItem, webUrl: string = ContextInfo.webServerRelativeUrl) {
-        // Clear the modal
-        Modal.clear();
+    // Renders the main form
+    static renderForm(el: HTMLElement, webUrl: string) {
+        // Set the body
+        el.innerHTML = "<p>Use this form to add/update a list template for this app.</p>";
 
-        // Set the header
-        Modal.setHeader("Copy List");
-
-        // Render the form
-        this.renderForm(appItem, webUrl);
-
-        // Show the modal
-        Modal.show();
+        // Render a form
+        this._form = Components.Form({
+            el,
+            controls: [
+                {
+                    name: "WebUrl",
+                    title: "Source Web Url",
+                    type: Components.FormControlTypes.TextField,
+                    description: "The source web containing the list.",
+                    required: true,
+                    errorMessage: "A relative web url is required. (Ex. /sites/dev)",
+                    value: webUrl
+                },
+                {
+                    name: "SourceList",
+                    title: "Select a List",
+                    type: Components.FormControlTypes.Dropdown,
+                    description: "Select the list to copy.",
+                    required: true,
+                    errorMessage: "A list is required."
+                }
+            ]
+        });
     }
 }

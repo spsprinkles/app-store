@@ -1,12 +1,14 @@
 import { List, LoadingDialog, Modal } from "dattatable";
 import { Components, ContextInfo, Helper, SPTypes, Types, Web } from "gd-sprest-bs";
-import { IAppStoreItem } from "./ds";
-import { getListTemplateUrl } from "./strings";
+import { IAppStoreItem } from "../ds";
+import { getListTemplateUrl } from "../strings";
 
 /**
- * Copy List Templates Modal
+ * Create Templates
  */
-export class CopyListTemplatesModal {
+export class CreateTemplates {
+    private static _form: Components.IForm = null;
+
     // Method to copy the list
     private static copyList(appTitle: string, srcListName: string, dstWebUrl: string, dstListName: string): PromiseLike<string> {
         // Return a promise
@@ -151,7 +153,7 @@ export class CopyListTemplatesModal {
                     // Ensure the user doesn't have permission to manage lists
                     if (!Helper.hasPermissions(web.EffectiveBasePermissions, [SPTypes.BasePermissionTypes.ManageLists])) {
                         // Reject the request
-                        reject("You do not have permission to create lists on this web.");
+                        reject("You do not have permission to copy templates on this web.");
                     } else {
                         // Resolve the request
                         resolve()
@@ -166,41 +168,29 @@ export class CopyListTemplatesModal {
         });
     }
 
-    // Renders the main form
-    private static renderForm(appItem: IAppStoreItem, listNames: string[]) {
-        // Render a form
-        let form = Components.Form({
-            el: Modal.BodyElement,
-            controls: [
-                {
-                    name: "WebUrl",
-                    title: "Destination Web Url",
-                    type: Components.FormControlTypes.TextField,
-                    description: "The destination web to copy the list(s) to.",
-                    required: true,
-                    errorMessage: "A relative web url is required. (Ex. /sites/dev)"
-                }
-            ]
-        });
+    // Renders the footer
+    static renderFooter(el: HTMLElement, appItem: IAppStoreItem, listNames: string[]) {
+        // Clear the footer
+        while (el.firstChild) { el.removeChild(el.firstChild); }
 
         // Set the footer
         Components.TooltipGroup({
-            el: Modal.FooterElement,
+            el,
             tooltips: [
                 {
                     content: "Copies the associated list tempaltes to the destination web.",
                     btnProps: {
-                        text: "Copy Lists",
+                        text: "Create Templates",
                         type: Components.ButtonTypes.OutlinePrimary,
                         onClick: () => {
                             // Validate the form
-                            if (form.isValid()) {
-                                let ctrlWeb = form.getControl("WebUrl");
+                            if (this._form.isValid()) {
+                                let ctrlWeb = this._form.getControl("WebUrl");
                                 let dstWebUrl = ctrlWeb.getValue();
 
                                 // Ensure the user has access to the destination web
                                 this.hasAccess(dstWebUrl).then(
-                                    // Has access to create lists
+                                    // Has access to copy templates
                                     () => {
                                         // Show a loading dialog
                                         LoadingDialog.setHeader("Copying the List");
@@ -272,24 +262,30 @@ export class CopyListTemplatesModal {
         });
     }
 
-    // Displays the modal
-    static show(appItem: IAppStoreItem, listNames: string[]) {
-        // Clear the modal
-        Modal.clear();
-
-        // Set the header
-        Modal.setHeader("Copy Lists");
-
+    // Renders the main form
+    static renderForm(el: HTMLElement, appItem: IAppStoreItem, listNames: string[]) {
         // Get the list templates associated w/ this item
         if (listNames.length > 0) {
-            // Render the form
-            this.renderForm(appItem, listNames);
+            // Set the body
+            el.innerHTML = `<p>This will create the lists required for this app in the web specified.</p>`;
+
+            // Render a form
+            this._form = Components.Form({
+                el,
+                controls: [
+                    {
+                        name: "WebUrl",
+                        title: "Destination Web Url",
+                        type: Components.FormControlTypes.TextField,
+                        description: "The destination web to copy the list(s) to.",
+                        required: true,
+                        errorMessage: "A relative web url is required. (Ex. /sites/dev)"
+                    }
+                ]
+            });
         } else {
             // Set the body
-            Modal.setBody("No list templates exist for this app.");
+            el.innerHTML = `<p>No list templates exist for this app: ${appItem.Title}.</p>`;
         }
-
-        // Show the modal
-        Modal.show();
     }
 }
