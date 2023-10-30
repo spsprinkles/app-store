@@ -2,8 +2,8 @@ import { Modal } from "dattatable";
 import { Components, ContextInfo } from "gd-sprest-bs";
 import { IAppStoreItem } from "../ds";
 import { Security } from "../security";
-import { CopyLists } from "./copyLists";
-import { CreateLists } from "./createLists";
+import { CreateTemplates } from "./createTemplate";
+import { CopyTemplates } from "./copyLists";
 
 /**
  * Copy List Modal
@@ -36,25 +36,25 @@ export class CopyListModal {
             isTabs: true,
             isUnderline: true,
             onClick: (tab) => {
-                // See if the copy lists tab was clicked
+                // See if the create templates tab was clicked
                 if (tab.tabName == "Add Template" && !tab.elTab.classList.contains("disabled")) {
                     // Render the footer
-                    CopyLists.renderFooter(Modal.FooterElement, appItem, listNames);
+                    CreateTemplates.renderFooter(Modal.FooterElement, appItem, listNames);
                 } else {
                     // Render the footer
-                    CreateLists.renderFooter(Modal.FooterElement, appItem);
+                    CopyTemplates.renderFooter(Modal.FooterElement, appItem);
                 }
             },
             items: [
                 {
                     isActive: true,
-                    title: "Create Lists",
+                    title: "Copy Templates",
                     onRenderTab: (el) => {
                         // Render the form
-                        CreateLists.renderForm(el, webUrl);
+                        CopyTemplates.renderForm(el, webUrl);
 
                         // Render the footer
-                        CreateLists.renderFooter(Modal.FooterElement, appItem);
+                        CopyTemplates.renderFooter(Modal.FooterElement, appItem);
                     },
                 },
                 {
@@ -62,10 +62,10 @@ export class CopyListModal {
                     isDisabled: !(Security.IsAdmin || Security.IsManager || isDeveloper),
                     onRenderTab: (el) => {
                         // Render the form
-                        CopyLists.renderForm(el, appItem, listNames);
+                        CreateTemplates.renderForm(el, appItem, listNames);
 
                         // Render the footer
-                        CopyLists.renderFooter(Modal.FooterElement, appItem, listNames);
+                        CreateTemplates.renderFooter(Modal.FooterElement, appItem, listNames);
                     }
                 }
             ]
