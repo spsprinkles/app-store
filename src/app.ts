@@ -7,7 +7,7 @@ import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
 import { window_ } from "gd-sprest-bs/build/icons/svgs/window_";
 import * as jQuery from "jquery";
 import * as Common from "./common";
-import { CopyListModal } from "./copyList";
+import { TemplatesModal } from "./templates";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Forms } from "./forms";
 import { InstallationModal } from "./install";
@@ -385,7 +385,7 @@ export class App {
                                             let listNames = (item.AssociatedLists || "").trim().split('\n');
 
                                             // Display the copy list modal
-                                            CopyListModal.show(item, listNames);
+                                            TemplatesModal.show(item, listNames);
                                         }
                                     }
                                 });

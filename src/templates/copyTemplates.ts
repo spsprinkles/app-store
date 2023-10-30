@@ -4,9 +4,9 @@ import { IAppStoreItem } from "../ds";
 import { getListTemplateUrl } from "../strings";
 
 /**
- * Create Lists
+ * Copy Templates
  */
-export class CreateLists {
+export class CopyTemplates {
     private static _form: Components.IForm = null;
 
     // Method to copy the list
@@ -29,7 +29,7 @@ export class CreateLists {
                     // Ensure the user doesn't have permission to manage lists
                     if (!Helper.hasPermissions(web.EffectiveBasePermissions, [SPTypes.BasePermissionTypes.ManageLists])) {
                         // Reject the request
-                        reject("You do not have permission to create lists on this web.");
+                        reject("You do not have permission to copy templates on this web.");
                         LoadingDialog.hide();
                         return;
                     }
