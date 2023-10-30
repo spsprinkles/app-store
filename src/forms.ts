@@ -1,5 +1,5 @@
 import { Documents, LoadingDialog, Modal } from "dattatable";
-import { Components, Helper, Web } from "gd-sprest-bs";
+import { Components, Helper } from "gd-sprest-bs";
 import * as moment from "moment";
 import * as Common from "./common";
 import { DataSource, IAppStoreItem } from "./ds";

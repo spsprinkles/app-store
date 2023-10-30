@@ -1,4 +1,4 @@
-import { InstallationRequired, LoadingDialog } from "dattatable";
+import { InstallationRequired } from "dattatable";
 import { Components } from "gd-sprest-bs";
 import { Configuration } from "./cfg";
 import { Security } from "./security";
