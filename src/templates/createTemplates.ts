@@ -178,9 +178,9 @@ export class CreateTemplates {
             el,
             tooltips: [
                 {
-                    content: "Copies the associated list tempaltes to the destination web.",
+                    content: "Copy the associated lists to the destination web",
                     btnProps: {
-                        text: "Create Templates",
+                        text: "Start Copy",
                         type: Components.ButtonTypes.OutlinePrimary,
                         onClick: () => {
                             // Validate the form
@@ -226,7 +226,7 @@ export class CreateTemplates {
                                             // Update the validation
                                             ctrlWeb.updateValidation(ctrlWeb.el, {
                                                 isValid: true,
-                                                validMessage: "List copied successfully."
+                                                validMessage: "List copied successfully"
                                             });
                                         });
                                     },
@@ -248,7 +248,7 @@ export class CreateTemplates {
                     }
                 },
                 {
-                    content: "Closes the dialog.",
+                    content: "Close this dialog",
                     btnProps: {
                         text: "Close",
                         type: Components.ButtonTypes.OutlineSecondary,
@@ -267,7 +267,7 @@ export class CreateTemplates {
         // Get the list templates associated w/ this item
         if (listNames.length > 0) {
             // Set the body
-            el.innerHTML = `<p>This will create the lists required for this app in the web specified.</p>`;
+            el.innerHTML = `<label class="my-2">This will create the list(s) required for this app in the web specified.</label>`;
 
             // Render a form
             this._form = Components.Form({
@@ -277,9 +277,9 @@ export class CreateTemplates {
                         name: "WebUrl",
                         title: "Destination Web Url",
                         type: Components.FormControlTypes.TextField,
-                        description: "The destination web to copy the list(s) to.",
+                        description: "The destination web to copy the list(s) to",
                         required: true,
-                        errorMessage: "A relative web url is required. (Ex. /sites/dev)"
+                        errorMessage: "A relative web url is required (Ex. /sites/dev)"
                     }
                 ]
             });

@@ -2,6 +2,7 @@ import { Modal } from "dattatable";
 import { Components, ContextInfo } from "gd-sprest-bs";
 import { IAppStoreItem } from "../ds";
 import { Security } from "../security";
+import * as Common from "../common";
 import { CreateTemplates } from "./createTemplates";
 import { CopyTemplates } from "./copyTemplates";
 
@@ -15,7 +16,8 @@ export class TemplatesModal {
         Modal.clear();
 
         // Set the header
-        Modal.setHeader("Copy List");
+        Modal.setHeader("Deploy Dataset: " + appItem.Title);
+        Modal.HeaderElement.prepend(Common.getIcon(28, 28, appItem.AppType + ' Template', 'icon-svg me-2'));
 
         // Determine if this is one of the developers
         let isDeveloper = false;
@@ -36,7 +38,7 @@ export class TemplatesModal {
             isTabs: true,
             onClick: (tab) => {
                 // See if the create templates tab was clicked
-                if (tab.tabName == "Add Template" && !tab.elTab.classList.contains("disabled")) {
+                if (tab.tabName == "Copy Templates" && !tab.elTab.classList.contains("disabled")) {
                     // Render the footer
                     CreateTemplates.renderFooter(Modal.FooterElement, appItem, listNames);
                 } else {
@@ -51,7 +53,7 @@ export class TemplatesModal {
             items: [
                 {
                     isActive: true,
-                    title: "Copy Templates",
+                    title: "Create Template",
                     onRenderTab: (el) => {
                         // Render the form
                         CopyTemplates.renderForm(el, webUrl);
@@ -61,7 +63,7 @@ export class TemplatesModal {
                     },
                 },
                 {
-                    title: "Add Template",
+                    title: "Copy Templates",
                     isDisabled: !(Security.IsAdmin || Security.IsManager || isDeveloper),
                     onRenderTab: (el) => {
                         // Render the form
