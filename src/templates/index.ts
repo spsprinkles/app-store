@@ -34,7 +34,6 @@ export class TemplatesModal {
         Components.Nav({
             el: Modal.BodyElement,
             isTabs: true,
-            isUnderline: true,
             onClick: (tab) => {
                 // See if the create templates tab was clicked
                 if (tab.tabName == "Add Template" && !tab.elTab.classList.contains("disabled")) {
@@ -44,6 +43,10 @@ export class TemplatesModal {
                     // Render the footer
                     CopyTemplates.renderFooter(Modal.FooterElement, appItem);
                 }
+            },
+            onRendered: () => {
+                // Render the first tab footer
+                CopyTemplates.renderFooter(Modal.FooterElement, appItem);
             },
             items: [
                 {
