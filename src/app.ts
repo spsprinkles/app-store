@@ -2,9 +2,7 @@ import { Dashboard } from "dattatable";
 import { Components, ContextInfo } from "gd-sprest-bs";
 import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
 import { gearWideConnected } from "gd-sprest-bs/build/icons/svgs/gearWideConnected";
-import { pencilSquare } from "gd-sprest-bs/build/icons/svgs/pencilSquare";
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
-import { window_ } from "gd-sprest-bs/build/icons/svgs/window_";
 import * as jQuery from "jquery";
 import * as Common from "./common";
 import { TemplatesModal } from "./templates";
@@ -49,7 +47,7 @@ export class App {
                             btnProps: {
                                 // Render the icon button
                                 className: "p-1 pe-2 me-2",
-                                iconType: Common.getIcon(25, 25, "App Dashboard", "brand"),
+                                iconType: Common.getIcon(25, 25, 'App Dashboard', 'brand'),
                                 text: "App Dashboard",
                                 type: Components.ButtonTypes.OutlineLight,
                                 onClick: () => {
@@ -260,7 +258,7 @@ export class App {
                                 el.appendChild(img);
                             } else {
                                 // Get the icon
-                                let icon = Common.getIcon(70, 70, item.AppType);
+                                let icon = Common.getIcon(70, 70, item.AppType, 'icon-type');
                                 el.appendChild(icon);
                             }
                         }
@@ -347,7 +345,7 @@ export class App {
                         className: "text-center",
                         name: "Actions",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            let isAppCatalog = item.AppType == "SharePoint";
+                            let isPowerPlatform = item.AppType.startsWith('Power ');
                             let root = document.querySelector(':root') as HTMLElement;
                             let tooltips: Components.ITooltipProps[] = [];
 
@@ -356,9 +354,7 @@ export class App {
                                 content: "View more details",
                                 btnProps: {
                                     className: "p-1 pe-2",
-                                    iconClassName: "me-1",
-                                    iconType: window_,
-                                    iconSize: 24,
+                                    iconType: Common.getIcon(24, 24, 'AppsContent', 'icon-svg img-flip-x me-1'),
                                     text: "Details",
                                     type: Components.ButtonTypes.OutlinePrimary,
                                     onClick: () => {
@@ -368,17 +364,16 @@ export class App {
                                 }
                             });
 
-                            // See if this is not an app catalog item
-                            if (!isAppCatalog) {
+                            // See if this is a power platform item
+                            if (isPowerPlatform) {
+                                let templateIcon = Common.getIcon(24, 24, item.AppType + ' Template', 'icon-svg me-1');
                                 // Add the copy button
                                 tooltips.push({
                                     content: "Click to copy the associated lists for this solution.",
                                     btnProps: {
                                         className: "p-1 pe-2",
-                                        iconClassName: "me-1",
-                                        iconType: window_,
-                                        iconSize: 24,
-                                        text: "Copy List(s)",
+                                        iconType: templateIcon,
+                                        text: "Template",
                                         type: Components.ButtonTypes.OutlinePrimary,
                                         onClick: () => {
                                             // Get the list templates associated w/ this item
@@ -398,9 +393,7 @@ export class App {
                                     content: "Edit the item",
                                     btnProps: {
                                         className: "p-1 pe-2",
-                                        iconClassName: "me-1",
-                                        iconType: pencilSquare,
-                                        iconSize: 24,
+                                        iconType: Common.getIcon(24, 24, 'WindowEdit', 'icon-svg me-1'),
                                         text: "Edit",
                                         type: Components.ButtonTypes.OutlinePrimary,
                                         isDisabled: item.IsAppCatalogItem ? true : false,
