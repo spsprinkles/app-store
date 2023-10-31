@@ -296,7 +296,7 @@ export class CopyTemplates {
                     content: "Closes the dialog.",
                     btnProps: {
                         text: "Close",
-                        type: Components.ButtonTypes.OutlineDanger,
+                        type: Components.ButtonTypes.OutlineSecondary,
                         onClick: () => {
                             // Close the dialog
                             Modal.hide();
