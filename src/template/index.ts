@@ -3,8 +3,8 @@ import { Components, ContextInfo } from "gd-sprest-bs";
 import { IAppStoreItem } from "../ds";
 import { Security } from "../security";
 import * as Common from "../common";
-import { CopyTemplates } from "./copy";
-import { CreateTemplates } from "./create";
+import { CopyTemplate } from "./copyTemplate";
+import { CreateTemplate } from "./createTemplate";
 
 /**
  * Templates Modal
@@ -40,37 +40,37 @@ export class TemplatesModal {
                 // See if the create templates tab was clicked
                 if (tab.tabName == "Copy Template" && !tab.elTab.classList.contains("disabled")) {
                     // Render the footer
-                    CopyTemplates.renderFooter(Modal.FooterElement, appItem, listNames);
+                    CopyTemplate.renderFooter(Modal.FooterElement, appItem, listNames);
                 } else {
                     // Render the footer
-                    CreateTemplates.renderFooter(Modal.FooterElement, appItem);
+                    CreateTemplate.renderFooter(Modal.FooterElement, appItem);
                 }
             },
             onRendered: () => {
                 // Render the first tab footer
-                CreateTemplates.renderFooter(Modal.FooterElement, appItem);
+                CreateTemplate.renderFooter(Modal.FooterElement, appItem);
             },
             items: [
                 {
                     isActive: true,
                     title: "Create Template",
+                    isDisabled: !(Security.IsAdmin || Security.IsManager || isDeveloper),
                     onRenderTab: (el) => {
                         // Render the form
-                        CreateTemplates.renderForm(el, webUrl);
+                        CreateTemplate.renderForm(el, webUrl);
 
                         // Render the footer
-                        CreateTemplates.renderFooter(Modal.FooterElement, appItem);
+                        CreateTemplate.renderFooter(Modal.FooterElement, appItem);
                     }
                 },
                 {
                     title: "Copy Template",
-                    isDisabled: !(Security.IsAdmin || Security.IsManager || isDeveloper),
                     onRenderTab: (el) => {
                         // Render the form
-                        CopyTemplates.renderForm(el, appItem, listNames);
+                        CopyTemplate.renderForm(el, appItem, listNames);
 
                         // Render the footer
-                        CopyTemplates.renderFooter(Modal.FooterElement, appItem, listNames);
+                        CopyTemplate.renderFooter(Modal.FooterElement, appItem, listNames);
                     }
                 }
             ]

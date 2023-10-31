@@ -6,7 +6,7 @@ import { getListTemplateUrl } from "../strings";
 /**
  * Copy Templates
  */
-export class CopyTemplates {
+export class CopyTemplate {
     private static _form: Components.IForm = null;
 
     // Method to copy the list
