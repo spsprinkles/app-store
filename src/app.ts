@@ -355,7 +355,7 @@ export class App {
                                     content: "Deploy the dataset for this solution",
                                     btnProps: {
                                         className: "p-1 pe-2",
-                                        iconType: Common.getIcon(24, 24, item.AppType + ' ' + column.title, 'icon-svg me-1'),
+                                        iconType: Common.getIcon(22, 22, item.AppType + ' ' + column.title, 'icon-svg me-1'),
                                         isSmall: true,
                                         text: column.name,
                                         type: Components.ButtonTypes.OutlinePrimary,
