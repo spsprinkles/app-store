@@ -38,7 +38,7 @@ export class TemplatesModal {
             isTabs: true,
             onClick: (tab) => {
                 // See if the create templates tab was clicked
-                if (tab.tabName == "Copy Templates" && !tab.elTab.classList.contains("disabled")) {
+                if (tab.tabName == "Copy Template" && !tab.elTab.classList.contains("disabled")) {
                     // Render the footer
                     CopyTemplates.renderFooter(Modal.FooterElement, appItem, listNames);
                 } else {
@@ -60,10 +60,10 @@ export class TemplatesModal {
 
                         // Render the footer
                         CreateTemplates.renderFooter(Modal.FooterElement, appItem);
-                    },
+                    }
                 },
                 {
-                    title: "Copy Templates",
+                    title: "Copy Template",
                     isDisabled: !(Security.IsAdmin || Security.IsManager || isDeveloper),
                     onRenderTab: (el) => {
                         // Render the form
