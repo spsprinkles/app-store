@@ -222,7 +222,7 @@ export class App {
                             "orderable": false,
                         },
                         {
-                            "targets": [0, 8],
+                            "targets": [0, 8, 9],
                             "searchable": false
                         }
                     ],
@@ -342,10 +342,39 @@ export class App {
                         }
                     },
                     {
+                        name: "Deploy Dataset",
+                        title: "Template",
+                        className: "d-none",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${column.title}:</label>`;
+                            // See if this is a power platform item
+                            if (item.AppType.startsWith('Power ')) {
+                                // Add a template button
+                                Components.Tooltip({
+                                    el,
+                                    content: "Deploy the dataset for this solution",
+                                    btnProps: {
+                                        className: "p-1 pe-2",
+                                        iconType: Common.getIcon(24, 24, item.AppType + ' ' + column.title, 'icon-svg me-1'),
+                                        isSmall: true,
+                                        text: column.name,
+                                        type: Components.ButtonTypes.OutlinePrimary,
+                                        onClick: () => {
+                                            // Get the list templates associated w/ this item
+                                            let listNames = (item.AssociatedLists || "").trim().split('\n');
+
+                                            // Display the copy list modal
+                                            TemplatesModal.show(item, listNames);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    },
+                    {
                         className: "text-center",
                         name: "Actions",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            let isPowerPlatform = item.AppType.startsWith('Power ');
                             let root = document.querySelector(':root') as HTMLElement;
                             let tooltips: Components.ITooltipProps[] = [];
 
@@ -363,28 +392,6 @@ export class App {
                                     }
                                 }
                             });
-
-                            // See if this is a power platform item
-                            if (isPowerPlatform) {
-                                let templateIcon = Common.getIcon(24, 24, item.AppType + ' Template', 'icon-svg me-1');
-                                // Add the copy button
-                                tooltips.push({
-                                    content: "Click to copy the associated lists for this solution.",
-                                    btnProps: {
-                                        className: "p-1 pe-2",
-                                        iconType: templateIcon,
-                                        text: "Template",
-                                        type: Components.ButtonTypes.OutlinePrimary,
-                                        onClick: () => {
-                                            // Get the list templates associated w/ this item
-                                            let listNames = (item.AssociatedLists || "").trim().split('\n');
-
-                                            // Display the copy list modal
-                                            TemplatesModal.show(item, listNames);
-                                        }
-                                    }
-                                });
-                            }
 
                             // Add the Edit button tooltip if IsAdmin or IsManager
                             if (Security.IsAdmin || Security.IsManager) {
@@ -420,25 +427,31 @@ export class App {
                                 tooltips
                             });
 
+                            // Add data attribute for Power Platform items
+                            item.AppType.startsWith('Power ') ? ttg.el.setAttribute("data-ispowerplatform", "") : null;
+
                             // Add click event to grow/shrink the card
                             ttg.el.addEventListener("click", (e) => {
                                 // Only grow/shrink if the click is outside the button group [::after]
                                 if (e.offsetX > ttg.el.offsetWidth) {
                                     let hide = ttg.el.classList.contains(_class);
+                                    let tdHide = "td:nth-child(5), td:nth-child(6), td:nth-child(8)";
+                                    // Only show Templates for Power Platform items
+                                    ttg.el.dataset["ispowerplatform"] != undefined ? tdHide += ", td:nth-child(9)" : null;
                                     let tr = ttg.el.closest("tr");
 
                                     if (hide) {
                                         // Remove the shrink class on title & description inner div
                                         jQuery("td:nth-child(2) :last-child, td:nth-child(4) :last-child", tr).removeClass(_class);
                                         // Show columns [nth-child() is not 0 index based]
-                                        jQuery("td:nth-child(5), td:nth-child(6), td:nth-child(8)", tr).removeClass("d-none");
+                                        jQuery(tdHide, tr).removeClass("d-none");
                                         // Remove the shrink class on tooltip group
                                         ttg.el.classList.remove(_class);
                                     } else {
                                         // Add the shrink class on title & description inner div
                                         jQuery("td:nth-child(2) :last-child, td:nth-child(4) :last-child", tr).addClass(_class);
                                         // Hide columns [nth-child() is not 0 index based]
-                                        jQuery("td:nth-child(5), td:nth-child(6), td:nth-child(8)", tr).addClass("d-none");
+                                        jQuery(tdHide, tr).addClass("d-none");
                                         // Add the shrink class on tooltip group
                                         ttg.el.classList.add(_class);
                                     }
