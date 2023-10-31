@@ -4,9 +4,9 @@ import { IAppStoreItem } from "../ds";
 import { getListTemplateUrl } from "../strings";
 
 /**
- * Copy Templates
+ * Create Templates
  */
-export class CopyTemplates {
+export class CreateTemplates {
     private static _form: Components.IForm = null;
 
     // Method to copy the list

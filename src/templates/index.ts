@@ -3,8 +3,8 @@ import { Components, ContextInfo } from "gd-sprest-bs";
 import { IAppStoreItem } from "../ds";
 import { Security } from "../security";
 import * as Common from "../common";
-import { CreateTemplates } from "./createTemplates";
-import { CopyTemplates } from "./copyTemplates";
+import { CopyTemplates } from "./copy";
+import { CreateTemplates } from "./create";
 
 /**
  * Templates Modal
@@ -40,15 +40,15 @@ export class TemplatesModal {
                 // See if the create templates tab was clicked
                 if (tab.tabName == "Copy Templates" && !tab.elTab.classList.contains("disabled")) {
                     // Render the footer
-                    CreateTemplates.renderFooter(Modal.FooterElement, appItem, listNames);
+                    CopyTemplates.renderFooter(Modal.FooterElement, appItem, listNames);
                 } else {
                     // Render the footer
-                    CopyTemplates.renderFooter(Modal.FooterElement, appItem);
+                    CreateTemplates.renderFooter(Modal.FooterElement, appItem);
                 }
             },
             onRendered: () => {
                 // Render the first tab footer
-                CopyTemplates.renderFooter(Modal.FooterElement, appItem);
+                CreateTemplates.renderFooter(Modal.FooterElement, appItem);
             },
             items: [
                 {
@@ -56,10 +56,10 @@ export class TemplatesModal {
                     title: "Create Template",
                     onRenderTab: (el) => {
                         // Render the form
-                        CopyTemplates.renderForm(el, webUrl);
+                        CreateTemplates.renderForm(el, webUrl);
 
                         // Render the footer
-                        CopyTemplates.renderFooter(Modal.FooterElement, appItem);
+                        CreateTemplates.renderFooter(Modal.FooterElement, appItem);
                     },
                 },
                 {
@@ -67,10 +67,10 @@ export class TemplatesModal {
                     isDisabled: !(Security.IsAdmin || Security.IsManager || isDeveloper),
                     onRenderTab: (el) => {
                         // Render the form
-                        CreateTemplates.renderForm(el, appItem, listNames);
+                        CopyTemplates.renderForm(el, appItem, listNames);
 
                         // Render the footer
-                        CreateTemplates.renderFooter(Modal.FooterElement, appItem, listNames);
+                        CopyTemplates.renderFooter(Modal.FooterElement, appItem, listNames);
                     }
                 }
             ]
