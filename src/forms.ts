@@ -266,7 +266,7 @@ export class Forms {
             icon.src = item.Icon;
         } else {
             // Get the icon by type
-            icon = Common.getIcon(150, 150, item.AppType);
+            icon = Common.getIcon(150, 150, item.AppType, 'icon-type');
         }
         // Add the app icon to the div element
         div.querySelector(".icon") ? div.querySelector(".icon").appendChild(icon) : null;
