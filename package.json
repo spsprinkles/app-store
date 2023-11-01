@@ -24,14 +24,14 @@
   "dependencies": {
     "datatables.net": "^1.13.6",
     "datatables.net-bs5": "^1.13.6",
-    "dattatable": "^2.9.20",
+    "dattatable": "^2.9.21",
     "gd-sprest-bs": "^10.10.62",
     "jquery": "^3.7.1",
     "moment": "^2.29.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.10",
-    "@babel/preset-env": "^7.22.10",
+    "@babel/core": "^7.23.2",
+    "@babel/preset-env": "^7.23.2",
     "@types/datatables.net": "^1.10.26",
     "babel-loader": "^9.1.3",
     "css-loader": "^6.7.3",
