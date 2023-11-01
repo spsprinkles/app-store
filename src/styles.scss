@@ -12,6 +12,12 @@
     .nav-tabs {
         border-bottom: 0;
     }
+    .line-limit-1 {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+    }
 }
 
 .carousel-control-prev-icon, .carousel-control-next-icon {

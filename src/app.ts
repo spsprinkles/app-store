@@ -327,7 +327,7 @@ export class App {
                                 el.innerHTML += `<a href="${DataSource.AppCatalogUrl}?app-id=${item.Id}" target="_blank">App Dashboard (Details)</a>`;
                             } else {
                                 // Render the link
-                                item.MoreInfo ? el.innerHTML += `<a href="${item.MoreInfo.Url}" target="_blank">${item.MoreInfo.Description}</a>` : el.innerHTML += "&nbsp;";
+                                item.MoreInfo ? el.innerHTML += `<a href="${item.MoreInfo.Url}" class="line-limit-1" target="_blank">${item.MoreInfo.Description}</a>` : el.innerHTML += "&nbsp;";
                             }
                         }
                     },
@@ -339,7 +339,7 @@ export class App {
                             el.innerHTML = `<label>${column.title}:</label>`;
                             el.setAttribute("data-filter", item.SupportURL ? item.SupportURL.Description : "");
                             // Ensure a value exists
-                            item.SupportURL ? el.innerHTML += `<a href="${item.SupportURL.Url}" target="_blank">${item.SupportURL.Description}</a>` : el.innerHTML += "&nbsp;";
+                            item.SupportURL ? el.innerHTML += `<a href="${item.SupportURL.Url}" class="line-limit-1" target="_blank">${item.SupportURL.Description}</a>` : el.innerHTML += "&nbsp;";
                         }
                     },
                     {
