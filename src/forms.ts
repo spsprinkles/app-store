@@ -76,7 +76,7 @@ export class Forms {
         props.onFormRendered = (form) => {
             let col12;
             let body = form.el.closest(".modal-body");
-            col12 = body.querySelector(".row>.col-12");
+            body ? col12 = body.querySelector(".row>.col-12") : null;
             (body && col12) ? col12.classList.add("mb-3") : null;
         }
 
@@ -215,18 +215,6 @@ export class Forms {
         let support = "";
         item.SupportURL ? support = `<a href="${item.SupportURL.Url}" target="_blank">${item.SupportURL.Description}</a>` : null;
 
-        // Generate the attachments
-        let attachments = "";
-        if (item.AttachmentFiles && item.AttachmentFiles.results) {
-            // Parse the attachments
-            for (let i = 0; i < item.AttachmentFiles.results.length; i++) {
-                let attachment = item.AttachmentFiles.results[i];
-
-                // Add the link
-                attachments += Common.isWopi(attachment.FileName) ? `<br/><a href="${Strings.SourceUrl}/_layouts/15/WopiFrame.aspx?sourcedoc=${attachment.ServerRelativeUrl}&action=view" target="_blank">${attachment.FileName}</a>` : `<br/><a href="${attachment.ServerRelativeUrl}" target="_blank">${attachment.FileName}</a>`;
-            }
-        }
-
         // Create a new div element
         let div = document.createElement("div");
         div.classList.add("container-fluid");
@@ -261,7 +249,7 @@ export class Forms {
                         <div class="col fs-6"><label>Updated:</label>&nbsp;${moment(item.Modified).format(Strings.DateFormat)}</div>
                     </div>
                     <div class="row">
-                        <div class="col fs-6"><label>Attachments:</label>${attachments}</div>
+                        <div class="attachments col fs-6"></div>
                     </div>
                 </div>
                 <div class="col-8 screenshots"></div>
@@ -281,6 +269,20 @@ export class Forms {
         }
         // Add the app icon to the div element
         div.querySelector(".icon") ? div.querySelector(".icon").appendChild(icon) : null;
+
+        // Generate the attachments
+        if (item.AttachmentFiles && item.AttachmentFiles.results && item.AttachmentFiles.results.length > 0) {
+            let attachments = "<label>Attachments:</label>";
+            // Parse the attachments
+            for (let i = 0; i < item.AttachmentFiles.results.length; i++) {
+                let attachment = item.AttachmentFiles.results[i];
+
+                // Add the link
+                attachments += Common.isWopi(attachment.FileName) ? `<br/><a href="${Strings.SourceUrl}/_layouts/15/WopiFrame.aspx?sourcedoc=${attachment.ServerRelativeUrl}&action=view" target="_blank">${attachment.FileName}</a>` : `<br/><a href="${attachment.ServerRelativeUrl}" target="_blank">${attachment.FileName}</a>`;
+            }
+            // Add the app icon to the div element
+            div.querySelector(".attachments") ? div.querySelector(".attachments").innerHTML = attachments : null;
+        }
 
         // Get each ScreenShot item for the carousel
         let items: Components.ICarouselItem[] = [];
