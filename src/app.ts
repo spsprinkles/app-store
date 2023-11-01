@@ -380,19 +380,6 @@ export class App {
                             let root = document.querySelector(':root') as HTMLElement;
                             let tooltips: Components.ITooltipProps[] = [];
 
-                            // Determine if this is one of the developers
-                            let isDeveloper = false;
-                            if (item.Developers && item.Developers.results.length > 0) {
-                                for (let i = 0; i < item.Developers.results.length; i++) {
-                                    // See if this is one of the developers
-                                    if (item.Developers.results[i].Id == ContextInfo.userId) {
-                                        // Set the flag
-                                        isDeveloper = true;
-                                        break;
-                                    }
-                                }
-                            }
-
                             // Add the Details button tooltip
                             tooltips.push({
                                 content: "View more details",
@@ -409,7 +396,7 @@ export class App {
                             });
 
                             // Add the Edit button tooltip if IsAdmin or IsManager or isDeveloper
-                            if (Security.IsAdmin || Security.IsManager || isDeveloper) {
+                            if (Security.IsAdmin || Security.IsManager || Security.IsDeveloper) {
                                 // Add the edit button
                                 tooltips.push({
                                     content: "Edit the item",
