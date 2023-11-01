@@ -97,6 +97,14 @@ export class Forms {
                 });
             },
             tabInfo: {
+                onClick: (el, tab) => {
+                    // See if the App Details tab was not clicked
+                    if (tab.tabName != "App Details") {
+                        Modal.FooterElement.classList.add('d-none');
+                    } else {
+                        Modal.FooterElement.classList.remove('d-none');
+                    }
+                },
                 tabs: [
                     {
                         title: "App Details",
