@@ -240,7 +240,8 @@ export class App {
                     },
                     lengthMenu: [5, 10, 20, 50],
                     // Order by the 1st column by default; ascending
-                    order: [[1, "asc"]]
+                    order: [[1, "asc"]],
+                    pageLength: 10
                 },
                 columns: [
                     {
