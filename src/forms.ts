@@ -2,6 +2,7 @@ import { Documents, LoadingDialog, Modal } from "dattatable";
 import { Components, Helper } from "gd-sprest-bs";
 import * as moment from "moment";
 import * as Common from "./common";
+import { CreateTemplate } from "./createTemplate";
 import { DataSource, IAppStoreItem } from "./ds";
 import Strings from "./strings";
 
@@ -84,9 +85,9 @@ export class Forms {
     }
 
     // Displays the edit form
-    static edit(itemId: number, onUpdate: () => void) {
+    static edit(item: IAppStoreItem, onUpdate: () => void) {
         DataSource.List.editForm({
-            itemId,
+            itemId: item.Id,
             onCreateEditForm: props => { return this.configureForm(props); },
             onUpdate: (item: IAppStoreItem) => {
                 // Refresh the item
@@ -109,8 +110,18 @@ export class Forms {
                             new Documents({
                                 el,
                                 listName: Strings.Lists.Main,
-                                itemId: itemId
+                                itemId: item.Id
                             });
+                        }
+                    },
+                    {
+                        title: "Template",
+                        onRendered: (el) => {
+                            // Render the form
+                            CreateTemplate.renderForm(el);
+
+                            // Render the footer
+                            CreateTemplate.renderFooter(el, item, false);
                         }
                     }
                 ]

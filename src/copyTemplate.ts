@@ -1,7 +1,8 @@
 import { List, LoadingDialog, Modal } from "dattatable";
 import { Components, ContextInfo, Helper, SPTypes, Types, Web } from "gd-sprest-bs";
-import { IAppStoreItem } from "../ds";
-import { getListTemplateUrl } from "../strings";
+import * as Common from "./common";
+import { IAppStoreItem } from "./ds";
+import { getListTemplateUrl } from "./strings";
 
 /**
  * Copy Templates
@@ -169,9 +170,9 @@ export class CopyTemplate {
     }
 
     // Renders the footer
-    static renderFooter(el: HTMLElement, appItem: IAppStoreItem, listNames: string[]) {
+    static renderFooter(el: HTMLElement, appItem: IAppStoreItem, listNames: string[], clearFl:boolean = true) {
         // Clear the footer
-        while (el.firstChild) { el.removeChild(el.firstChild); }
+        if(clearFl) { while (el.firstChild) { el.removeChild(el.firstChild); } }
 
         // Set the footer
         Components.TooltipGroup({
@@ -246,17 +247,6 @@ export class CopyTemplate {
                             }
                         }
                     }
-                },
-                {
-                    content: "Close this dialog",
-                    btnProps: {
-                        text: "Close",
-                        type: Components.ButtonTypes.OutlineSecondary,
-                        onClick: () => {
-                            // Close the dialog
-                            Modal.hide();
-                        }
-                    }
                 }
             ]
         });
@@ -267,7 +257,7 @@ export class CopyTemplate {
         // Get the list templates associated w/ this item
         if (listNames.length > 0) {
             // Set the body
-            el.innerHTML = `<label class="my-2">This will create the list(s) required for this app in the web specified.</label>`;
+            el.innerHTML = `<label class="mb-2">This will create the list(s) required for this app in the web specified.</label>`;
 
             // Render a form
             this._form = Components.Form({
@@ -287,5 +277,24 @@ export class CopyTemplate {
             // Set the body
             el.innerHTML = `<p>No list templates exist for this app: ${appItem.Title}.</p>`;
         }
+    }
+
+    // Renders the modal
+    static renderModal(appItem: IAppStoreItem, listNames: string[] = [], webUrl: string = ContextInfo.webServerRelativeUrl) {
+        // Clear the modal
+        Modal.clear();
+
+        // Set the header
+        Modal.setHeader("Deploy Dataset: " + appItem.Title);
+        Modal.HeaderElement.prepend(Common.getIcon(28, 28, appItem.AppType + ' Template', 'icon-svg me-2'));
+
+        // Render the form
+        CopyTemplate.renderForm(Modal.BodyElement, appItem, listNames);
+
+        // Render the footer
+        CopyTemplate.renderFooter(Modal.FooterElement, appItem, listNames);
+
+        // Show the modal
+        Modal.show();
     }
 }

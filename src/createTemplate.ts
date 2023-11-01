@@ -1,7 +1,7 @@
 import { List, LoadingDialog, Modal } from "dattatable";
 import { Components, Helper, SPTypes, Types, Web } from "gd-sprest-bs";
-import { IAppStoreItem } from "../ds";
-import { getListTemplateUrl } from "../strings";
+import { IAppStoreItem } from "./ds";
+import { getListTemplateUrl } from "./strings";
 
 /**
  * Create Templates
@@ -174,13 +174,14 @@ export class CreateTemplate {
     }
 
     // Renders the footer
-    static renderFooter(el: HTMLElement, appItem: IAppStoreItem) {
+    static renderFooter(el: HTMLElement, appItem: IAppStoreItem, clearFl:boolean = true) {
         // Clear the footer
-        while (el.firstChild) { el.removeChild(el.firstChild); }
+        if(clearFl) { while (el.firstChild) { el.removeChild(el.firstChild); } }
 
         // Set the footer
         Components.TooltipGroup({
             el,
+            className: "float-end",
             tooltips: [
                 {
                     content: "Load the lists from the source web",
@@ -291,27 +292,16 @@ export class CreateTemplate {
                             }
                         }
                     }
-                },
-                {
-                    content: "Close this dialog",
-                    btnProps: {
-                        text: "Close",
-                        type: Components.ButtonTypes.OutlineSecondary,
-                        onClick: () => {
-                            // Close the dialog
-                            Modal.hide();
-                        }
-                    }
                 }
             ]
         });
     }
 
     // Renders the main form
-    static renderForm(el: HTMLElement, webUrl: string) {
+    static renderForm(el: HTMLElement, webUrl?: string) {
         // Set the body
         el.innerHTML = `<label class="my-2">Use this form to add or update a list template for this app.`;
-
+        
         // Render a form
         this._form = Components.Form({
             el,
@@ -322,7 +312,7 @@ export class CreateTemplate {
                     type: Components.FormControlTypes.TextField,
                     description: "The source web containing the list",
                     required: true,
-                    errorMessage: "A relative web url is required. (Ex. /sites/dev)",
+                    errorMessage: "A relative web url is required (Ex. /sites/dev)",
                     value: webUrl
                 },
                 {

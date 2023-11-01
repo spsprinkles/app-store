@@ -5,7 +5,7 @@ import { gearWideConnected } from "gd-sprest-bs/build/icons/svgs/gearWideConnect
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
 import * as jQuery from "jquery";
 import * as Common from "./common";
-import { TemplatesModal } from "./template";
+import { CopyTemplate } from "./copyTemplate";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Forms } from "./forms";
 import { InstallationModal } from "./install";
@@ -356,6 +356,7 @@ export class App {
                                     btnProps: {
                                         className: "p-1 pe-2",
                                         iconType: Common.getIcon(22, 22, item.AppType + ' ' + column.title, 'icon-svg me-1'),
+                                        isDisabled: !(item.AssociatedLists),
                                         isSmall: true,
                                         text: column.name,
                                         type: Components.ButtonTypes.OutlinePrimary,
@@ -364,7 +365,7 @@ export class App {
                                             let listNames = (item.AssociatedLists || "").trim().split('\n');
 
                                             // Display the copy list modal
-                                            TemplatesModal.show(item, listNames);
+                                            CopyTemplate.renderModal(item, listNames);
                                         }
                                     }
                                 });
@@ -377,6 +378,19 @@ export class App {
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             let root = document.querySelector(':root') as HTMLElement;
                             let tooltips: Components.ITooltipProps[] = [];
+
+                            // Determine if this is one of the developers
+                            let isDeveloper = false;
+                            if (item.Developers && item.Developers.results.length > 0) {
+                                for (let i = 0; i < item.Developers.results.length; i++) {
+                                    // See if this is one of the developers
+                                    if (item.Developers.results[i].Id == ContextInfo.userId) {
+                                        // Set the flag
+                                        isDeveloper = true;
+                                        break;
+                                    }
+                                }
+                            }
 
                             // Add the Details button tooltip
                             tooltips.push({
@@ -393,8 +407,8 @@ export class App {
                                 }
                             });
 
-                            // Add the Edit button tooltip if IsAdmin or IsManager
-                            if (Security.IsAdmin || Security.IsManager) {
+                            // Add the Edit button tooltip if IsAdmin or IsManager or isDeveloper
+                            if (Security.IsAdmin || Security.IsManager || isDeveloper) {
                                 // Add the edit button
                                 tooltips.push({
                                     content: "Edit the item",
@@ -406,7 +420,7 @@ export class App {
                                         isDisabled: item.IsAppCatalogItem ? true : false,
                                         onClick: () => {
                                             // Edit the item
-                                            Forms.edit(item.Id, () => {
+                                            Forms.edit(item, () => {
                                                 // Refresh the table
                                                 this._dashboard.refresh(DataSource.AppItems);
                                             });
