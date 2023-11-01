@@ -4,6 +4,7 @@ import * as moment from "moment";
 import * as Common from "./common";
 import { CreateTemplate } from "./createTemplate";
 import { DataSource, IAppStoreItem } from "./ds";
+import { Security } from "./security";
 import Strings from "./strings";
 
 // Acceptable image file types
@@ -16,6 +17,23 @@ const ImageExtensions = [
  * Forms
  */
 export class Forms {
+    // Adds the developers to the group
+    private static addDevelopers(item: IAppStoreItem) {
+        // Return a promise
+        return new Promise((resolve, reject) => {
+            let requests = [];
+
+            // Parse the owners and add them to the developers group
+            Helper.Executor(item.Developers.results, user => {
+                // Add the developer
+                requests.push(Security.addDeveloper(user.Id));
+            });
+
+            // Wait for the requests to complete
+            Promise.all(requests).then(resolve, reject);
+        });
+    }
+
     // Configures the form
     private static configureForm(props: Components.IListFormEditProps): Components.IListFormEditProps {
         // Include the attachments
@@ -91,9 +109,9 @@ export class Forms {
             onCreateEditForm: props => { return this.configureForm(props); },
             onUpdate: (item: IAppStoreItem) => {
                 // Refresh the item
-                DataSource.List.refreshItem(item.Id).then(() => {
-                    // Call the update event
-                    onUpdate();
+                DataSource.List.refreshItem(item.Id).then(updatedItem => {
+                    // Add the developers
+                    this.addDevelopers(updatedItem).then(onUpdate);
                 });
             },
             tabInfo: {
@@ -161,9 +179,9 @@ export class Forms {
             onCreateEditForm: props => { return this.configureForm(props); },
             onUpdate: (item: IAppStoreItem) => {
                 // Refresh the data
-                DataSource.List.refreshItem(item.Id).then(() => {
-                    // Call the update event
-                    onUpdate();
+                DataSource.List.refreshItem(item.Id).then(newItem => {
+                    // Add the developers
+                    this.addDevelopers(newItem).then(onUpdate);
                 });
             },
             tabInfo: {
@@ -208,7 +226,7 @@ export class Forms {
             // Display the devs
             developers = devArr.join(", ");
         }
-        
+
         // See if this is from the app catalog
         let moreInfo = "";
         if (item.IsAppCatalogItem) {
