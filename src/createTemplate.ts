@@ -1,12 +1,12 @@
 import { List, LoadingDialog, Modal } from "dattatable";
 import { Components, Helper, SPTypes, Types, Web } from "gd-sprest-bs";
-import { IAppStoreItem } from "../ds";
-import { getListTemplateUrl } from "../strings";
+import { IAppStoreItem } from "./ds";
+import { getListTemplateUrl } from "./strings";
 
 /**
- * Copy Templates
+ * Create Templates
  */
-export class CopyTemplates {
+export class CreateTemplate {
     private static _form: Components.IForm = null;
 
     // Method to copy the list
@@ -174,16 +174,17 @@ export class CopyTemplates {
     }
 
     // Renders the footer
-    static renderFooter(el: HTMLElement, appItem: IAppStoreItem) {
+    static renderFooter(el: HTMLElement, appItem: IAppStoreItem, clearFl:boolean = true) {
         // Clear the footer
-        while (el.firstChild) { el.removeChild(el.firstChild); }
+        if(clearFl) { while (el.firstChild) { el.removeChild(el.firstChild); } }
 
         // Set the footer
         Components.TooltipGroup({
             el,
+            className: "float-end",
             tooltips: [
                 {
-                    content: "Loads the lists from the selected web.",
+                    content: "Load the lists from the source web",
                     btnProps: {
                         text: "Load Lists",
                         type: Components.ButtonTypes.OutlinePrimary,
@@ -198,7 +199,7 @@ export class CopyTemplates {
 
                                 // Show a loading dialog
                                 LoadingDialog.setHeader("Loading Lists");
-                                LoadingDialog.setBody("This dialog will close after the lists are loaded.");
+                                LoadingDialog.setBody("This dialog will close after the lists are loaded");
                                 LoadingDialog.show();
 
                                 // Load the lists
@@ -234,7 +235,7 @@ export class CopyTemplates {
                                         // Set the validation
                                         ctrlLists.updateValidation(ctrlLists.el, {
                                             isValid: false,
-                                            invalidMessage: "Error loading the lists from the web."
+                                            invalidMessage: "Error loading the lists from the web"
                                         });
 
                                         // Hide the loading dialog
@@ -246,7 +247,7 @@ export class CopyTemplates {
                     }
                 },
                 {
-                    content: "Copies the selected list to the list templates sub-web.",
+                    content: "Copy the selected list as a list template",
                     btnProps: {
                         text: "Copy List",
                         type: Components.ButtonTypes.OutlinePrimary,
@@ -277,7 +278,7 @@ export class CopyTemplates {
                                         // Update the validation
                                         ctrlLists.updateValidation(ctrlLists.el, {
                                             isValid: true,
-                                            validMessage: "List copied successfully."
+                                            validMessage: "List copied successfully"
                                         });
                                     },
                                     err => {
@@ -291,27 +292,16 @@ export class CopyTemplates {
                             }
                         }
                     }
-                },
-                {
-                    content: "Closes the dialog.",
-                    btnProps: {
-                        text: "Close",
-                        type: Components.ButtonTypes.OutlineDanger,
-                        onClick: () => {
-                            // Close the dialog
-                            Modal.hide();
-                        }
-                    }
                 }
             ]
         });
     }
 
     // Renders the main form
-    static renderForm(el: HTMLElement, webUrl: string) {
+    static renderForm(el: HTMLElement, webUrl?: string) {
         // Set the body
-        el.innerHTML = "<p>Use this form to add/update a list template for this app.</p>";
-
+        el.innerHTML = `<label class="my-2">Use this form to add or update a list template for this app.`;
+        
         // Render a form
         this._form = Components.Form({
             el,
@@ -320,18 +310,18 @@ export class CopyTemplates {
                     name: "WebUrl",
                     title: "Source Web Url",
                     type: Components.FormControlTypes.TextField,
-                    description: "The source web containing the list.",
+                    description: "The source web containing the list",
                     required: true,
-                    errorMessage: "A relative web url is required. (Ex. /sites/dev)",
+                    errorMessage: "A relative web url is required (Ex. /sites/dev)",
                     value: webUrl
                 },
                 {
                     name: "SourceList",
                     title: "Select a List",
                     type: Components.FormControlTypes.Dropdown,
-                    description: "Select the list to copy.",
+                    description: "Select a list to copy",
                     required: true,
-                    errorMessage: "A list is required."
+                    errorMessage: "A list is required"
                 }
             ]
         });

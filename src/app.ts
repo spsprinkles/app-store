@@ -2,12 +2,10 @@ import { Dashboard } from "dattatable";
 import { Components, ContextInfo } from "gd-sprest-bs";
 import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
 import { gearWideConnected } from "gd-sprest-bs/build/icons/svgs/gearWideConnected";
-import { pencilSquare } from "gd-sprest-bs/build/icons/svgs/pencilSquare";
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
-import { window_ } from "gd-sprest-bs/build/icons/svgs/window_";
 import * as jQuery from "jquery";
 import * as Common from "./common";
-import { TemplatesModal } from "./templates";
+import { CopyTemplate } from "./copyTemplate";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Forms } from "./forms";
 import { InstallationModal } from "./install";
@@ -49,7 +47,7 @@ export class App {
                             btnProps: {
                                 // Render the icon button
                                 className: "p-1 pe-2 me-2",
-                                iconType: Common.getIcon(25, 25, "App Dashboard", "brand"),
+                                iconType: Common.getIcon(25, 25, 'App Dashboard', 'brand'),
                                 text: "App Dashboard",
                                 type: Components.ButtonTypes.OutlineLight,
                                 onClick: () => {
@@ -224,7 +222,7 @@ export class App {
                             "orderable": false,
                         },
                         {
-                            "targets": [0, 8],
+                            "targets": [0, 8, 9],
                             "searchable": false
                         }
                     ],
@@ -242,7 +240,8 @@ export class App {
                     },
                     lengthMenu: [5, 10, 20, 50],
                     // Order by the 1st column by default; ascending
-                    order: [[1, "asc"]]
+                    order: [[1, "asc"]],
+                    pageLength: 10
                 },
                 columns: [
                     {
@@ -260,7 +259,7 @@ export class App {
                                 el.appendChild(img);
                             } else {
                                 // Get the icon
-                                let icon = Common.getIcon(70, 70, item.AppType);
+                                let icon = Common.getIcon(70, 70, item.AppType, 'icon-type');
                                 el.appendChild(icon);
                             }
                         }
@@ -344,21 +343,62 @@ export class App {
                         }
                     },
                     {
+                        name: "Deploy Dataset",
+                        title: "Template",
+                        className: "d-none",
+                        onRenderCell: (el, column, item: IAppStoreItem) => {
+                            el.innerHTML = `<label>${column.title}:</label>`;
+                            // See if this is a power platform item
+                            if (item.AppType.startsWith('Power ')) {
+                                // Add a template button
+                                Components.Tooltip({
+                                    el,
+                                    content: "Deploy the dataset for this solution",
+                                    btnProps: {
+                                        className: "p-1 pe-2",
+                                        iconType: Common.getIcon(22, 22, item.AppType + ' ' + column.title, 'icon-svg me-1'),
+                                        isDisabled: !(item.AssociatedLists),
+                                        isSmall: true,
+                                        text: column.name,
+                                        type: Components.ButtonTypes.OutlinePrimary,
+                                        onClick: () => {
+                                            // Get the list templates associated w/ this item
+                                            let listNames = (item.AssociatedLists || "").trim().split('\n');
+
+                                            // Display the copy list modal
+                                            CopyTemplate.renderModal(item, listNames);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    },
+                    {
                         className: "text-center",
                         name: "Actions",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            let isAppCatalog = item.AppType == "SharePoint";
                             let root = document.querySelector(':root') as HTMLElement;
                             let tooltips: Components.ITooltipProps[] = [];
+
+                            // Determine if this is one of the developers
+                            let isDeveloper = false;
+                            if (item.Developers && item.Developers.results.length > 0) {
+                                for (let i = 0; i < item.Developers.results.length; i++) {
+                                    // See if this is one of the developers
+                                    if (item.Developers.results[i].Id == ContextInfo.userId) {
+                                        // Set the flag
+                                        isDeveloper = true;
+                                        break;
+                                    }
+                                }
+                            }
 
                             // Add the Details button tooltip
                             tooltips.push({
                                 content: "View more details",
                                 btnProps: {
                                     className: "p-1 pe-2",
-                                    iconClassName: "me-1",
-                                    iconType: window_,
-                                    iconSize: 24,
+                                    iconType: Common.getIcon(24, 24, 'AppsContent', 'icon-svg img-flip-x me-1'),
                                     text: "Details",
                                     type: Components.ButtonTypes.OutlinePrimary,
                                     onClick: () => {
@@ -368,45 +408,20 @@ export class App {
                                 }
                             });
 
-                            // See if this is not an app catalog item
-                            if (!isAppCatalog) {
-                                // Add the copy button
-                                tooltips.push({
-                                    content: "Click to copy the associated lists for this solution.",
-                                    btnProps: {
-                                        className: "p-1 pe-2",
-                                        iconClassName: "me-1",
-                                        iconType: window_,
-                                        iconSize: 24,
-                                        text: "Copy List(s)",
-                                        type: Components.ButtonTypes.OutlinePrimary,
-                                        onClick: () => {
-                                            // Get the list templates associated w/ this item
-                                            let listNames = (item.AssociatedLists || "").trim().split('\n');
-
-                                            // Display the copy list modal
-                                            TemplatesModal.show(item, listNames);
-                                        }
-                                    }
-                                });
-                            }
-
-                            // Add the Edit button tooltip if IsAdmin or IsManager
-                            if (Security.IsAdmin || Security.IsManager) {
+                            // Add the Edit button tooltip if IsAdmin or IsManager or isDeveloper
+                            if (Security.IsAdmin || Security.IsManager || isDeveloper) {
                                 // Add the edit button
                                 tooltips.push({
                                     content: "Edit the item",
                                     btnProps: {
                                         className: "p-1 pe-2",
-                                        iconClassName: "me-1",
-                                        iconType: pencilSquare,
-                                        iconSize: 24,
+                                        iconType: Common.getIcon(24, 24, 'WindowEdit', 'icon-svg me-1'),
                                         text: "Edit",
                                         type: Components.ButtonTypes.OutlinePrimary,
                                         isDisabled: item.IsAppCatalogItem ? true : false,
                                         onClick: () => {
                                             // Edit the item
-                                            Forms.edit(item.Id, () => {
+                                            Forms.edit(item, () => {
                                                 // Refresh the table
                                                 this._dashboard.refresh(DataSource.AppItems);
                                             });
@@ -427,25 +442,31 @@ export class App {
                                 tooltips
                             });
 
+                            // Add data attribute for Power Platform items
+                            item.AppType.startsWith('Power ') ? ttg.el.setAttribute("data-ispowerplatform", "") : null;
+
                             // Add click event to grow/shrink the card
                             ttg.el.addEventListener("click", (e) => {
                                 // Only grow/shrink if the click is outside the button group [::after]
                                 if (e.offsetX > ttg.el.offsetWidth) {
                                     let hide = ttg.el.classList.contains(_class);
+                                    let tdHide = "td:nth-child(5), td:nth-child(6), td:nth-child(8)";
+                                    // Only show Templates for Power Platform items
+                                    ttg.el.dataset["ispowerplatform"] != undefined ? tdHide += ", td:nth-child(9)" : null;
                                     let tr = ttg.el.closest("tr");
 
                                     if (hide) {
                                         // Remove the shrink class on title & description inner div
                                         jQuery("td:nth-child(2) :last-child, td:nth-child(4) :last-child", tr).removeClass(_class);
                                         // Show columns [nth-child() is not 0 index based]
-                                        jQuery("td:nth-child(5), td:nth-child(6), td:nth-child(8)", tr).removeClass("d-none");
+                                        jQuery(tdHide, tr).removeClass("d-none");
                                         // Remove the shrink class on tooltip group
                                         ttg.el.classList.remove(_class);
                                     } else {
                                         // Add the shrink class on title & description inner div
                                         jQuery("td:nth-child(2) :last-child, td:nth-child(4) :last-child", tr).addClass(_class);
                                         // Hide columns [nth-child() is not 0 index based]
-                                        jQuery("td:nth-child(5), td:nth-child(6), td:nth-child(8)", tr).addClass("d-none");
+                                        jQuery(tdHide, tr).addClass("d-none");
                                         // Add the shrink class on tooltip group
                                         ttg.el.classList.add(_class);
                                     }
