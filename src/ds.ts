@@ -203,9 +203,24 @@ export class DataSource {
         // Execute the required initialization methods
         return Promise.all([
             this.initList(),
+            this.initRatingsList(),
             this.loadAppCatalog(),
             Security.init()
         ]);
+    }
+
+    // Ratings List
+    private static _ratingsList: List<IRatingItem> = null;
+    static get RatingsList(): List<IRatingItem> { return this._ratingsList; }
+    private static initRatingsList(): PromiseLike<void> {
+        // Return a promise
+        return new Promise((resolve, reject) => {
+            this._ratingsList = new List({
+                listName: Strings.Lists.Ratings,
+                onInitError: reject,
+                onInitialized: resolve
+            });
+        });
     }
 
     // Theme information

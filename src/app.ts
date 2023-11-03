@@ -77,17 +77,45 @@ export class App {
                     isButton: true,
                     items: [
                         {
+                            text: "Main List",
+                            onClick: () => {
+                                // Show the settings in a new tab
+                                window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/listedit.aspx?List=" + DataSource.List.ListInfo.Id);
+                            }
+                        },
+                        {
+                            text: "Ratings List",
+                            onClick: () => {
+                                // Show the settings in a new tab
+                                window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/listedit.aspx?List=" + DataSource.RatingsList.ListInfo.Id);
+                            }
+                        },
+                        {
+                            text: "Developer's Group",
+                            onClick: () => {
+                                // Show the settings in a new tab
+                                window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/people.aspx?MembershipGroupId=" + Security.DeveloperGroup.Id);
+                            }
+                        },
+                        {
+                            text: "Manager's Group",
+                            onClick: () => {
+                                // Show the settings in a new tab
+                                window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/people.aspx?MembershipGroupId=" + Security.ManagerGroup.Id);
+                            }
+                        },
+                        {
+                            text: "Owners's Group",
+                            onClick: () => {
+                                // Show the settings in a new tab
+                                window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/people.aspx?MembershipGroupId=" + Security.AdminGroup.Id);
+                            }
+                        },
+                        {
                             text: "App Settings",
                             onClick: () => {
                                 // Show the install modal
                                 InstallationModal.show(true);
-                            }
-                        },
-                        {
-                            text: "List Settings",
-                            onClick: () => {
-                                // Show the settings in a new tab
-                                window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/listedit.aspx?List=" + DataSource.List.ListInfo.Id);
                             }
                         }
                     ]
