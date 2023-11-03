@@ -43,7 +43,14 @@ const GlobalVariable = {
         DataSource.AppCatalogUrl = url;
     },
     updateTheme: (themeInfo) => {
-        // TODO
+        // Store the theme info
+        DataSource.ThemeInfo = themeInfo;
+
+        // See if the app exists
+        if(GlobalVariable.App) {
+            // Apply theming
+            GlobalVariable.App.updateTheme();
+        }
     },
     version: Strings.Version
 };

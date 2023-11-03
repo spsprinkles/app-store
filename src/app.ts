@@ -20,8 +20,14 @@ export class App {
 
     // Constructor
     constructor(el: HTMLElement) {
+        // Clear the element
+        while (el.firstChild) { el.removeChild(el.firstChild); }
+
         // Render the dashboard
         this.render(el);
+
+        // Update the themeing
+        this.updateTheme();
     }
 
     // Renders the dashboard
@@ -464,5 +470,13 @@ export class App {
                 ]
             }
         });
+    }
+
+    // Update the theme
+    updateTheme() {
+        // See if the theme information exists
+        if (DataSource.ThemeInfo) {
+            // TODO - apply the theme
+        }
     }
 }

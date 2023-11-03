@@ -19,23 +19,12 @@ export interface IAppStoreWebPartProps {
 }
 
 export default class AppStoreWebPart extends BaseClientSideWebPart<IAppStoreWebPartProps> {
-  private _hasRendered: boolean = false;
-
   public render(): void {
-    // See if have rendered the solution
-    if (this._hasRendered) {
-      // Clear the element
-      while (this.domElement.firstChild) { this.domElement.removeChild(this.domElement.firstChild); }
-    }
-
     // Set the app catalog url
     AppStore.setAppCatalogUrl(this.properties.appCatalogUrl);
 
     // Render the application
     AppStore.render(this.domElement, this.context);
-
-    // Set the flag
-    this._hasRendered = true;
   }
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {

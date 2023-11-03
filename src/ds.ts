@@ -207,4 +207,9 @@ export class DataSource {
             Security.init()
         ]);
     }
+
+    // Theme information
+    private static _themeInfo = null;
+    static get ThemeInfo() { return this._themeInfo; }
+    static set ThemeInfo(value) { this._themeInfo = value; }
 }
