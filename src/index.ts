@@ -8,19 +8,28 @@ import Strings, { setContext } from "./strings";
 // Styling
 import "./styles.scss";
 
+// Properties
+interface IProps {
+    el: HTMLElement;
+    context?: any;
+    displayMode?: number;
+    envType?: number;
+    sourceUrl?: string;
+}
+
 // Create the global variable for this solution
 const GlobalVariable = {
     App: null,
     Configuration,
     description: Strings.ProjectDescription,
-    render: (el, context?, sourceUrl?: string) => {
+    render: (props: IProps) => {
         // See if the page context exists
-        if (context) {
+        if (props.context) {
             // Set the context
-            setContext(context, sourceUrl);
+            setContext(props.context, props.envType, props.sourceUrl);
 
             // Update the configuration
-            Configuration.setWebUrl(sourceUrl || ContextInfo.webServerRelativeUrl);
+            Configuration.setWebUrl(props.sourceUrl || ContextInfo.webServerRelativeUrl);
         }
 
         // Initialize the application
@@ -28,7 +37,7 @@ const GlobalVariable = {
             // Success
             () => {
                 // Create the application
-                GlobalVariable.App = new App(el);
+                GlobalVariable.App = new App(props.el);
             },
 
             // Error
@@ -65,5 +74,5 @@ if (elApp) {
     DataSource.AppCatalogUrl = elApp.getAttribute("data-appCatalogUrl");
 
     // Render the application
-    GlobalVariable.render(elApp);
+    GlobalVariable.render({ el: elApp });
 }

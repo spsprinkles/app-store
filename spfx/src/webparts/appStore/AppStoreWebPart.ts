@@ -1,22 +1,28 @@
-import { Version } from '@microsoft/sp-core-library';
+import { DisplayMode, Environment, Version } from '@microsoft/sp-core-library';
 import { IPropertyPaneConfiguration, PropertyPaneLabel, PropertyPaneTextField } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart, WebPartContext } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme, ISemanticColors } from '@microsoft/sp-component-base';
 import * as strings from 'AppStoreWebPartStrings';
 
+export interface IAppStoreWebPartProps {
+  appCatalogUrl: string;
+}
+
 // Reference the solution
 import "../../../../dist/app-store.min.js";
 declare const AppStore: {
   description: string;
-  render: (el: HTMLElement, context: WebPartContext) => void;
+  render: (props: {
+    el: HTMLElement;
+    context?: WebPartContext;
+    displayMode?: DisplayMode;
+    envType?: number;
+    sourceUrl?: string;
+  }) => void;
   setAppCatalogUrl: (url: string) => void;
   updateTheme: (currentTheme: Partial<ISemanticColors>) => void;
   version: string;
 };
-
-export interface IAppStoreWebPartProps {
-  appCatalogUrl: string;
-}
 
 export default class AppStoreWebPart extends BaseClientSideWebPart<IAppStoreWebPartProps> {
   public render(): void {
@@ -24,7 +30,12 @@ export default class AppStoreWebPart extends BaseClientSideWebPart<IAppStoreWebP
     AppStore.setAppCatalogUrl(this.properties.appCatalogUrl);
 
     // Render the application
-    AppStore.render(this.domElement, this.context);
+    AppStore.render({
+      el: this.domElement,
+      context: this.context,
+      displayMode: this.displayMode,
+      envType: Environment.type
+    });
   }
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
