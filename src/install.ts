@@ -70,7 +70,7 @@ export class InstallationModal {
                 if (!hasSubWeb) {
                     // Add an error
                     customErrors.push({
-                        content: "Sub-Web for list templates does not exist.",
+                        content: "Sub-Web for list templates does not exist",
                         type: Components.ListGroupItemTypes.Danger
                     });
                 }
@@ -83,7 +83,7 @@ export class InstallationModal {
 
                     // Add an error
                     customErrors.push({
-                        content: "Security groups are not installed.",
+                        content: "Security groups are not installed",
                         type: Components.ListGroupItemTypes.Danger
                     });
                 }
@@ -99,7 +99,7 @@ export class InstallationModal {
                                 // Add the custom install button
                                 Components.Tooltip({
                                     el,
-                                    content: "Creates the sub-web for storing the list templates.",
+                                    content: "Create the sub-web for storing list templates",
                                     type: Components.ButtonTypes.OutlinePrimary,
                                     btnProps: {
                                         text: "Create Sub-Web",
@@ -119,7 +119,7 @@ export class InstallationModal {
                                 // Add the custom install button
                                 Components.Tooltip({
                                     el,
-                                    content: "Creates the security groups.",
+                                    content: "Create the security groups",
                                     type: Components.ButtonTypes.OutlinePrimary,
                                     btnProps: {
                                         text: "Security",
