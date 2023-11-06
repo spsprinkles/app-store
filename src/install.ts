@@ -44,7 +44,7 @@ export class InstallationModal {
     }
 
     // Checks to see if the sub-web exists
-    static hasSubWeb(): PromiseLike<boolean> {
+    private static hasSubWeb(): PromiseLike<boolean> {
         // Return a promise
         return new Promise((resolve) => {
             // See if the web exists
