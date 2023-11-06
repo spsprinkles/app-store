@@ -1,4 +1,4 @@
-import { ContextInfo } from "gd-sprest-bs";
+import { ContextInfo, SPTypes } from "gd-sprest-bs";
 
 // Sets the context information
 // This is for SPFx or Teams solutions
@@ -27,6 +27,12 @@ const Strings = {
     Lists: {
         Main: "App Store",
         Ratings: "App Ratings"
+    },
+    ListTemplateWebInfo: {
+        Description: "Stores the list templates for the app store solution.",
+        Title: "List Templates",
+        Url: "listtemplates",
+        WebTemplate: SPTypes.WebTemplateType.Site
     },
     ListTemplateUrl: "~site/listtemplates",
     ProjectName: "AppStore",
