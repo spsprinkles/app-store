@@ -215,7 +215,11 @@ export class App {
                 itemsEnd: [
                     {
                         className: "p-0 pe-none text-dark",
-                        text: "v" + Strings.Version
+                        text: "v" + Strings.Version,
+                        onRender: (el) => {
+                            // Hide version footer in a modern page
+                            Strings.IsClassic ? null : el.classList.add("d-none");
+                        }
                     }
                 ]
             },
