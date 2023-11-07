@@ -101,6 +101,9 @@ export class InstallationModal {
                                     el,
                                     content: "Create the sub-web for storing list templates",
                                     type: Components.ButtonTypes.OutlinePrimary,
+                                    options: {
+                                        theme: "sharepoint"
+                                    },
                                     btnProps: {
                                         text: "Create Sub-Web",
                                         onClick: () => {
@@ -121,6 +124,9 @@ export class InstallationModal {
                                     el,
                                     content: "Create the security groups",
                                     type: Components.ButtonTypes.OutlinePrimary,
+                                    options: {
+                                        theme: "sharepoint"
+                                    },
                                     btnProps: {
                                         text: "Security",
                                         isDisabled: !InstallationRequired.ListsExist,

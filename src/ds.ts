@@ -1,5 +1,5 @@
 import { List } from "dattatable";
-import { Components, Types, Web } from "gd-sprest-bs";
+import { Components, ContextInfo, Types, Web } from "gd-sprest-bs";
 import { Security } from "./security";
 import Strings from "./strings";
 
@@ -227,4 +227,5 @@ export class DataSource {
     private static _themeInfo = null;
     static get ThemeInfo() { return this._themeInfo; }
     static set ThemeInfo(value) { this._themeInfo = value; }
+    static getThemeColor(name: string) { return ContextInfo.theme.accent ? ContextInfo.theme[name] : this._themeInfo[name]; }
 }

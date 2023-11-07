@@ -180,6 +180,9 @@ export class CopyTemplate {
             tooltips: [
                 {
                     content: "Copy the associated lists to the destination web",
+                    options: {
+                        theme: "sharepoint"
+                    },
                     btnProps: {
                         text: "Start Copy",
                         type: Components.ButtonTypes.OutlinePrimary,
