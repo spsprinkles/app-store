@@ -1,4 +1,4 @@
-import { ContextInfo } from "gd-sprest-bs";
+import { ContextInfo, Helper } from "gd-sprest-bs";
 import { App } from "./app";
 import { Configuration } from "./cfg";
 import { DataSource } from "./ds";
@@ -40,6 +40,18 @@ const GlobalVariable = {
                 GlobalVariable.App = new App(props.el);
 
                 if (Strings.IsClassic) {
+                    Helper.getCurrentTheme().then(() => {
+                        // Log
+                        console.log("Theme has been loaded...");
+                        console.log(ContextInfo.theme.accent ? "Modern theme exists" : "Modern theme doesn't exist");
+
+                        // See if the theme exists
+                        if (ContextInfo.theme.accent) {
+                            // Update the theme
+                            GlobalVariable.updateTheme(ContextInfo.theme);
+                        }
+                    });
+                    /*
                     let counter = 0;
                     let loopId = setInterval(() => {
                         // See if the theme exists
@@ -51,6 +63,7 @@ const GlobalVariable = {
                             clearInterval(loopId);
                         }
                     }, 100);
+                    */
                 }
             },
 
