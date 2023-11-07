@@ -42,29 +42,12 @@ const GlobalVariable = {
                 // See if this is a classic page.
                 if (Strings.IsClassic) {
                     Helper.getCurrentTheme().then(() => {
-                        // Log
-                        console.log("Theme has been loaded...");
-                        console.log(ContextInfo.theme.accent ? "Modern theme exists" : "Modern theme doesn't exist");
-
                         // See if the theme exists
                         if (ContextInfo.theme.accent) {
                             // Update the theme
                             GlobalVariable.updateTheme(ContextInfo.theme);
                         }
                     });
-                    /*
-                    let counter = 0;
-                    let loopId = setInterval(() => {
-                        // See if the theme exists
-                        if (ContextInfo.theme.accent) {
-                            clearInterval(loopId);
-                            console.log("It took " + counter + " tries for the theme to exist.");
-                            GlobalVariable.updateTheme(ContextInfo.theme);
-                        } else if (++counter > 10) {
-                            clearInterval(loopId);
-                        }
-                    }, 100);
-                    */
                 }
             },
 
