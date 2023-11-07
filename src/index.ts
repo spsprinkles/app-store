@@ -38,6 +38,20 @@ const GlobalVariable = {
             () => {
                 // Create the application
                 GlobalVariable.App = new App(props.el);
+
+                if (Strings.IsClassic) {
+                    let counter = 0;
+                    let loopId = setInterval(() => {
+                        // See if the theme exists
+                        if (ContextInfo.theme.accent) {
+                            clearInterval(loopId);
+                            console.log("It took " + counter + " tries for the theme to exist.");
+                            GlobalVariable.updateTheme(ContextInfo.theme);
+                        } else if (++counter > 10) {
+                            clearInterval(loopId);
+                        }
+                    }, 100);
+                }
             },
 
             // Error
@@ -56,7 +70,7 @@ const GlobalVariable = {
         DataSource.ThemeInfo = themeInfo;
 
         // See if the app exists
-        if(GlobalVariable.App) {
+        if (GlobalVariable.App) {
             // Apply theming
             GlobalVariable.App.updateTheme();
         }

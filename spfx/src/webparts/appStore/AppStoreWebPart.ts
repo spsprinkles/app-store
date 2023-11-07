@@ -1,7 +1,7 @@
 import { DisplayMode, Environment, Version } from '@microsoft/sp-core-library';
 import { IPropertyPaneConfiguration, PropertyPaneLabel, PropertyPaneTextField } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart, WebPartContext } from '@microsoft/sp-webpart-base';
-import { IReadonlyTheme, ISemanticColors } from '@microsoft/sp-component-base';
+import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import * as strings from 'AppStoreWebPartStrings';
 
 export interface IAppStoreWebPartProps {
@@ -20,7 +20,7 @@ declare const AppStore: {
     sourceUrl?: string;
   }) => void;
   setAppCatalogUrl: (url: string) => void;
-  updateTheme: (currentTheme: Partial<ISemanticColors>) => void;
+  updateTheme: (currentTheme: Partial<IReadonlyTheme>) => void;
   version: string;
 };
 
@@ -44,7 +44,7 @@ export default class AppStoreWebPart extends BaseClientSideWebPart<IAppStoreWebP
     }
 
     // Update the theme
-    AppStore.updateTheme(currentTheme.semanticColors);
+    AppStore.updateTheme(currentTheme);
   }
 
   protected get dataVersion(): Version {

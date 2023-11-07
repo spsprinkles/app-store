@@ -46,6 +46,9 @@ export class Forms {
                 // Set a tooltip
                 Components.Tooltip({
                     content: "Click to upload an image file.",
+                    options: {
+                        theme: "sharepoint"
+                    },
                     target: ctrl.textbox.elTextbox
                 });
 
@@ -92,10 +95,13 @@ export class Forms {
         }
 
         props.onFormRendered = (form) => {
+            let closeBtn;
             let col12;
-            let body = form.el.closest(".modal-body");
-            body ? col12 = body.querySelector(".row>.col-12") : null;
-            (body && col12) ? col12.classList.add("mb-3") : null;
+            let modal = form.el.closest(".modal-content");
+            modal ? col12 = modal.querySelector(".modal-body .row>.col-12") : null;
+            modal ? closeBtn = modal.querySelector(".modal-header .btn-close") : null;
+            (modal && col12) ? col12.classList.add("mb-3") : null;
+            (closeBtn && DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? closeBtn.classList.add("invert") : null;
         }
 
         // Return the properties
@@ -210,6 +216,10 @@ export class Forms {
         // Set the header
         Modal.setHeader("");
 
+        let closeBtn;
+        Modal.HeaderElement ? closeBtn = Modal.HeaderElement.closest(".modal-header").querySelector(".btn-close") : null;
+        (closeBtn && DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? closeBtn.classList.add("invert") : null;
+
         // Hide the footer
         Modal.FooterElement.classList.add("d-none");
 
@@ -286,6 +296,7 @@ export class Forms {
         if (item.Icon) {
             // Display the image
             icon = document.createElement("img");
+            (DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? icon.classList.add("invert") : null;
             icon.style.height = "150px";
             icon.style.width = "150px";
             icon.src = item.Icon;
@@ -327,7 +338,10 @@ export class Forms {
             enableControls: true,
             enableIndicators: true,
             id: "screenshots" + item.Id,
-            items
+            items,
+            onRendered: (el, props) => {
+                DataSource.ThemeInfo ? props.isDark = DataSource.ThemeInfo.isInverted : null;
+            }
         });
 
         // Add the div element to the form
