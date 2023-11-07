@@ -39,6 +39,7 @@ const GlobalVariable = {
                 // Create the application
                 GlobalVariable.App = new App(props.el);
 
+                // See if this is a classic page.
                 if (Strings.IsClassic) {
                     Helper.getCurrentTheme().then(() => {
                         // Log
