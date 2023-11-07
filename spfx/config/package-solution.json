@@ -3,7 +3,7 @@
   "solution": {
     "name": "app-store-client-side-solution",
     "id": "53ee91a7-1302-4b7b-8b93-d0e92057cd4c",
-    "version": "0.1.1.4",
+    "version": "0.1.2.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
