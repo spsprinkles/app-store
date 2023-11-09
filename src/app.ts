@@ -51,9 +51,6 @@ export class App {
                             el,
                             content: item.text,
                             type: Components.TooltipTypes.LightBorder,
-                            options: {
-                                theme: "sharepoint"
-                            },
                             btnProps: {
                                 // Render the icon button
                                 className: "p-1 pe-2 me-2",
@@ -149,9 +146,6 @@ export class App {
                         Components.Tooltip({
                             el: span,
                             content: item.text,
-                            options: {
-                                theme: "sharepoint"
-                            },
                             btnProps: {
                                 // Render the icon button
                                 className: "p-1 pe-2",
@@ -191,9 +185,6 @@ export class App {
                     Components.Tooltip({
                         el: span,
                         content: item.text,
-                        options: {
-                            theme: "sharepoint"
-                        },
                         btnProps: {
                             // Render the icon button
                             className: "p-1 pe-2",
@@ -232,9 +223,6 @@ export class App {
                     Components.Tooltip({
                         el: span,
                         content: item.text,
-                        options: {
-                            theme: "sharepoint"
-                        },
                         btnProps: {
                             // Render the icon button
                             className: "p-1 pe-2",
@@ -270,9 +258,6 @@ export class App {
                     Components.Tooltip({
                         el: span,
                         content: "Show " + item.text,
-                        options: {
-                            theme: "sharepoint"
-                        },
                         btnProps: {
                             // Render the icon button
                             className: "p-1 pe-2",
@@ -495,9 +480,6 @@ export class App {
                                 Components.Tooltip({
                                     el,
                                     content: "Deploy the dataset for this solution",
-                                    options: {
-                                        theme: "sharepoint"
-                                    },
                                     btnProps: {
                                         className: "p-1 pe-2",
                                         iconType: Common.getIcon(22, 22, item.AppType + ' ' + column.title, 'icon-svg me-1'),
@@ -527,9 +509,6 @@ export class App {
                             // Add the Details button tooltip
                             tooltips.push({
                                 content: "View more details",
-                                options: {
-                                    theme: "sharepoint"
-                                },
                                 btnProps: {
                                     className: "p-1 pe-2",
                                     iconType: Common.getIcon(24, 24, 'AppsContent', 'icon-svg img-flip-x me-1'),
@@ -547,9 +526,6 @@ export class App {
                                 // Add the edit button
                                 tooltips.push({
                                     content: "Edit the item",
-                                    options: {
-                                        theme: "sharepoint"
-                                    },
                                     btnProps: {
                                         className: "p-1 pe-2",
                                         iconType: Common.getIcon(24, 24, 'WindowEdit', 'icon-svg me-1'),
@@ -640,6 +616,7 @@ export class App {
             let neutralQuaternary = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralQuaternary || DataSource.getThemeColor("disabledSubtext");
             let neutralQuaternaryAlt = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralQuaternaryAlt || DataSource.getThemeColor("listItemBackgroundCheckedHovered");
             let primaryButtonText = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).primaryButtonText || DataSource.getThemeColor("TileText");
+            let primaryText = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).primaryText || DataSource.getThemeColor("BodyText");
             let severeWarningIcon = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).severeWarningIcon || DataSource.getThemeColor("orange");
             let successIcon = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).successIcon || DataSource.getThemeColor("green");
             let themeAccent = (DataSource.ThemeInfo.palette || ContextInfo.theme).themeAccent || DataSource.getThemeColor("AccentText");
@@ -672,7 +649,8 @@ export class App {
             root.style.setProperty('--sp-neutral-tertiary-alt', neutralTertiaryAlt);
             root.style.setProperty('--sp-neutral-quaternary', neutralQuaternary);
             root.style.setProperty('--sp-neutral-quaternary-alt', neutralQuaternaryAlt);
-            root.style.setProperty('--sp-primary-text', primaryButtonText);
+            root.style.setProperty('--sp-primary-button-text', primaryButtonText);
+            root.style.setProperty('--sp-primary-text', primaryText);
             root.style.setProperty('--sp-severe-warning-icon', severeWarningIcon);
             root.style.setProperty('--sp-success-icon', successIcon);
             root.style.setProperty('--sp-theme-accent', themeAccent);

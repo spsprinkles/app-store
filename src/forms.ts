@@ -47,9 +47,6 @@ export class Forms {
                 // Set a tooltip
                 Components.Tooltip({
                     content: "Click to upload an image file.",
-                    options: {
-                        theme: "sharepoint"
-                    },
                     target: ctrl.textbox.elTextbox
                 });
 
