@@ -215,6 +215,44 @@ export class App {
             }
         );
 
+        // Render the Add button
+        subNavItems.push(
+            {
+                text: "Views the current requests for the app store",
+                onRender: (el, item) => {
+                    // Clear the existing button
+                    el.innerHTML = "";
+                    // Create a span to wrap the icon in
+                    let span = document.createElement("span");
+                    span.className = "bg-white d-inline-flex ms-2 rounded";
+                    el.appendChild(span);
+
+                    // Render a tooltip
+                    Components.Tooltip({
+                        el: span,
+                        content: item.text,
+                        options: {
+                            theme: "sharepoint"
+                        },
+                        btnProps: {
+                            // Render the icon button
+                            className: "p-1 pe-2",
+                            iconClassName: "me-1",
+                            iconType: plusSquare,
+                            iconSize: 24,
+                            isSmall: true,
+                            text: "View Requests",
+                            type: Components.ButtonTypes.OutlineSecondary,
+                            onClick: () => {
+                                // Show the requests modal
+                                Forms.viewRequests();
+                            }
+                        }
+                    });
+                }
+            }
+        );
+
         // Render the filters button
         subNavItems.push(
             {

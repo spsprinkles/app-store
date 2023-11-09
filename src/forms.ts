@@ -1,5 +1,6 @@
-import { Documents, LoadingDialog, Modal } from "dattatable";
+import { Documents, LoadingDialog, Modal, DataTable } from "dattatable";
 import { Components, Helper } from "gd-sprest-bs";
+import * as jQuery from "jquery";
 import * as moment from "moment";
 import * as Common from "./common";
 import { CreateTemplate } from "./createTemplate";
@@ -356,6 +357,113 @@ export class Forms {
 
         // Add the div element to the form
         Modal.BodyElement.appendChild(div);
+
+        // Show the modal
+        Modal.show();
+    }
+
+    // Displays the view the current requests
+    static viewRequests() {
+        // Clear the modal
+        Modal.clear();
+
+        // Set the modal props
+        Modal.setType(Components.ModalTypes.XLarge);
+
+        // Set the header
+        Modal.setHeader("View Requests");
+
+        // Update the close button
+        let closeBtn;
+        Modal.HeaderElement ? closeBtn = Modal.HeaderElement.closest(".modal-header").querySelector(".btn-close") : null;
+        (closeBtn && DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? closeBtn.classList.add("invert") : null;
+
+        // Render the table
+        new DataTable({
+            el: Modal.BodyElement,
+            rows: DataSource.RequestsList.Items,
+            dtProps: {
+                dom: 'rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',
+                pageLength: 10,
+                createdRow: function (row, data, index) {
+                    jQuery('td', row).addClass('align-middle');
+                },
+                // Add some classes to the dataTable elements
+                drawCallback: function (settings) {
+                    let api = new jQuery.fn.dataTable.Api(settings) as any;
+                    let div = api.table().container() as HTMLDivElement;
+                    let table = api.table().node() as HTMLTableElement;
+                    div.querySelector(".dataTables_info").classList.add("text-center");
+                    div.querySelector(".dataTables_length").classList.add("pt-2");
+                    div.querySelector(".dataTables_paginate").classList.add("pt-03");
+                    table.classList.remove("no-footer");
+                    table.classList.add("tbl-footer");
+                    table.classList.add("table-striped");
+                },
+                headerCallback: function (thead, data, start, end, display) {
+                    jQuery('th', thead).addClass('align-middle');
+                },
+                // Sort descending by Start Date
+                order: [[1, "asc"]],
+                language: {
+                    emptyTable: "No app requests exist",
+                },
+            },
+            columns: [
+                {
+                    name: "Title",
+                    title: "App Name"
+                },
+                {
+                    name: "AppType",
+                    title: "App Type"
+                },
+                {
+                    name: "Status",
+                    title: "App Status"
+                },
+                {
+                    name: "Description",
+                    title: "Description"
+                },
+                {
+                    name: "Organization",
+                    title: "Organization"
+                },
+                {
+                    name: "Developers",
+                    title: "Developers",
+                    onRenderCell: (el, column, item: IAppStoreItem) => {
+                        let devs = item.Developers && item.Developers.results || [];
+
+                        // Parse the devs
+                        let strDevs = [];
+                        devs.forEach(dev => {
+                            // Append the title
+                            strDevs.push(dev.Title);
+                        });
+
+                        // Display the devs
+                        el.innerHTML = `${strDevs.join("<br/>")}`;
+                        el.setAttribute("data-filter", strDevs.join(","));
+                    }
+                }
+            ]
+        });
+
+        // Render the footer
+        Components.Tooltip({
+            el: Modal.FooterElement,
+            content: "Closes the dialog",
+            btnProps: {
+                text: "Close",
+                type: Components.ButtonTypes.OutlinePrimary,
+                onClick: () => {
+                    // Hide the modal
+                    Modal.hide();
+                }
+            }
+        });
 
         // Show the modal
         Modal.show();
