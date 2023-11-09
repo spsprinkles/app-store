@@ -28,7 +28,8 @@ const Strings = {
     IsClassic: true,
     Lists: {
         Main: "App Store",
-        Ratings: "App Ratings"
+        Ratings: "App Ratings",
+        Requests: "App Store Requests"
     },
     ListTemplateWebInfo: {
         Description: "Stores the list templates for the app store solution.",

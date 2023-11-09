@@ -94,6 +94,13 @@ export class App {
                             }
                         },
                         {
+                            text: "Requests List",
+                            onClick: () => {
+                                // Show the settings in a new tab
+                                window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/listedit.aspx?List=" + DataSource.RequestsList.ListInfo.Id);
+                            }
+                        },
+                        {
                             text: "Developer's Group",
                             onClick: () => {
                                 // Show the settings in a new tab

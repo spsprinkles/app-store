@@ -38,6 +38,18 @@ export interface IRatingItem extends Types.SP.ListItem {
 }
 
 /**
+ * Requests Item
+ */
+export interface IRequestItem extends Types.SP.ListItem {
+    AppType: string;
+    Description: string;
+    Developers: { results: { Id: number; EMail: string; Title: string }[] };
+    Modified: string;
+    Organization: string;
+    Status: string;
+}
+
+/**
  * Data Source
  */
 export class DataSource {
@@ -204,6 +216,7 @@ export class DataSource {
         return Promise.all([
             this.initList(),
             this.initRatingsList(),
+            this.initRequestsList(),
             this.loadAppCatalog(),
             Security.init()
         ]);
@@ -217,6 +230,27 @@ export class DataSource {
         return new Promise((resolve, reject) => {
             this._ratingsList = new List({
                 listName: Strings.Lists.Ratings,
+                onInitError: reject,
+                onInitialized: resolve
+            });
+        });
+    }
+
+    // Requests List
+    private static _requestsList: List<IRatingItem> = null;
+    static get RequestsList(): List<IRatingItem> { return this._requestsList; }
+    private static initRequestsList(): PromiseLike<void> {
+        // Return a promise
+        return new Promise((resolve, reject) => {
+            this._requestsList = new List({
+                listName: Strings.Lists.Requests,
+                itemQuery: {
+                    Expand: ["Developers"],
+                    GetAllItems: true,
+                    OrderBy: ["Title"],
+                    Select: ["*", "Developers/Id", "Developers/EMail", "Developers/Title",],
+                    Top: 5000
+                },
                 onInitError: reject,
                 onInitialized: resolve
             });

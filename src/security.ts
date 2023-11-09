@@ -100,6 +100,21 @@ export class Security {
                         groupName: this._managerGroupInfo.Title,
                         permission: SPTypes.RoleType.Contributor
                     },
+                    {
+                        listName: Strings.Lists.Requests,
+                        groupName: ListSecurityDefaultGroups.Owners,
+                        permission: SPTypes.RoleType.Administrator
+                    },
+                    {
+                        listName: Strings.Lists.Requests,
+                        groupName: ListSecurityDefaultGroups.Visitors,
+                        permission: SPTypes.RoleType.Contributor
+                    },
+                    {
+                        listName: Strings.Lists.Requests,
+                        groupName: this._managerGroupInfo.Title,
+                        permission: SPTypes.RoleType.Contributor
+                    },
                 ],
                 onGroupCreated: group => {
                     // Set the group owner

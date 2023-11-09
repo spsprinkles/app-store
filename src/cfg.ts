@@ -178,6 +178,81 @@ export const Configuration = Helper.SPConfig({
         },
         {
             ListInformation: {
+                Title: Strings.Lists.Requests,
+                BaseTemplate: SPTypes.ListTemplateType.GenericList
+            },
+            TitleFieldDisplayName: "App Name",
+            ContentTypes: [
+                {
+                    Name: "Item",
+                    FieldRefs: [
+                        "Title",
+                        "AppType",
+                        "Status",
+                        "Description",
+                        "Developers",
+                        "Organization"
+                    ]
+                }
+            ],
+            CustomFields: [
+                {
+                    name: "AppType",
+                    title: "App Type",
+                    type: Helper.SPCfgFieldType.Choice,
+                    required: true,
+                    choices: [
+                        "Power Apps", "Power Automate", "Power BI", "PowerShell", "SharePoint", "Teams"
+                    ]
+                } as Helper.IFieldInfoChoice,
+                {
+                    name: "Description",
+                    title: "Description",
+                    type: Helper.SPCfgFieldType.Note,
+                    description: "A description of the application and its function and usage",
+                    notetype: SPTypes.FieldNoteType.TextOnly,
+                    required: true,
+                } as Helper.IFieldInfoNote,
+                {
+                    name: "Developers",
+                    title: "Developers",
+                    type: Helper.SPCfgFieldType.User,
+                    description: "The developers of the application",
+                    multi: true,
+                    required: true,
+                    selectionMode: SPTypes.FieldUserSelectionType.PeopleOnly,
+                    showField: "ImnName"
+                } as Helper.IFieldInfoUser,
+                {
+                    name: "Organization",
+                    title: "Organization",
+                    type: Helper.SPCfgFieldType.Text,
+                    description: "The organization that supports the application",
+                    required: true
+                },
+                {
+                    name: "Status",
+                    title: "Status",
+                    type: Helper.SPCfgFieldType.Choice,
+                    defaultValue: "New",
+                    required: true,
+                    showInNewForm: false,
+                    choices: [
+                        "New", "In Review", "Approved", "Rejected"
+                    ]
+                } as Helper.IFieldInfoChoice
+            ],
+            ViewInformation: [
+                {
+                    ViewName: "All Items",
+                    ViewFields: [
+                        "LinkTitle", "AppType", "Status", "Description", "Developers", "Organization"
+                    ]
+                }
+            ]
+        },
+        {
+            ListInformation: {
                 Title: Strings.Lists.Ratings,
                 BaseTemplate: SPTypes.ListTemplateType.GenericList
             },
