@@ -616,7 +616,7 @@ export class App {
             let neutralQuaternary = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralQuaternary || DataSource.getThemeColor("disabledSubtext");
             let neutralQuaternaryAlt = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralQuaternaryAlt || DataSource.getThemeColor("listItemBackgroundCheckedHovered");
             let primaryButtonText = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).primaryButtonText || DataSource.getThemeColor("TileText");
-            let primaryText = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).primaryText || DataSource.getThemeColor("BodyText");
+            let primaryText = (DataSource.ThemeInfo.palette || ContextInfo.theme).primaryText || DataSource.getThemeColor("BodyText");
             let severeWarningIcon = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).severeWarningIcon || DataSource.getThemeColor("orange");
             let successIcon = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).successIcon || DataSource.getThemeColor("green");
             let themeAccent = (DataSource.ThemeInfo.palette || ContextInfo.theme).themeAccent || DataSource.getThemeColor("AccentText");
