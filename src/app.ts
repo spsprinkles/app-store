@@ -3,6 +3,7 @@ import { Components, ContextInfo } from "gd-sprest-bs";
 import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
 import { gearWideConnected } from "gd-sprest-bs/build/icons/svgs/gearWideConnected";
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
+import { viewList } from "gd-sprest-bs/build/icons/svgs/viewList";
 import * as jQuery from "jquery";
 import * as Common from "./common";
 import { CopyTemplate } from "./copyTemplate";
@@ -238,7 +239,7 @@ export class App {
                             // Render the icon button
                             className: "p-1 pe-2",
                             iconClassName: "me-1",
-                            iconType: plusSquare,
+                            iconType: viewList,
                             iconSize: 24,
                             isSmall: true,
                             text: "View Requests",
