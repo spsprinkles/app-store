@@ -78,6 +78,13 @@ export class App {
                     isButton: true,
                     items: [
                         {
+                            text: "App Settings",
+                            onClick: () => {
+                                // Show the install modal
+                                InstallationModal.show(true);
+                            }
+                        },
+                        {
                             text: "Main List",
                             onClick: () => {
                                 // Show the settings in a new tab
@@ -117,13 +124,6 @@ export class App {
                             onClick: () => {
                                 // Show the settings in a new tab
                                 window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/people.aspx?MembershipGroupId=" + Security.AdminGroup.Id);
-                            }
-                        },
-                        {
-                            text: "App Settings",
-                            onClick: () => {
-                                // Show the install modal
-                                InstallationModal.show(true);
                             }
                         }
                     ]
