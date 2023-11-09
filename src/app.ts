@@ -135,7 +135,7 @@ export class App {
             // Render the Add button
             subNavItems.push(
                 {
-                    text: "Add an App",
+                    text: "Adds an item to the app store",
                     onRender: (el, item) => {
                         // Clear the existing button
                         el.innerHTML = "";
@@ -173,6 +173,47 @@ export class App {
                 }
             );
         }
+
+        // Render the Add button
+        subNavItems.push(
+            {
+                text: "Request for an App to be added to the app store",
+                onRender: (el, item) => {
+                    // Clear the existing button
+                    el.innerHTML = "";
+                    // Create a span to wrap the icon in
+                    let span = document.createElement("span");
+                    span.className = "bg-white d-inline-flex ms-2 rounded";
+                    el.appendChild(span);
+
+                    // Render a tooltip
+                    Components.Tooltip({
+                        el: span,
+                        content: item.text,
+                        options: {
+                            theme: "sharepoint"
+                        },
+                        btnProps: {
+                            // Render the icon button
+                            className: "p-1 pe-2",
+                            iconClassName: "me-1",
+                            iconType: plusSquare,
+                            iconSize: 24,
+                            isSmall: true,
+                            text: "Request App",
+                            type: Components.ButtonTypes.OutlineSecondary,
+                            onClick: () => {
+                                // Show the new request form
+                                Forms.newRequest(() => {
+                                    // Refresh the table
+                                    this._dashboard.refresh(DataSource.AppItems);
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        );
 
         // Render the filters button
         subNavItems.push(
@@ -574,7 +615,7 @@ export class App {
             let themeTertiary = (DataSource.ThemeInfo.palette || ContextInfo.theme).themeTertiary || DataSource.getThemeColor("SuiteBarHoverBackground");
             let warningHighlight = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).warningHighlight || DataSource.getThemeColor("yellow");
             let white = (DataSource.ThemeInfo.palette || ContextInfo.theme).white || DataSource.getThemeColor("EmphasisText");
-            
+
             // Set the CSS properties to the theme colors
             let root = document.querySelector(':root') as HTMLElement;
             root.style.setProperty('--sp-accent', accent);

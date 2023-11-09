@@ -205,6 +205,16 @@ export class Forms {
         });
     }
 
+    // Displays the new request form
+    static newRequest(onUpdate: () => void) {
+        DataSource.RequestsList.newForm({
+            onUpdate: (item: IAppStoreItem) => {
+                // Refresh the data
+                DataSource.RequestsList.refreshItem(item.Id).then(onUpdate);
+            }
+        });
+    }
+
     // Displays the view form
     static view(item: IAppStoreItem) {
         // Clear the modal
