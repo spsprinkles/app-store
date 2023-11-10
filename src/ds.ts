@@ -256,10 +256,4 @@ export class DataSource {
             });
         });
     }
-
-    // Theme information
-    private static _themeInfo = null;
-    static get ThemeInfo() { return this._themeInfo; }
-    static set ThemeInfo(value) { this._themeInfo = value; }
-    static getThemeColor(name: string) { return ContextInfo.theme.accent ? ContextInfo.theme[name] : this._themeInfo[name]; }
 }

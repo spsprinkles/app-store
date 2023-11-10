@@ -99,7 +99,7 @@ export class Forms {
             modal ? col12 = modal.querySelector(".modal-body .row>.col-12") : null;
             modal ? closeBtn = modal.querySelector(".modal-header .btn-close") : null;
             (modal && col12) ? col12.classList.add("mb-3") : null;
-            (closeBtn && DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? closeBtn.classList.add("invert") : null;
+            Components.ThemeManager.CurrentTheme.isInverted ? closeBtn.classList.add("invert") : null;
         }
 
         // Return the properties
@@ -226,7 +226,7 @@ export class Forms {
 
         let closeBtn;
         Modal.HeaderElement ? closeBtn = Modal.HeaderElement.closest(".modal-header").querySelector(".btn-close") : null;
-        (closeBtn && DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? closeBtn.classList.add("invert") : null;
+        Components.ThemeManager.CurrentTheme.isInverted ? closeBtn.classList.add("invert") : null;
 
         // Hide the footer
         Modal.FooterElement.classList.add("d-none");
@@ -304,7 +304,7 @@ export class Forms {
         if (item.Icon) {
             // Display the image
             icon = document.createElement("img");
-            (DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? icon.classList.add("invert") : null;
+            Components.ThemeManager.CurrentTheme.isInverted ? icon.classList.add("invert") : null;
             icon.style.height = "150px";
             icon.style.width = "150px";
             icon.src = item.Icon;
@@ -348,7 +348,7 @@ export class Forms {
             id: "screenshots" + item.Id,
             items,
             onRendered: (el, props) => {
-                DataSource.ThemeInfo ? props.isDark = DataSource.ThemeInfo.isInverted : null;
+                props.isDark = Components.ThemeManager.CurrentTheme.isInverted ? true : false;
             }
         });
 
@@ -373,7 +373,7 @@ export class Forms {
         // Update the close button
         let closeBtn;
         Modal.HeaderElement ? closeBtn = Modal.HeaderElement.closest(".modal-header").querySelector(".btn-close") : null;
-        (closeBtn && DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? closeBtn.classList.add("invert") : null;
+        Components.ThemeManager.CurrentTheme.isInverted ? closeBtn.classList.add("invert") : null;
 
         // Render the table
         new DataTable({

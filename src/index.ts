@@ -1,4 +1,4 @@
-import { ContextInfo, Helper } from "gd-sprest-bs";
+import { Components, ContextInfo } from "gd-sprest-bs";
 import { App } from "./app";
 import { Configuration } from "./cfg";
 import { DataSource } from "./ds";
@@ -36,19 +36,11 @@ const GlobalVariable = {
         DataSource.init().then(
             // Success
             () => {
-                // Create the application
-                GlobalVariable.App = new App(props.el);
-
-                // See if this is a classic page.
-                if (Strings.IsClassic) {
-                    Helper.getCurrentTheme().then(() => {
-                        // See if the theme exists
-                        if (ContextInfo.theme.accent) {
-                            // Update the theme
-                            GlobalVariable.updateTheme(ContextInfo.theme);
-                        }
-                    });
-                }
+                // Load the theme
+                Components.ThemeManager.load(true).then(() => {
+                    // Create the application
+                    GlobalVariable.App = new App(props.el);
+                });
             },
 
             // Error
@@ -63,14 +55,8 @@ const GlobalVariable = {
         DataSource.AppCatalogUrl = url;
     },
     updateTheme: (themeInfo) => {
-        // Store the theme info
-        DataSource.ThemeInfo = themeInfo;
-
-        // See if the app exists
-        if (GlobalVariable.App) {
-            // Apply theming
-            GlobalVariable.App.updateTheme();
-        }
+        // Set the theme
+        Components.ThemeManager.setCurrentTheme(themeInfo);
     },
     version: Strings.Version
 };
