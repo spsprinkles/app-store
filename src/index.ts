@@ -1,4 +1,4 @@
-import { Components, ContextInfo } from "gd-sprest-bs";
+import { ContextInfo, ThemeManager } from "gd-sprest-bs";
 import { App } from "./app";
 import { Configuration } from "./cfg";
 import { DataSource } from "./ds";
@@ -37,7 +37,7 @@ const GlobalVariable = {
             // Success
             () => {
                 // Load the theme
-                Components.ThemeManager.load(true).then(() => {
+                ThemeManager.load(true).then(() => {
                     // Create the application
                     GlobalVariable.App = new App(props.el);
                 });
@@ -56,7 +56,7 @@ const GlobalVariable = {
     },
     updateTheme: (themeInfo) => {
         // Set the theme
-        Components.ThemeManager.setCurrentTheme(themeInfo);
+        ThemeManager.setCurrentTheme(themeInfo);
     },
     version: Strings.Version
 };

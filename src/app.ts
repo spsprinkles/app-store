@@ -292,7 +292,7 @@ export class App {
                     let closeBtn;
                     let canvas = CanvasForm.HeaderElement.closest(".offcanvas-header");
                     canvas ? closeBtn = canvas.querySelector(".btn-close") : null;
-                    Components.ThemeManager.CurrentTheme.isInverted ? closeBtn.classList.add("invert") : null;
+                    closeBtn && ThemeManager.CurrentTheme.isInverted ? closeBtn.classList.add("invert") : null;
                 }
             },
             footer: {
@@ -377,7 +377,7 @@ export class App {
                                 // Display the image
                                 let img = document.createElement("img");
                                 img.classList.add("icon");
-                                Components.ThemeManager.CurrentTheme.isInverted ? img.classList.add("invert") : null;
+                                ThemeManager.CurrentTheme.isInverted ? img.classList.add("invert") : null;
                                 img.src = item.Icon;
                                 el.appendChild(img);
                             } else {
@@ -553,7 +553,7 @@ export class App {
                             });
 
                             // Invert the colors for grow/shrink if ThemeInfo.isInverted
-                            Components.ThemeManager.CurrentTheme.isInverted ? ttg.el.classList.add("invert") : null;
+                            ThemeManager.CurrentTheme.isInverted ? ttg.el.classList.add("invert") : null;
 
                             // Add data attribute for Power Platform items
                             item.AppType.startsWith('Power ') ? ttg.el.setAttribute("data-ispowerplatform", "") : null;
