@@ -314,12 +314,13 @@ export class App {
                 // Add the branding icon & text
                 onRendering: (props) => {
                     // Set the class names
-                    props.className = "bg-sharepoint navbar-expand rounded-top";
+                    props.className = "navbar-expand rounded-top";
+                    props.type = Components.NavbarTypes.Primary
 
                     // Set the brand
                     let brand = document.createElement("div");
                     brand.className = "d-flex";
-                    brand.appendChild(Common.getIcon(32, 32, 'App Store', 'brand me-2'));
+                    brand.appendChild(Common.getIcon(32, 32, 'App Store', 'brand me-75'));
                     brand.append(Strings.ProjectName);
                     props.brand = brand;
                 },
