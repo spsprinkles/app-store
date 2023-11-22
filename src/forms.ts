@@ -92,6 +92,11 @@ export class Forms {
             }
         }
 
+        // Add spacing between the tab control and the form
+        props.onFormRendered = (form) => {
+            form.el ? form.el.classList.add("mt-3") : null;
+        }
+
         // Return the properties
         return props;
     }
