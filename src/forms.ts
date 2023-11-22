@@ -92,16 +92,6 @@ export class Forms {
             }
         }
 
-        props.onFormRendered = (form) => {
-            let closeBtn;
-            let col12;
-            let modal = form.el.closest(".modal-content");
-            modal ? col12 = modal.querySelector(".modal-body .row>.col-12") : null;
-            modal ? closeBtn = modal.querySelector(".modal-header .btn-close") : null;
-            (modal && col12) ? col12.classList.add("mb-3") : null;
-            closeBtn && ThemeManager.CurrentTheme.isInverted ? closeBtn.classList.add("invert") : null;
-        }
-
         // Return the properties
         return props;
     }
@@ -224,10 +214,6 @@ export class Forms {
         // Set the header
         Modal.setHeader("");
 
-        let closeBtn;
-        Modal.HeaderElement ? closeBtn = Modal.HeaderElement.closest(".modal-header").querySelector(".btn-close") : null;
-        closeBtn && ThemeManager.CurrentTheme.isInverted ? closeBtn.classList.add("invert") : null;
-
         // Hide the footer
         Modal.FooterElement.classList.add("d-none");
 
@@ -304,7 +290,7 @@ export class Forms {
         if (item.Icon) {
             // Display the image
             icon = document.createElement("img");
-            ThemeManager.CurrentTheme.isInverted ? icon.classList.add("invert") : null;
+            ThemeManager.IsInverted ? icon.classList.add("invert") : null;
             icon.style.height = "150px";
             icon.style.width = "150px";
             icon.src = item.Icon;
@@ -348,7 +334,7 @@ export class Forms {
             id: "screenshots" + item.Id,
             items,
             onRendered: (el, props) => {
-                props.isDark = ThemeManager.CurrentTheme.isInverted ? true : false;
+                props.isDark = ThemeManager.IsInverted;
             }
         });
 
@@ -369,11 +355,6 @@ export class Forms {
 
         // Set the header
         Modal.setHeader("View Requests");
-
-        // Update the close button
-        let closeBtn;
-        Modal.HeaderElement ? closeBtn = Modal.HeaderElement.closest(".modal-header").querySelector(".btn-close") : null;
-        closeBtn && ThemeManager.CurrentTheme.isInverted ? closeBtn.classList.add("invert") : null;
 
         // Render the table
         new DataTable({

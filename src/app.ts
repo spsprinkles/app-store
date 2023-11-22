@@ -287,18 +287,12 @@ export class App {
                         // Filter the table
                         this._dashboard.filter(2, value);
                     }
-                }],
-                onRendered: () => {
-                    let closeBtn;
-                    let canvas = CanvasForm.HeaderElement.closest(".offcanvas-header");
-                    canvas ? closeBtn = canvas.querySelector(".btn-close") : null;
-                    closeBtn && ThemeManager.CurrentTheme.isInverted ? closeBtn.classList.add("invert") : null;
-                }
+                }]
             },
             footer: {
                 itemsEnd: [
                     {
-                        className: "p-0 pe-none text-dark",
+                        className: "p-0 pe-none text-body",
                         text: "v" + Strings.Version,
                         onRender: (el) => {
                             // Hide version footer in a modern page
@@ -377,7 +371,7 @@ export class App {
                                 // Display the image
                                 let img = document.createElement("img");
                                 img.classList.add("icon");
-                                ThemeManager.CurrentTheme.isInverted ? img.classList.add("invert") : null;
+                                ThemeManager.IsInverted ? img.classList.add("invert") : null;
                                 img.src = item.Icon;
                                 el.appendChild(img);
                             } else {
@@ -553,7 +547,7 @@ export class App {
                             });
 
                             // Invert the colors for grow/shrink if ThemeInfo.isInverted
-                            ThemeManager.CurrentTheme.isInverted ? ttg.el.classList.add("invert") : null;
+                            ThemeManager.IsInverted ? ttg.el.classList.add("invert") : null;
 
                             // Add data attribute for Power Platform items
                             item.AppType.startsWith('Power ') ? ttg.el.setAttribute("data-ispowerplatform", "") : null;
