@@ -36,11 +36,8 @@ const GlobalVariable = {
         DataSource.init().then(
             // Success
             () => {
-                // Load the theme
-                ThemeManager.load(true).then(() => {
-                    // Create the application
-                    GlobalVariable.App = new App(props.el);
-                });
+                // Create the application
+                GlobalVariable.App = new App(props.el);
             },
 
             // Error
