@@ -32,7 +32,7 @@ table.cards {
             width: 19rem;
         }
         td {
-            background-color: var(--sp-neutral-lighter) !important;
+            background-color: color-mix(in srgb, var(--sp-black, #000000), transparent 95%) !important;
             display: flex;
             div:not(.btn-group).shrink {
                 display: -webkit-box;
