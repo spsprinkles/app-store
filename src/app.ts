@@ -287,15 +287,7 @@ export class App {
                         // Filter the table
                         this._dashboard.filter(2, value);
                     }
-                }],
-                onRendered: (el) => {
-                    // Add the dark class if theme is inverted
-                    if (ThemeManager.IsInverted) {
-                        el.querySelectorAll("div.form-check.form-switch input[type=checkbox].form-check-input").forEach((el: HTMLElement) => {
-                            el.classList.add("dark");
-                        });
-                    }
-                }
+                }]
             },
             footer: {
                 itemsEnd: [
