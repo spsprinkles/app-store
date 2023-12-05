@@ -370,7 +370,6 @@ export class Forms {
             rows: DataSource.RequestsList.Items,
             dtProps: {
                 dom: 'rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',
-                pageLength: 10,
                 createdRow: function (row, data, index) {
                     jQuery('td', row).addClass('align-middle');
                 },
@@ -389,11 +388,12 @@ export class Forms {
                 headerCallback: function (thead, data, start, end, display) {
                     jQuery('th', thead).addClass('align-middle');
                 },
-                // Sort descending by Start Date
-                order: [[1, "asc"]],
                 language: {
                     emptyTable: "No app requests exist",
                 },
+                // Sort descending by Start Date
+                order: [[1, "asc"]],
+                pageLength: 10
             },
             columns: [
                 {
