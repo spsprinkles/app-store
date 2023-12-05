@@ -442,7 +442,6 @@ export class Forms {
             el: Modal.FooterElement,
             content: "Close the dialog",
             btnProps: {
-                isSmall: true,
                 text: "Close",
                 type: Components.ButtonTypes.OutlineSecondary,
                 onClick: () => {
