@@ -201,6 +201,9 @@ export class Forms {
     // Displays the new request form
     static newRequest(onUpdate: () => void) {
         DataSource.RequestsList.newForm({
+            onSetHeader: (el) => {
+                el.querySelector("h5") ? el.querySelector("h5").innerHTML = "New App Request" : null;
+            },
             onUpdate: (item: IAppStoreItem) => {
                 // Refresh the data
                 DataSource.RequestsList.refreshItem(item.Id).then(onUpdate);
@@ -359,7 +362,7 @@ export class Forms {
         Modal.setType(Components.ModalTypes.XLarge);
 
         // Set the header
-        Modal.setHeader("View Requests");
+        Modal.setHeader("App Requests");
 
         // Render the table
         new DataTable({
@@ -437,10 +440,11 @@ export class Forms {
         // Render the footer
         Components.Tooltip({
             el: Modal.FooterElement,
-            content: "Closes the dialog",
+            content: "Close the dialog",
             btnProps: {
+                isSmall: true,
                 text: "Close",
-                type: Components.ButtonTypes.OutlinePrimary,
+                type: Components.ButtonTypes.OutlineSecondary,
                 onClick: () => {
                     // Hide the modal
                     Modal.hide();
