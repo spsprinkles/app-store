@@ -1,5 +1,5 @@
-import { CanvasForm, Dashboard } from "dattatable";
-import { Components, ContextInfo } from "gd-sprest-bs";
+import { Dashboard } from "dattatable";
+import { Components, ContextInfo, ThemeManager } from "gd-sprest-bs";
 import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
 import { gearWideConnected } from "gd-sprest-bs/build/icons/svgs/gearWideConnected";
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
@@ -25,9 +25,6 @@ export class App {
 
         // Render the dashboard
         this.render(el);
-
-        // Update the themeing
-        this.updateTheme();
     }
 
     // Renders the dashboard
@@ -50,13 +47,10 @@ export class App {
                             el,
                             content: item.text,
                             type: Components.TooltipTypes.LightBorder,
-                            options: {
-                                theme: "sharepoint"
-                            },
                             btnProps: {
                                 // Render the icon button
-                                className: "p-1 pe-2 me-2",
-                                iconType: Common.getIcon(25, 25, 'App Dashboard', 'brand'),
+                                className: "p-1 px-2 me-2",
+                                iconType: Common.getIcon(22, 22, 'App Dashboard', 'brand'),
                                 text: "App Dashboard",
                                 type: Components.ButtonTypes.OutlineLight,
                                 onClick: () => {
@@ -80,6 +74,13 @@ export class App {
                     isButton: true,
                     items: [
                         {
+                            text: "App Settings",
+                            onClick: () => {
+                                // Show the install modal
+                                InstallationModal.show(true);
+                            }
+                        },
+                        {
                             text: "Main List",
                             onClick: () => {
                                 // Show the settings in a new tab
@@ -91,6 +92,13 @@ export class App {
                             onClick: () => {
                                 // Show the settings in a new tab
                                 window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/listedit.aspx?List=" + DataSource.RatingsList.ListInfo.Id);
+                            }
+                        },
+                        {
+                            text: "Requests List",
+                            onClick: () => {
+                                // Show the settings in a new tab
+                                window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/listedit.aspx?List=" + DataSource.RequestsList.ListInfo.Id);
                             }
                         },
                         {
@@ -113,13 +121,6 @@ export class App {
                                 // Show the settings in a new tab
                                 window.open(ContextInfo.webServerRelativeUrl + "/_layouts/15/people.aspx?MembershipGroupId=" + Security.AdminGroup.Id);
                             }
-                        },
-                        {
-                            text: "App Settings",
-                            onClick: () => {
-                                // Show the install modal
-                                InstallationModal.show(true);
-                            }
                         }
                     ]
                 }
@@ -128,7 +129,7 @@ export class App {
             // Render the Add button
             subNavItems.push(
                 {
-                    text: "Add an App",
+                    text: "Adds an item to the AppStore",
                     onRender: (el, item) => {
                         // Clear the existing button
                         el.innerHTML = "";
@@ -141,9 +142,6 @@ export class App {
                         Components.Tooltip({
                             el: span,
                             content: item.text,
-                            options: {
-                                theme: "sharepoint"
-                            },
                             btnProps: {
                                 // Render the icon button
                                 className: "p-1 pe-2",
@@ -167,6 +165,75 @@ export class App {
             );
         }
 
+        // Render the Add button
+        subNavItems.push(
+            {
+                text: "Request an App to be added to the AppStore",
+                onRender: (el, item) => {
+                    // Clear the existing button
+                    el.innerHTML = "";
+                    // Create a span to wrap the icon in
+                    let span = document.createElement("span");
+                    span.className = "bg-white d-inline-flex ms-2 rounded";
+                    el.appendChild(span);
+
+                    // Render a tooltip
+                    Components.Tooltip({
+                        el: span,
+                        content: item.text,
+                        btnProps: {
+                            // Render the icon button
+                            className: "p-1 pe-2",
+                            iconType: Common.getIcon(24, 24, 'AppIconDefaultAdd', 'icon-svg me-1'),
+                            isSmall: true,
+                            text: "App Request",
+                            type: Components.ButtonTypes.OutlineSecondary,
+                            onClick: () => {
+                                // Show the new request form
+                                Forms.newRequest(() => {
+                                    // Refresh the table
+                                    this._dashboard.refresh(DataSource.AppItems);
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        );
+
+        // Render the Add button
+        subNavItems.push(
+            {
+                text: "View app requests for the AppStore",
+                onRender: (el, item) => {
+                    // Clear the existing button
+                    el.innerHTML = "";
+                    // Create a span to wrap the icon in
+                    let span = document.createElement("span");
+                    span.className = "bg-white d-inline-flex ms-2 rounded";
+                    el.appendChild(span);
+
+                    // Render a tooltip
+                    Components.Tooltip({
+                        el: span,
+                        content: item.text,
+                        btnProps: {
+                            // Render the icon button
+                            className: "p-1 pe-2",
+                            iconType: Common.getIcon(24, 24, 'AppIconDefaultList', 'icon-svg me-1'),
+                            isSmall: true,
+                            text: "View Requests",
+                            type: Components.ButtonTypes.OutlineSecondary,
+                            onClick: () => {
+                                // Show the requests modal
+                                Forms.viewRequests();
+                            }
+                        }
+                    });
+                }
+            }
+        );
+
         // Render the filters button
         subNavItems.push(
             {
@@ -183,9 +250,6 @@ export class App {
                     Components.Tooltip({
                         el: span,
                         content: "Show " + item.text,
-                        options: {
-                            theme: "sharepoint"
-                        },
                         btnProps: {
                             // Render the icon button
                             className: "p-1 pe-2",
@@ -218,18 +282,12 @@ export class App {
                         // Filter the table
                         this._dashboard.filter(2, value);
                     }
-                }],
-                onRendered: () => {
-                    let closeBtn;
-                    let canvas = CanvasForm.HeaderElement.closest(".offcanvas-header");
-                    canvas ? closeBtn = canvas.querySelector(".btn-close") : null;
-                    (closeBtn && DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? closeBtn.classList.add("invert") : null;
-                }
+                }]
             },
             footer: {
                 itemsEnd: [
                     {
-                        className: "p-0 pe-none text-dark",
+                        className: "p-0 pe-none text-body",
                         text: "v" + Strings.Version,
                         onRender: (el) => {
                             // Hide version footer in a modern page
@@ -243,12 +301,13 @@ export class App {
                 // Add the branding icon & text
                 onRendering: (props) => {
                     // Set the class names
-                    props.className = "bg-sharepoint navbar-expand rounded-top";
+                    props.className = "navbar-expand rounded-top";
+                    props.type = Components.NavbarTypes.Primary
 
                     // Set the brand
                     let brand = document.createElement("div");
-                    brand.className = "d-flex align-items-center";
-                    brand.appendChild(Common.getIcon(36, 36, 'App Store', 'brand me-2'));
+                    brand.className = "d-flex";
+                    brand.appendChild(Common.getIcon(32, 32, 'App Store', 'brand me-75'));
                     brand.append(Strings.ProjectName);
                     props.brand = brand;
                 },
@@ -308,7 +367,7 @@ export class App {
                                 // Display the image
                                 let img = document.createElement("img");
                                 img.classList.add("icon");
-                                (DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? img.classList.add("invert") : null;
+                                ThemeManager.IsInverted ? img.classList.add("invert") : null;
                                 img.src = item.Icon;
                                 el.appendChild(img);
                             } else {
@@ -408,9 +467,6 @@ export class App {
                                 Components.Tooltip({
                                     el,
                                     content: "Deploy the dataset for this solution",
-                                    options: {
-                                        theme: "sharepoint"
-                                    },
                                     btnProps: {
                                         className: "p-1 pe-2",
                                         iconType: Common.getIcon(22, 22, item.AppType + ' ' + column.title, 'icon-svg me-1'),
@@ -440,9 +496,6 @@ export class App {
                             // Add the Details button tooltip
                             tooltips.push({
                                 content: "View more details",
-                                options: {
-                                    theme: "sharepoint"
-                                },
                                 btnProps: {
                                     className: "p-1 pe-2",
                                     iconType: Common.getIcon(24, 24, 'AppsContent', 'icon-svg img-flip-x me-1'),
@@ -460,9 +513,6 @@ export class App {
                                 // Add the edit button
                                 tooltips.push({
                                     content: "Edit the item",
-                                    options: {
-                                        theme: "sharepoint"
-                                    },
                                     btnProps: {
                                         className: "p-1 pe-2",
                                         iconType: Common.getIcon(24, 24, 'WindowEdit', 'icon-svg me-1'),
@@ -493,7 +543,7 @@ export class App {
                             });
 
                             // Invert the colors for grow/shrink if ThemeInfo.isInverted
-                            (DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? ttg.el.classList.add("invert") : null;
+                            ThemeManager.IsInverted ? ttg.el.classList.add("invert") : null;
 
                             // Add data attribute for Power Platform items
                             item.AppType.startsWith('Power ') ? ttg.el.setAttribute("data-ispowerplatform", "") : null;
@@ -530,76 +580,5 @@ export class App {
                 ]
             }
         });
-    }
-
-    // Update the theme
-    updateTheme() {
-        // See if the theme information exists
-        if (DataSource.ThemeInfo) {
-            // Get the theme colors by SPFx ThemeInfo, or ContextInfo, or classic mode
-            let accent = (DataSource.ThemeInfo.palette || ContextInfo.theme).accent || DataSource.getThemeColor("accentButtonBackground");
-            let black = (DataSource.ThemeInfo.palette || ContextInfo.theme).black || DataSource.getThemeColor("bodyTextChecked");
-            let errorIcon = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).errorIcon || DataSource.getThemeColor("red");
-            let neutralDark = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralDark || DataSource.getThemeColor("StrongBodyText");
-            let neutralLight = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralLight || DataSource.getThemeColor("DisabledLines");
-            let neutralLighter = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralLighter || DataSource.getThemeColor("DialogBorder");
-            let neutralLighterAlt = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralLighterAlt || DataSource.getThemeColor("DisabledBackground");
-            let neutralPrimary = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralPrimary || DataSource.getThemeColor("ButtonText");
-            let neutralPrimaryAlt = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralPrimaryAlt || DataSource.getThemeColor("neutralPrimaryAlt");
-            let neutralSecondary = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralSecondary || DataSource.getThemeColor("SubtleEmphasisText");
-            let neutralSecondaryAlt = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralSecondaryAlt || DataSource.getThemeColor("SubtleBodyText");
-            let neutralTertiary = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralTertiary || DataSource.getThemeColor("DisabledText");
-            let neutralTertiaryAlt = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralTertiaryAlt || DataSource.getThemeColor("SubtleLines");
-            let neutralQuaternary = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralQuaternary || DataSource.getThemeColor("disabledSubtext");
-            let neutralQuaternaryAlt = (DataSource.ThemeInfo.palette || ContextInfo.theme).neutralQuaternaryAlt || DataSource.getThemeColor("listItemBackgroundCheckedHovered");
-            let primaryButtonText = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).primaryButtonText || DataSource.getThemeColor("TileText");
-            let severeWarningIcon = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).severeWarningIcon || DataSource.getThemeColor("orange");
-            let successIcon = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).successIcon || DataSource.getThemeColor("green");
-            let themeAccent = (DataSource.ThemeInfo.palette || ContextInfo.theme).themeAccent || DataSource.getThemeColor("AccentText");
-            let themeDark = (DataSource.ThemeInfo.palette || ContextInfo.theme).themeDark || DataSource.getThemeColor("EmphasisBorder");
-            let themeDarker = (DataSource.ThemeInfo.palette || ContextInfo.theme).themeDarker || DataSource.getThemeColor("EmphasisHoverBorder");
-            let themeDarkAlt = (DataSource.ThemeInfo.palette || ContextInfo.theme).themeDarkAlt || DataSource.getThemeColor("primaryButtonBackgroundHovered");
-            let themeLight = (DataSource.ThemeInfo.palette || ContextInfo.theme).themeLight || DataSource.getThemeColor("StrongLines");
-            let themeLighter = (DataSource.ThemeInfo.palette || ContextInfo.theme).themeLighter || DataSource.getThemeColor("ButtonHoverBackground");
-            let themeLighterAlt = (DataSource.ThemeInfo.palette || ContextInfo.theme).themeLighterAlt || DataSource.getThemeColor("themeLighterAlt");
-            let themePrimary = (DataSource.ThemeInfo.palette || ContextInfo.theme).themePrimary || DataSource.getThemeColor("AccentText");
-            let themeSecondary = (DataSource.ThemeInfo.palette || ContextInfo.theme).themeSecondary || DataSource.getThemeColor("AccentLines");
-            let themeTertiary = (DataSource.ThemeInfo.palette || ContextInfo.theme).themeTertiary || DataSource.getThemeColor("SuiteBarHoverBackground");
-            let warningHighlight = (DataSource.ThemeInfo.semanticColors || ContextInfo.theme).warningHighlight || DataSource.getThemeColor("yellow");
-            let white = (DataSource.ThemeInfo.palette || ContextInfo.theme).white || DataSource.getThemeColor("EmphasisText");
-            
-            // Set the CSS properties to the theme colors
-            let root = document.querySelector(':root') as HTMLElement;
-            root.style.setProperty('--sp-accent', accent);
-            root.style.setProperty('--sp-black', black);
-            root.style.setProperty('--sp-error-icon', errorIcon);
-            root.style.setProperty('--sp-neutral-dark', neutralDark);
-            root.style.setProperty('--sp-neutral-light', neutralLight);
-            root.style.setProperty('--sp-neutral-lighter', neutralLighter);
-            root.style.setProperty('--sp-neutral-lighter-alt', neutralLighterAlt);
-            root.style.setProperty('--sp-neutral-primary', neutralPrimary);
-            root.style.setProperty('--sp-neutral-primary-alt', neutralPrimaryAlt);
-            root.style.setProperty('--sp-neutral-secondary', neutralSecondary);
-            root.style.setProperty('--sp-neutral-secondary-alt', neutralSecondaryAlt);
-            root.style.setProperty('--sp-neutral-tertiary', neutralTertiary);
-            root.style.setProperty('--sp-neutral-tertiary-alt', neutralTertiaryAlt);
-            root.style.setProperty('--sp-neutral-quaternary', neutralQuaternary);
-            root.style.setProperty('--sp-neutral-quaternary-alt', neutralQuaternaryAlt);
-            root.style.setProperty('--sp-primary-text', primaryButtonText);
-            root.style.setProperty('--sp-severe-warning-icon', severeWarningIcon);
-            root.style.setProperty('--sp-success-icon', successIcon);
-            root.style.setProperty('--sp-theme-accent', themeAccent);
-            root.style.setProperty('--sp-theme-dark', themeDark);
-            root.style.setProperty('--sp-theme-darker', themeDarker);
-            root.style.setProperty('--sp-theme-dark-alt', themeDarkAlt);
-            root.style.setProperty('--sp-theme-light', themeLight);
-            root.style.setProperty('--sp-theme-lighter', themeLighter);
-            root.style.setProperty('--sp-theme-lighter-alt', themeLighterAlt);
-            root.style.setProperty('--sp-theme-primary', themePrimary);
-            root.style.setProperty('--sp-theme-secondary', themeSecondary);
-            root.style.setProperty('--sp-theme-tertiary', themeTertiary);
-            root.style.setProperty('--sp-warning-highlight', warningHighlight);
-            root.style.setProperty('--sp-white', white);
-        }
     }
 }

@@ -185,9 +185,6 @@ export class CreateTemplate {
             tooltips: [
                 {
                     content: "Load the lists from the source web",
-                    options: {
-                        theme: "sharepoint"
-                    },
                     btnProps: {
                         text: "Load Lists",
                         type: Components.ButtonTypes.OutlinePrimary,

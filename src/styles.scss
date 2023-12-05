@@ -1,223 +1,6 @@
 /** Custom Styles Go Here */
 :root {
     --shrink-right: -6rem;
-    --sp-accent: #8764b8;
-    --sp-black: #000000;
-    --sp-error-icon: #a80000;
-    --sp-neutral-dark: #201f1e;
-    --sp-neutral-light: #edebe9;
-    --sp-neutral-lighter: #f3f2f1;
-    --sp-neutral-lighter-alt: #faf9f8;
-    --sp-neutral-primary: #323130;
-    --sp-neutral-primary-alt: #3b3a39;
-    --sp-neutral-secondary: #605e5c;
-    --sp-neutral-secondary-alt: #8a8886;
-    --sp-neutral-tertiary: #a19f9d;
-    --sp-neutral-tertiary-alt: #c8c6c4;
-    --sp-neutral-quaternary: #d2d0ce;
-    --sp-neutral-quaternary-alt: #e1dfdd;
-    --sp-primary-text: #ffffff;
-    --sp-severe-warning-icon: #d83b01;
-    --sp-success-icon: #107c10;
-    --sp-theme-accent: #0078d4;
-    --sp-theme-dark: #005a9e;
-    --sp-theme-darker: #004578;
-    --sp-theme-dark-alt: #106ebe;
-    --sp-theme-light: #c7e0f4;
-    --sp-theme-lighter: #deecf9;
-    --sp-theme-lighter-alt: #eff6fc;
-    --sp-theme-primary: #0078d4;
-    --sp-theme-secondary: #2b88d8;
-    --sp-theme-tertiary: #71afe5;
-    --sp-warning-highlight: #ffb900;
-    --sp-white: #ffffff;
-
-    --bs-primary: var(--sp-theme-primary);
-    --bs-secondary: var(--sp-neutral-secondary);
-    --bs-success: var(--sp-success-icon);
-    --bs-info: var(--sp-accent);
-    --bs-warning: var(--sp-severe-warning-icon);
-    --bs-danger: var(--sp-error-icon);
-    --bs-light: var(--sp-neutral-lighter-alt);
-    --bs-dark: var(--sp-neutral-dark);
-
-    --bs-body-bg: var(--sp-primary-text);
-    --bs-body-color: var(--sp-neutral-dark);
-    --bs-border-color: var(--sp-neutral-quaternary);
-    --bs-link-color: var(--sp-theme-primary);
-    --bs-modal-color: var(--sp-primary-text);
-}
-.bs {
-    a, .link-primary {
-        color: var(--sp-theme-primary);
-    }
-    .bg-sharepoint {
-        background-color: var(--sp-theme-primary) !important;
-    }
-    .bg-primary {
-        background-color: rgba(var(--sp-theme-primary), var(--bs-bg-opacity)) !important;
-    }
-    .bg-white {
-        background-color: var(--sp-white) !important;
-    }
-    .btn-outline-light {
-        --bs-btn-color: var(--sp-neutral-lighter-alt);
-        --bs-btn-border-color: var(--sp-neutral-lighter-alt);
-        --bs-btn-hover-color: var(--sp-black);
-        --bs-btn-hover-bg: var(--sp-neutral-lighter-alt);
-        --bs-btn-hover-border-color: var(--sp-neutral-lighter-alt);
-        --bs-btn-active-color: var(--sp-black);
-        --bs-btn-active-bg: var(--sp-neutral-lighter-alt);
-    }
-    .btn-outline-light:focus {
-        color: var(--sp-neutral-lighter-alt);
-    }
-    .btn-outline-light:hover {
-        background-color: var(--sp-neutral-lighter-alt);
-        border-color: var(--sp-neutral-lighter-alt);
-        color: var(--sp-black);//--sp-neutral-dark
-        svg.brand path {
-            fill: var(--sp-black);//--sp-neutral-dark
-        }
-    }
-    .btn:focus-visible {
-        background-color: var(--sp-neutral-dark);
-        border-color: var(--sp-neutral-dark);
-        color: var(--sp-neutral-lighter-alt);
-    }
-    /* Fix button text size */
-    .btn-icon {
-        font-size: 0.875rem;
-    }
-    .btn-outline-primary, .btn-outline-primary:disabled, .btn-outline-primary.disabled {
-        border-color: var(--sp-theme-primary);
-        color: var(--sp-theme-primary);
-    }
-    .btn-outline-primary:hover {
-        background-color: var(--sp-theme-dark-alt);
-        border-color: var(--sp-theme-dark-alt);
-    }
-    .btn-check:checked+.btn, :not(.btn-check)+.btn:active, .btn:first-child:active, .btn.active, .btn.show {
-        background-color: var(--sp-theme-dark);
-        border-color: var(--sp-theme-dark);
-        color: var(--sp-primary-text);
-    }
-    .btn-outline-primary:active, .list-group-item.active, .nav-tabs .nav-link.active, .nav-tabs .nav-link:focus, .page-link:focus {
-        background-color: var(--sp-theme-dark);
-        border-color: var(--sp-theme-dark);
-    }
-    .btn-outline-secondary {
-        --bs-btn-color: var(--sp-neutral-secondary);
-        --bs-btn-border-color: var(--sp-neutral-secondary);
-        --bs-btn-hover-color: var(--sp-white);
-        --bs-btn-hover-bg: var(--sp-neutral-secondary);
-        --bs-btn-hover-border-color: var(--sp-neutral-secondary);
-        --bs-btn-active-color: var(--sp-white);
-        --bs-btn-active-bg: var(--sp-neutral-secondary);
-        --bs-btn-active-border-color: var(--sp-neutral-secondary);
-        --bs-btn-disabled-color: var(--sp-neutral-secondary);
-        --bs-btn-disabled-border-color: var(--sp-neutral-secondary);
-    }
-    .btn-primary, .nav-tabs .show>.nav-link {
-        background-color: var(--sp-theme-primary);
-        border-color: var(--sp-theme-primary);
-    }
-    .dropdown-item:hover, .dropdown-item:focus {
-        background-color: var(--sp-neutral-quaternary);
-    }
-    .dropdown-item.active, .dropdown-item:active {
-        background-color: var(--sp-theme-primary);
-    }
-    .form-check-input:checked {
-        background-color: var(--sp-theme-primary);
-        border-color: var(--sp-theme-primary);
-    }
-    .form-check-input:focus {
-        background-color: var(--sp-theme-dark);
-        border-color: var(--sp-theme-dark);
-    }
-    .form-control {
-        border-color: var(--sp-neutral-secondary);
-        color: var(--sp-neutral-secondary);
-    }
-    .form-control:focus, .form-check-input:focus, .page-link:focus {
-        border-color: var(--sp-theme-secondary);
-    }
-    .form-control::placeholder {
-        color: var(--sp-neutral-secondary);
-    }
-    .form-range::-webkit-slider-thumb {
-        background-color: var(--sp-theme-primary);
-    }
-    .form-select {
-        border-color: var(--sp-neutral-secondary);
-    }
-    :not(.btn-group).invert, button.btn-close.invert, img.invert, .invert::after {
-        filter: invert(1);
-    }
-    .line-limit-1 {
-        display: -webkit-box;
-        overflow: hidden;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 1;
-    }
-    .modal-content {
-        color: var(--sp-neutral-dark);
-    }
-    .modal-footer, .modal-header, .offcanvas-header {
-        border-color: var(--sp-neutral-quaternary);
-    }
-    .nav-link, .page-link {
-        color: var(--sp-theme-primary);
-    }
-    .nav-tabs {
-        border-bottom: 0;
-    }
-    .navbar {
-        --bs-navbar-brand-color: var(--sp-primary-text);
-        --bs-navbar-color: var(--sp-primary-text);
-    }
-    .page-item.disabled .page-link {
-        background-color: var(--sp-white);
-        border-color: var(--sp-neutral-secondary);
-        color: var(--sp-neutral-secondary);
-    }
-    .page-item.active .page-link {
-        background-color: var(--sp-neutral-secondary);
-        border-color: var(--sp-neutral-secondary);
-        color: var(--sp-white);
-    }
-    .table>:not(caption)>*>* {
-        color: var(--sp-neutral-dark);
-    }
-}
-.people-picker input.form-control {
-    background-color: var(--sp-white);
-}
-/* Tippy Tooltip SharePoint theme color */
-.tippy-box[data-theme~='sharepoint'] {
-    background-color: var(--sp-theme-dark);
-}
-.tippy-box[data-theme~='sharepoint'][data-placement^='top']>.tippy-arrow::before {
-    border-top-color: var(--sp-theme-dark);
-}
-.tippy-box[data-theme~='sharepoint'][data-placement^='bottom']>.tippy-arrow::before {
-    border-bottom-color: var(--sp-theme-dark);
-}
-.tippy-box[data-theme~='sharepoint'][data-placement^='left']>.tippy-arrow::before {
-    border-left-color: var(--sp-theme-dark);
-}
-.tippy-box[data-theme~='sharepoint'][data-placement^='right']>.tippy-arrow::before {
-    border-right-color: var(--sp-theme-dark);
-}
-.carousel-caption {
-    color: var(--sp-neutral-dark) !important;
-}
-.carousel-control-prev-icon, .carousel-control-next-icon {
-    filter: invert(1);
-}
-.carousel-indicators [data-bs-target] {
-    background-color: var(--sp-neutral-dark) !important;
 }
 div.fs-6 label {
     display: contents;
@@ -225,12 +8,6 @@ div.fs-6 label {
 }
 svg.brand {
     margin-right: .25rem;
-    path {
-        fill: var(--sp-primary-text);
-    }
-}
-svg.icon-svg path {
-    fill: currentColor;
 }
 svg.icon-type path {
     fill: var(--sp-neutral-dark);
@@ -255,7 +32,7 @@ table.cards {
             width: 19rem;
         }
         td {
-            background-color: var(--sp-neutral-lighter) !important;
+            background-color: color-mix(in srgb, var(--sp-black, #000000), transparent 95%) !important;
             display: flex;
             div:not(.btn-group).shrink {
                 display: -webkit-box;
@@ -304,17 +81,6 @@ table.cards {
             }
         }
     }
-}
-#footer nav {
-    background-color: var(--sp-primary-text) !important;
-}
-/* Fix icon alignment inside nav item buttons */
-#navbar_content ul.navbar-nav li.nav-item a.btn svg {
-    margin: .1rem .25rem .088rem -.25rem;
-}
-#sub-navigation nav.sub-nav {
-    background-color: var(--sp-neutral-lighter) !important;
-    border-color: var(--sp-neutral-quaternary);
 }
 /* Remove the extra top padding on the content row */
 #contentRow {

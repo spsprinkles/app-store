@@ -1,5 +1,6 @@
-import { Documents, LoadingDialog, Modal } from "dattatable";
-import { Components, Helper } from "gd-sprest-bs";
+import { Documents, LoadingDialog, Modal, DataTable } from "dattatable";
+import { Components, Helper, ThemeManager } from "gd-sprest-bs";
+import * as jQuery from "jquery";
 import * as moment from "moment";
 import * as Common from "./common";
 import { CreateTemplate } from "./createTemplate";
@@ -46,9 +47,6 @@ export class Forms {
                 // Set a tooltip
                 Components.Tooltip({
                     content: "Click to upload an image file.",
-                    options: {
-                        theme: "sharepoint"
-                    },
                     target: ctrl.textbox.elTextbox
                 });
 
@@ -94,14 +92,9 @@ export class Forms {
             }
         }
 
+        // Add spacing between the tab control and the form
         props.onFormRendered = (form) => {
-            let closeBtn;
-            let col12;
-            let modal = form.el.closest(".modal-content");
-            modal ? col12 = modal.querySelector(".modal-body .row>.col-12") : null;
-            modal ? closeBtn = modal.querySelector(".modal-header .btn-close") : null;
-            (modal && col12) ? col12.classList.add("mb-3") : null;
-            (closeBtn && DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? closeBtn.classList.add("invert") : null;
+            form.el ? form.el.classList.add("mt-3") : null;
         }
 
         // Return the properties
@@ -205,6 +198,19 @@ export class Forms {
         });
     }
 
+    // Displays the new request form
+    static newRequest(onUpdate: () => void) {
+        DataSource.RequestsList.newForm({
+            onSetHeader: (el) => {
+                el.querySelector("h5") ? el.querySelector("h5").innerHTML = "New App Request" : null;
+            },
+            onUpdate: (item: IAppStoreItem) => {
+                // Refresh the data
+                DataSource.RequestsList.refreshItem(item.Id).then(onUpdate);
+            }
+        });
+    }
+
     // Displays the view form
     static view(item: IAppStoreItem) {
         // Clear the modal
@@ -215,10 +221,6 @@ export class Forms {
 
         // Set the header
         Modal.setHeader("");
-
-        let closeBtn;
-        Modal.HeaderElement ? closeBtn = Modal.HeaderElement.closest(".modal-header").querySelector(".btn-close") : null;
-        (closeBtn && DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? closeBtn.classList.add("invert") : null;
 
         // Hide the footer
         Modal.FooterElement.classList.add("d-none");
@@ -296,7 +298,7 @@ export class Forms {
         if (item.Icon) {
             // Display the image
             icon = document.createElement("img");
-            (DataSource.ThemeInfo && DataSource.ThemeInfo.isInverted) ? icon.classList.add("invert") : null;
+            ThemeManager.IsInverted ? icon.classList.add("invert") : null;
             icon.style.height = "150px";
             icon.style.width = "150px";
             icon.src = item.Icon;
@@ -340,12 +342,114 @@ export class Forms {
             id: "screenshots" + item.Id,
             items,
             onRendered: (el, props) => {
-                DataSource.ThemeInfo ? props.isDark = DataSource.ThemeInfo.isInverted : null;
+                props.isDark = ThemeManager.IsInverted;
             }
         });
 
         // Add the div element to the form
         Modal.BodyElement.appendChild(div);
+
+        // Show the modal
+        Modal.show();
+    }
+
+    // Displays the view the current requests
+    static viewRequests() {
+        // Clear the modal
+        Modal.clear();
+
+        // Set the modal props
+        Modal.setType(Components.ModalTypes.XLarge);
+
+        // Set the header
+        Modal.setHeader("App Requests");
+
+        // Render the table
+        new DataTable({
+            el: Modal.BodyElement,
+            rows: DataSource.RequestsList.Items,
+            dtProps: {
+                dom: 'rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',
+                createdRow: function (row, data, index) {
+                    jQuery('td', row).addClass('align-middle');
+                },
+                // Add some classes to the dataTable elements
+                drawCallback: function (settings) {
+                    let api = new jQuery.fn.dataTable.Api(settings) as any;
+                    let div = api.table().container() as HTMLDivElement;
+                    let table = api.table().node() as HTMLTableElement;
+                    div.querySelector(".dataTables_info").classList.add("text-center");
+                    div.querySelector(".dataTables_length").classList.add("pt-2");
+                    div.querySelector(".dataTables_paginate").classList.add("pt-03");
+                    table.classList.remove("no-footer");
+                    table.classList.add("tbl-footer");
+                    table.classList.add("table-striped");
+                },
+                headerCallback: function (thead, data, start, end, display) {
+                    jQuery('th', thead).addClass('align-middle');
+                },
+                language: {
+                    emptyTable: "No app requests exist",
+                },
+                // Sort descending by Start Date
+                order: [[1, "asc"]],
+                pageLength: 10
+            },
+            columns: [
+                {
+                    name: "Title",
+                    title: "App Name"
+                },
+                {
+                    name: "AppType",
+                    title: "App Type"
+                },
+                {
+                    name: "Status",
+                    title: "App Status"
+                },
+                {
+                    name: "Description",
+                    title: "Description"
+                },
+                {
+                    name: "Organization",
+                    title: "Organization"
+                },
+                {
+                    name: "Developers",
+                    title: "Developers",
+                    onRenderCell: (el, column, item: IAppStoreItem) => {
+                        let devs = item.Developers && item.Developers.results || [];
+
+                        // Parse the devs
+                        let strDevs = [];
+                        devs.forEach(dev => {
+                            // Append the title
+                            strDevs.push(dev.Title);
+                        });
+
+                        // Display the devs
+                        el.innerHTML = `${strDevs.join("<br/>")}`;
+                        el.setAttribute("data-filter", strDevs.join(","));
+                    }
+                }
+            ]
+        });
+
+        // Render the footer
+        Components.Tooltip({
+            el: Modal.FooterElement,
+            content: "Close the dialog",
+            btnProps: {
+                text: "Close",
+                type: Components.ButtonTypes.OutlineSecondary,
+                onClick: () => {
+                    // Hide the modal
+                    Modal.hide();
+                }
+            }
+        });
 
         // Show the modal
         Modal.show();
