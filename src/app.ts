@@ -1,9 +1,8 @@
-import { CanvasForm, Dashboard } from "dattatable";
+import { Dashboard } from "dattatable";
 import { Components, ContextInfo, ThemeManager } from "gd-sprest-bs";
 import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
 import { gearWideConnected } from "gd-sprest-bs/build/icons/svgs/gearWideConnected";
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
-import { viewList } from "gd-sprest-bs/build/icons/svgs/viewList";
 import * as jQuery from "jquery";
 import * as Common from "./common";
 import { CopyTemplate } from "./copyTemplate";
@@ -130,7 +129,7 @@ export class App {
             // Render the Add button
             subNavItems.push(
                 {
-                    text: "Adds an item to the app store",
+                    text: "Adds an item to the AppStore",
                     onRender: (el, item) => {
                         // Clear the existing button
                         el.innerHTML = "";
@@ -169,7 +168,7 @@ export class App {
         // Render the Add button
         subNavItems.push(
             {
-                text: "Request for an App to be added to the app store",
+                text: "Request an App to be added to the AppStore",
                 onRender: (el, item) => {
                     // Clear the existing button
                     el.innerHTML = "";
@@ -185,11 +184,9 @@ export class App {
                         btnProps: {
                             // Render the icon button
                             className: "p-1 pe-2",
-                            iconClassName: "me-1",
-                            iconType: plusSquare,
-                            iconSize: 24,
+                            iconType: Common.getIcon(24, 24, 'AppIconDefaultAdd', 'icon-svg me-1'),
                             isSmall: true,
-                            text: "Request App",
+                            text: "App Request",
                             type: Components.ButtonTypes.OutlineSecondary,
                             onClick: () => {
                                 // Show the new request form
@@ -207,7 +204,7 @@ export class App {
         // Render the Add button
         subNavItems.push(
             {
-                text: "Views the current requests for the app store",
+                text: "View app requests for the AppStore",
                 onRender: (el, item) => {
                     // Clear the existing button
                     el.innerHTML = "";
@@ -223,9 +220,7 @@ export class App {
                         btnProps: {
                             // Render the icon button
                             className: "p-1 pe-2",
-                            iconClassName: "me-1",
-                            iconType: viewList,
-                            iconSize: 24,
+                            iconType: Common.getIcon(24, 24, 'AppIconDefaultList', 'icon-svg me-1'),
                             isSmall: true,
                             text: "View Requests",
                             type: Components.ButtonTypes.OutlineSecondary,
