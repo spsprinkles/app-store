@@ -50,8 +50,8 @@ export class App {
                             type: Components.TooltipTypes.LightBorder,
                             btnProps: {
                                 // Render the icon button
-                                className: "p-1 pe-2 me-2",
-                                iconType: Common.getIcon(25, 25, 'App Dashboard', 'brand'),
+                                className: "p-1 px-2 me-2",
+                                iconType: Common.getIcon(22, 22, 'App Dashboard', 'brand'),
                                 text: "App Dashboard",
                                 type: Components.ButtonTypes.OutlineLight,
                                 onClick: () => {
