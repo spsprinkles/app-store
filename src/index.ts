@@ -1,4 +1,4 @@
-import { waitForTheme } from "dattatable";
+import { LoadingDialog } from "dattatable";
 import { ContextInfo, ThemeManager } from "gd-sprest-bs";
 import { App } from "./app";
 import { Configuration } from "./cfg";
@@ -24,6 +24,11 @@ const GlobalVariable = {
     Configuration,
     description: Strings.ProjectDescription,
     render: (props: IProps) => {
+        // Show a loading dialog
+        LoadingDialog.setHeader("Loading Application");
+        LoadingDialog.setBody("This may take time based on the number of apps to load...");
+        LoadingDialog.show();
+
         // See if the page context exists
         if (props.context) {
             // Set the context
@@ -37,16 +42,20 @@ const GlobalVariable = {
         DataSource.init().then(
             // Success
             () => {
-                waitForTheme().then(() => {
-                    // Create the application
-                    GlobalVariable.App = new App(props.el);
-                });
+                // Create the application
+                GlobalVariable.App = new App(props.el);
+
+                // Hide the loading dialog
+                LoadingDialog.hide();
             },
 
             // Error
             () => {
                 // Display the install dialog
                 InstallationModal.show();
+
+                // Hide the loading dialog
+                LoadingDialog.hide();
             }
         );
     },
