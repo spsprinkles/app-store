@@ -42,6 +42,10 @@ const GlobalVariable = {
         DataSource.init().then(
             // Success
             () => {
+                // Update the loading dialog
+                LoadingDialog.setHeader("Loading Theme");
+
+                // Wait for the theme to be loaded
                 waitForTheme().then(() => {
                     // Create the application
                     GlobalVariable.App = new App(props.el);
