@@ -1,4 +1,4 @@
-import { LoadingDialog } from "dattatable";
+import { LoadingDialog, waitForTheme } from "dattatable";
 import { ContextInfo, ThemeManager } from "gd-sprest-bs";
 import { App } from "./app";
 import { Configuration } from "./cfg";
@@ -42,11 +42,13 @@ const GlobalVariable = {
         DataSource.init().then(
             // Success
             () => {
-                // Create the application
-                GlobalVariable.App = new App(props.el);
-
-                // Hide the loading dialog
-                LoadingDialog.hide();
+                waitForTheme().then(() => {
+                    // Create the application
+                    GlobalVariable.App = new App(props.el);
+                    
+                    // Hide the loading dialog
+                    LoadingDialog.hide();
+                });
             },
 
             // Error
