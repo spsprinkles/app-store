@@ -1,6 +1,6 @@
 {
   "name": "app-store",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A generic app store that will display project information in a dashboard.",
   "main": "src/index.ts",
   "scripts": {
