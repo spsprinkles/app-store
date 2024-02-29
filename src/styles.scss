@@ -83,6 +83,35 @@ table.cards {
         }
     }
 }
+/* Remove the extra top padding on the content row in a classic page */
+#contentRow {
+    padding-top: 0 !important;
+}
+/* Extend the Comments pane full width in a modern page */
+#CommentsWrapper > div:first-child {
+    max-width: none;
+    width: 100%;
+    div[data-sp-feature-tag='Comments'] {
+        max-width: none;
+        padding: 0 24px 20px;
+    }
+    div[data-sp-feature-tag='Comments']::before {
+        margin: 10px 0 0 0;
+    }
+}
+/* Extend the WebPart full width in a modern page */
+div[data-automation-id='CanvasZone'] > div:first-child {
+    max-width: none !important;
+}
+/* Fix the WebPart margin in a modern page */
+div[data-automation-id='CanvasControl'] {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+/* Hide the page title in a modern page */
+div[data-automation-id='pageHeader'] {
+    display: none;
+}
 /* Apply changes to the Settings Panel */
 div.spPropertyPaneContainer div[aria-label='AppStore property pane'] div[data-automation-id='propertyPaneGroupContent'] {
     /* Align version to the right */
