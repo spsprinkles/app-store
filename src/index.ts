@@ -15,6 +15,7 @@ interface IProps {
     context?: any;
     displayMode?: number;
     envType?: number;
+    title?: string;
     sourceUrl?: string;
 }
 
@@ -37,6 +38,9 @@ const GlobalVariable = {
             // Update the configuration
             Configuration.setWebUrl(props.sourceUrl || ContextInfo.webServerRelativeUrl);
         }
+
+        // Update the ProjectName from SPFx title field
+        props.title ? Strings.ProjectName = props.title : null;
 
         // Initialize the application
         DataSource.init().then(
@@ -69,11 +73,11 @@ const GlobalVariable = {
         // Set the app catalog url
         DataSource.AppCatalogUrl = url;
     },
+    title: Strings.ProjectName,
     updateTheme: (themeInfo) => {
         // Set the theme
         ThemeManager.setCurrentTheme(themeInfo);
-    },
-    version: Strings.Version
+    }
 };
 
 // Make is available in the DOM
@@ -82,6 +86,10 @@ window[Strings.GlobalVariable] = GlobalVariable;
 // Get the element and render the app if it is found
 let elApp = document.querySelector("#" + Strings.AppElementId) as HTMLElement;
 if (elApp) {
+    // Remove the extra border spacing on the webpart in classic mode
+    let contentBox = document.querySelector("#contentBox table.ms-core-tableNoSpace");
+    contentBox ? contentBox.classList.remove("ms-webpartPage-root") : null;
+
     // Set the app catalog url property
     DataSource.AppCatalogUrl = elApp.getAttribute("data-appCatalogUrl");
 

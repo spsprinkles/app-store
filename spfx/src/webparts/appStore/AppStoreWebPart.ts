@@ -6,6 +6,7 @@ import * as strings from 'AppStoreWebPartStrings';
 
 export interface IAppStoreWebPartProps {
   appCatalogUrl: string;
+  title: string;
 }
 
 // Reference the solution
@@ -17,15 +18,26 @@ declare const AppStore: {
     context?: WebPartContext;
     displayMode?: DisplayMode;
     envType?: number;
+    title?: string;
     sourceUrl?: string;
   }) => void;
   setAppCatalogUrl: (url: string) => void;
+  title: string;
   updateTheme: (currentTheme: Partial<IReadonlyTheme>) => void;
-  version: string;
 };
 
 export default class AppStoreWebPart extends BaseClientSideWebPart<IAppStoreWebPartProps> {
+  private _hasRendered: boolean = false;
+
   public render(): void {
+    // See if have rendered the solution
+    if (this._hasRendered) {
+      // Clear the element
+      while (this.domElement.firstChild) { this.domElement.removeChild(this.domElement.firstChild); }
+    }
+
+    // Set the default property values
+    if (!this.properties.title) { this.properties.title = AppStore.title; }
     // Set the app catalog url
     AppStore.setAppCatalogUrl(this.properties.appCatalogUrl);
 
@@ -34,8 +46,12 @@ export default class AppStoreWebPart extends BaseClientSideWebPart<IAppStoreWebP
       el: this.domElement,
       context: this.context,
       displayMode: this.displayMode,
-      envType: Environment.type
+      envType: Environment.type,
+      title: this.properties.title
     });
+
+    // Set the flag
+    this._hasRendered = true;
   }
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
@@ -48,7 +64,7 @@ export default class AppStoreWebPart extends BaseClientSideWebPart<IAppStoreWebP
   }
 
   protected get dataVersion(): Version {
-    return Version.parse(AppStore.version);
+    return Version.parse(this.context.manifest.version);
   }
 
 
@@ -59,12 +75,16 @@ export default class AppStoreWebPart extends BaseClientSideWebPart<IAppStoreWebP
           groups: [
             {
               groupFields: [
+                PropertyPaneTextField('title', {
+                  label: strings.TitleFieldLabel,
+                  description: strings.TitleFieldDescription
+                }),
                 PropertyPaneTextField('appCatalogUrl', {
                   label: strings.AppCatalogUrlFieldLabel,
                   description: strings.AppCatalogUrlFieldDescription
                 }),
                 PropertyPaneLabel('version', {
-                  text: "v" + AppStore.version
+                  text: "v" + this.context.manifest.version
                 })
               ]
             }
