@@ -78,6 +78,13 @@ export const Configuration = Helper.SPConfig({
                     notetype: SPTypes.FieldNoteType.TextOnly
                 } as Helper.IFieldInfoNote,
                 {
+                    name: "FlowData",
+                    title: "Flow Data",
+                    type: Helper.SPCfgFieldType.Note,
+                    description: "Internal field for holding the flow package customizations.",
+                    notetype: SPTypes.FieldNoteType.TextOnly
+                } as Helper.IFieldInfoNote,
+                {
                     name: "MoreInfo",
                     title: "More Info",
                     type: Helper.SPCfgFieldType.Url,

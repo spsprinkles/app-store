@@ -177,7 +177,7 @@ export class DataSource {
                     Expand: ["Developers", "AttachmentFiles"],
                     GetAllItems: true,
                     OrderBy: ["Title"],
-                    Select: ["*", "Developers/Id", "Developers/EMail", "Developers/Title",],
+                    Select: ["*", "Developers/Id", "Developers/EMail", "Developers/Title", "FlowData"],
                     Top: 5000
                 },
                 onInitError: reject,
@@ -248,7 +248,7 @@ export class DataSource {
                     Expand: ["Developers"],
                     GetAllItems: true,
                     OrderBy: ["Title"],
-                    Select: ["*", "Developers/Id", "Developers/EMail", "Developers/Title",],
+                    Select: ["*", "Developers/Id", "Developers/EMail", "Developers/Title"],
                     Top: 5000
                 },
                 onInitError: reject,
