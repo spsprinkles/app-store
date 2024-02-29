@@ -1,5 +1,5 @@
 import { DisplayMode, Environment, Version } from '@microsoft/sp-core-library';
-import { IPropertyPaneConfiguration, PropertyPaneLabel, PropertyPaneTextField } from '@microsoft/sp-property-pane';
+import { IPropertyPaneConfiguration, PropertyPaneHorizontalRule, PropertyPaneLabel, PropertyPaneLink, PropertyPaneTextField } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart, WebPartContext } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import * as strings from 'AppStoreWebPartStrings';
@@ -13,6 +13,7 @@ export interface IAppStoreWebPartProps {
 import "../../../../dist/app-store.min.js";
 declare const AppStore: {
   description: string;
+  getLogo: () => SVGImageElement;
   render: (props: {
     el: HTMLElement;
     context?: WebPartContext;
@@ -54,6 +55,20 @@ export default class AppStoreWebPart extends BaseClientSideWebPart<IAppStoreWebP
     this._hasRendered = true;
   }
 
+  // Add the logo to the PropertyPane Settings panel
+  protected onPropertyPaneRendered(): void {
+    const setLogo = setInterval(() => {
+      let closeBtn = document.querySelectorAll("div.spPropertyPaneContainer div[aria-label='Solution Center property pane'] button[data-automation-id='propertyPaneClose']");
+      if (closeBtn) {
+        closeBtn.forEach((el: HTMLElement) => {
+          let parent = el.parentElement;
+          if (parent && !(parent.firstChild as HTMLElement).classList.contains("logo")) { parent.prepend(AppStore.getLogo()) }
+        });
+        clearInterval(setLogo);
+      }
+    }, 50);
+  }
+  
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
     if (!currentTheme) {
       return;
@@ -67,13 +82,13 @@ export default class AppStoreWebPart extends BaseClientSideWebPart<IAppStoreWebP
     return Version.parse(this.context.manifest.version);
   }
 
-
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [
         {
           groups: [
             {
+              groupName: "Settings:",
               groupFields: [
                 PropertyPaneTextField('title', {
                   label: strings.TitleFieldLabel,
@@ -82,16 +97,42 @@ export default class AppStoreWebPart extends BaseClientSideWebPart<IAppStoreWebP
                 PropertyPaneTextField('appCatalogUrl', {
                   label: strings.AppCatalogUrlFieldLabel,
                   description: strings.AppCatalogUrlFieldDescription
-                }),
-                PropertyPaneLabel('version', {
-                  text: "v" + this.context.manifest.version
                 })
               ]
             }
-          ],
-          header: {
-            description: AppStore.description
-          }
+          ]
+        },
+        {
+          groups: [
+            {
+              groupName: "About this app:",
+              groupFields: [
+                PropertyPaneLabel('version', {
+                  text: "Version: " + this.context.manifest.version
+                }),
+                PropertyPaneLabel('description', {
+                  text: AppStore.description
+                }),
+                PropertyPaneLabel('about', {
+                  text: "We think adding sprinkles to a donut just makes it better! SharePoint Sprinkles builds apps that are sprinkled on top of SharePoint, making your experience even better. Check out our site below to discover other SharePoint Sprinkles apps, or connect with us on GitHub."
+                }),
+                PropertyPaneLabel('support', {
+                  text: "Are you having a problem or do you have a great idea for this app? Visit our GitHub link below to open an issue and let us know!"
+                }),
+                PropertyPaneHorizontalRule(),
+                PropertyPaneLink('supportLink', {
+                  href: "https://www.spsprinkles.com/",
+                  text: "SharePoint Sprinkles",
+                  target: "_blank"
+                }),
+                PropertyPaneLink('sourceLink', {
+                  href: "https://github.com/spsprinkles/app-store/",
+                  text: "View Source on GitHub",
+                  target: "_blank"
+                })
+              ]
+            }
+          ]
         }
       ]
     };

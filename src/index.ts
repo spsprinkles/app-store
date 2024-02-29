@@ -2,6 +2,7 @@ import { LoadingDialog, waitForTheme } from "dattatable";
 import { ContextInfo, ThemeManager } from "gd-sprest-bs";
 import { App } from "./app";
 import { Configuration } from "./cfg";
+import { getIcon } from "./common";
 import { DataSource } from "./ds";
 import { InstallationModal } from "./install";
 import Strings, { setContext } from "./strings";
@@ -24,6 +25,7 @@ const GlobalVariable = {
     App: null,
     Configuration,
     description: Strings.ProjectDescription,
+    getLogo: () => { return getIcon(28, 28, 'App Store', 'brand logo'); },
     render: (props: IProps) => {
         // Show a loading dialog
         LoadingDialog.setHeader("Loading Application");
