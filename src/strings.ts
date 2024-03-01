@@ -40,8 +40,8 @@ const Strings = {
         WebTemplate: SPTypes.WebTemplateType.Site
     },
     ListTemplateUrl: "~site/listtemplates",
-    ProjectName: "AppStore",
-    ProjectDescription: "List that displays the app information in a card view.",
+    ProjectName: "Solution Center",
+    ProjectDescription: "An app that displays solutions in a card view.",
     SecurityGroups: {
         Developers: {
             Name: "App Store Developers",

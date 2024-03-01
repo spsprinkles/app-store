@@ -10,7 +10,7 @@ export interface IAppStoreItem extends Types.SP.ListItemOData {
     AppType: string;
     AssociatedLists: string;
     Description: string;
-    Developers: { results: { Id: number; EMail: string; Title: string }[] };
+    Developers: { results: { Id: number; Title: string }[] };
     FlowData: string;
     Icon: string;
     Modified: string;
@@ -44,7 +44,7 @@ export interface IRatingItem extends Types.SP.ListItem {
 export interface IRequestItem extends Types.SP.ListItem {
     AppType: string;
     Description: string;
-    Developers: { results: { Id: number; EMail: string; Title: string }[] };
+    Developers: { results: { Id: number; Title: string }[] };
     Modified: string;
     Organization: string;
     Status: string;
@@ -178,7 +178,7 @@ export class DataSource {
                     Expand: ["Developers", "AttachmentFiles"],
                     GetAllItems: true,
                     OrderBy: ["Title"],
-                    Select: ["*", "Developers/Id", "Developers/EMail", "Developers/Title", "FlowData"],
+                    Select: ["*", "Developers/Id", "Developers/Title", "FlowData"],
                     Top: 5000
                 },
                 onInitError: reject,
@@ -249,7 +249,7 @@ export class DataSource {
                     Expand: ["Developers"],
                     GetAllItems: true,
                     OrderBy: ["Title"],
-                    Select: ["*", "Developers/Id", "Developers/EMail", "Developers/Title"],
+                    Select: ["*", "Developers/Id", "Developers/Title",],
                     Top: 5000
                 },
                 onInitError: reject,

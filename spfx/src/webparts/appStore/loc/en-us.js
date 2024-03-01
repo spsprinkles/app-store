@@ -2,7 +2,8 @@ define([], function() {
   return {
     "AppCatalogUrlFieldLabel": "App Dashboard Url",
     "AppCatalogUrlFieldDescription": "A link to the page containing the app dashboard management tool.",
-    "BasicGroupName": "Group Name",
+    "TitleFieldDescription": "The text shown in the top-left of the webpart",
+    "TitleFieldLabel": "App Title",
     "AppLocalEnvironmentSharePoint": "The app is running on your local environment as SharePoint web part",
     "AppLocalEnvironmentTeams": "The app is running on your local environment as Microsoft Teams app",
     "AppLocalEnvironmentOffice": "The app is running on your local environment in office.com",
