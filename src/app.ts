@@ -484,6 +484,63 @@ export class App {
                                     }
                                 });
                             }
+
+                            // See if this is a flow and the user can download
+                            if (item.AppType == "Power Automate" && !Strings.IsFlow3) {
+                                let packageFile = null;
+                                if (item.AttachmentFiles?.results) {
+                                    for (let i = 0; i < item.AttachmentFiles.results.length; i++) {
+                                        if (item.AttachmentFiles.results[i].FileName.endsWith(".zip")) {
+                                            packageFile = item.AttachmentFiles.results[i];
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                // Ensure the package exists
+                                if (packageFile) {
+                                    // See if flow data doesn't exists
+                                    if (item.FlowData == null) {
+                                        // Ensure this is the owner of the app or an admin
+                                        if (Security.IsAdmin || Security.IsManager || Security.IsDeveloper) {
+                                            // Add a button to customize the package
+                                            Components.Tooltip({
+                                                el,
+                                                content: "Click to allow users to generate a custom package.",
+                                                btnProps: {
+                                                    className: "p-1 pe-2",
+                                                    iconType: Common.getIcon(24, 24, 'WindowEdit', 'icon-svg me-1'),
+                                                    text: "Customize Package",
+                                                    type: Components.ButtonTypes.OutlinePrimary,
+                                                    onClick: () => {
+                                                        // Show the form to customize the package
+                                                        Forms.customizeFlowPackage(item, packageFile, () => {
+                                                            // Refresh the table
+                                                            this._dashboard.refresh(DataSource.AppItems);
+                                                        });
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    } else {
+                                        // Add a button to generate a package
+                                        Components.Tooltip({
+                                            el,
+                                            content: "Click to generate a custom package.",
+                                            btnProps: {
+                                                className: "p-1 pe-2",
+                                                iconType: Common.getIcon(22, 22, item.AppType + ' ' + column.title, 'icon-svg me-1'),
+                                                text: "Generate Package",
+                                                type: Components.ButtonTypes.OutlinePrimary,
+                                                onClick: () => {
+                                                    // Show the form to generate the package
+                                                    Forms.generateFlow(item, packageFile);
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
                         }
                     },
                     {

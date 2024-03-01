@@ -1,6 +1,7 @@
 import { Documents, LoadingDialog, Modal, DataTable } from "dattatable";
-import { Components, Helper, ThemeManager } from "gd-sprest-bs";
+import { Components, Helper, ThemeManager, Types, Web } from "gd-sprest-bs";
 import * as jQuery from "jquery";
+import * as JSZip from "jszip";
 import * as moment from "moment";
 import * as Common from "./common";
 import { CreateTemplate } from "./createTemplate";
@@ -13,6 +14,14 @@ const ImageExtensions = [
     ".apng", ".avif", ".bmp", ".gif", ".jpg", ".jpeg", ".jfif", ".ico",
     ".pjpeg", ".pjp", ".png", ".svg", ".svgz", ".tif", ".tiff", ".webp", ".xbm"
 ];
+
+// Flow Action
+interface IFlowAction {
+    action: string;
+    name: string
+    type: string;
+    value: string;
+}
 
 /**
  * Forms
@@ -101,6 +110,130 @@ export class Forms {
         return props;
     }
 
+    // Displays the form to customize a flow
+    static customizeFlowPackage(item: IAppStoreItem, fileInfo: Types.SP.Attachment, onUpdate: () => void) {
+        // Clear the modal
+        Modal.clear();
+
+        // Set the header
+        Modal.setHeader("Customize Flow Package");
+
+        // Show a loading dialog
+        LoadingDialog.setHeader("Reading the Package");
+        LoadingDialog.setBody("This will close after the flow package is read...");
+        LoadingDialog.show();
+
+        // Read the package
+        Web(Strings.SourceUrl).getFileByServerRelativeUrl(fileInfo.ServerRelativeUrl).content().execute(data => {
+            JSZip.loadAsync(data).then(zipContents => {
+                // Parse the files
+                zipContents.forEach((path, fileInfo) => {
+                    // See if this is the definitions file
+                    if (fileInfo.name.endsWith("/definition.json")) {
+                        // Get the variables for this definition
+                        this.readDefinitionFile(fileInfo).then(variables => {
+                            let items: Components.IDropdownItem[] = [];
+
+                            // Parse the variables
+                            for (let i = 0; i < variables.length; i++) {
+                                let variable = variables[i];
+
+                                // Add the variable
+                                items.push({
+                                    data: variable,
+                                    text: variable.name,
+                                    value: variable.name
+                                });
+                            }
+
+                            // Generate the form
+                            let form = Components.Form({
+                                el: Modal.BodyElement,
+                                controls: [{
+                                    label: "Customize Variables",
+                                    name: "CustomVariables",
+                                    placeholder: "Select Variables...",
+                                    description: "Select the variables to customize for the package",
+                                    type: Components.FormControlTypes.MultiDropdownCheckbox,
+                                    required: true,
+                                    items
+                                } as Components.IFormControlPropsMultiDropdownCheckbox]
+                            });
+
+                            // Generate the footer
+                            Components.TooltipGroup({
+                                el: Modal.FooterElement,
+                                tooltips: [
+                                    {
+                                        content: "Saves the variables to customize for this package",
+                                        btnProps: {
+                                            text: "Save",
+                                            type: Components.ButtonTypes.OutlinePrimary,
+                                            onClick: () => {
+                                                // Ensure the form is valid
+                                                if (form.isValid()) {
+                                                    // Get the selected variables
+                                                    let selectedVariables = form.getValues()["CustomVariables"];
+
+                                                    // Show a loading dialog
+                                                    LoadingDialog.setHeader("Updating the Item");
+                                                    LoadingDialog.setBody("This will close after the item is updated...");
+                                                    LoadingDialog.show();
+
+                                                    // Update the item
+                                                    item.update({
+                                                        FlowData: JSON.stringify(selectedVariables)
+                                                    }).execute(
+                                                        () => {
+                                                            // Call the update event
+                                                            onUpdate();
+
+                                                            // Close the form
+                                                            Modal.hide();
+
+                                                            // Hide the loading dialog
+                                                            LoadingDialog.hide();
+                                                        }
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        content: "Closes the modal",
+                                        btnProps: {
+                                            text: "Close",
+                                            type: Components.ButtonTypes.OutlinePrimary,
+                                            onClick: () => {
+                                                // Hide the form
+                                                Modal.hide();
+                                            }
+                                        }
+                                    }
+                                ]
+                            })
+
+                            // Hide the loading dialog
+                            LoadingDialog.hide();
+
+                            // Show the modal
+                            Modal.show();
+                        });
+                    }
+                });
+            });
+        }, () => {
+            // Error loading the package
+            Modal.setBody("Error loading the power automate package...");
+
+            // Hide the loading dialog
+            LoadingDialog.hide();
+
+            // Show the modal
+            Modal.show();
+        });
+    }
+
     // Displays the edit form
     static edit(item: IAppStoreItem, onUpdate: () => void) {
         DataSource.List.editForm({
@@ -151,6 +284,161 @@ export class Forms {
                     }
                 ]
             }
+        });
+    }
+
+    // Displays the form to generate a custom flow package
+    static generateFlow(item: IAppStoreItem, fileInfo: Types.SP.Attachment) {
+        // Clear the modal
+        Modal.clear();
+
+        // Set the header
+        Modal.setHeader("Generate Flow Package");
+
+        // Parse the variables
+        let controls: Components.IFormControlProps[] = [];
+        let items: Components.IDropdownItem[] = JSON.parse(item.FlowData);
+        let variables: IFlowAction[] = [];
+        for (let i = 0; i < items.length; i++) {
+            let item = items[i];
+            let variable: IFlowAction = item.data;
+            let isTextbox = variable.type == "string" || variable.type.startsWith("int");
+
+            // Save a reference to the variable
+            variables.push(variable);
+
+            // Generate a form control
+            controls.push({
+                data: variable,
+                name: variable.name,
+                label: variable.name,
+                type: isTextbox ? Components.FormControlTypes.TextField : Components.FormControlTypes.TextArea,
+                value: variable.value
+            });
+        }
+
+        // Generate the form
+        let form = Components.Form({
+            el: Modal.BodyElement,
+            controls
+        });
+
+        // Set the footer
+        Components.TooltipGroup({
+            el: Modal.FooterElement,
+            tooltips: [
+                {
+                    content: "Generates the flow package.",
+                    btnProps: {
+                        text: "Generate",
+                        type: Components.ButtonTypes.OutlinePrimary,
+                        onClick: () => {
+                            // Ensure the form is valid
+                            if (form.isValid()) {
+                                let values = form.getValues();
+
+                                // Show a loading dialog
+                                LoadingDialog.setHeader("Generating Package");
+                                LoadingDialog.setBody("This dialog will close after the package is generated...");
+                                LoadingDialog.show();
+
+                                // Parse the variables
+                                for (let i = 0; i < variables.length; i++) {
+                                    let variable = variables[i];
+
+                                    // Set the value
+                                    variable.value = values[variable.name];
+                                }
+
+                                // Generate the package
+                                this.generateFlowPackage(fileInfo, variables).then(zipFile => {
+                                    // Generate the new file
+                                    zipFile.generateAsync({ type: "uint8array" }).then(contents => {
+                                        // See if this is IE or Mozilla
+                                        if (Blob && navigator && navigator["msSaveBlob"]) {
+                                            // Download the file
+                                            navigator["msSaveBlob"](new Blob([contents], { type: "octet/stream" }), fileInfo.FileName);
+                                        } else {
+                                            // Generate an anchor
+                                            var anchor = document.createElement("a");
+                                            anchor.download = fileInfo.FileName;
+                                            anchor.href = URL.createObjectURL(new Blob([contents], { type: "octet/stream" }));
+                                            anchor.target = "__blank";
+
+                                            // Download the file
+                                            anchor.click();
+                                        }
+
+                                        // Close the loading dialog
+                                        LoadingDialog.hide();
+                                    }, () => {
+                                        // Error loading the package
+                                        Modal.setBody("Error generating the power automate package...");
+
+                                        // Show the modal
+                                        Modal.show();
+                                    });
+                                });
+                            }
+                        }
+                    }
+                },
+                {
+                    content: "Closes the form.",
+                    btnProps: {
+                        text: "Close",
+                        type: Components.ButtonTypes.OutlinePrimary,
+                        onClick: () => {
+                            // Close the modal
+                            Modal.hide();
+                        }
+                    }
+                }
+            ]
+        });
+
+        // Show the modal
+        Modal.show();
+    }
+
+    // Generates the flow package
+    private static generateFlowPackage(fileInfo: Types.SP.Attachment, variables: IFlowAction[]): PromiseLike<JSZip> {
+        // Return a promise
+        return new Promise((resolve, reject) => {
+            // Read the package
+            Web(Strings.SourceUrl).getFileByServerRelativeUrl(fileInfo.ServerRelativeUrl).content().execute(data => {
+                JSZip.loadAsync(data).then(zipContents => {
+                    // Parse the files
+                    zipContents.forEach((path, fileInfo) => {
+                        // See if this is the definitions file
+                        if (fileInfo.name.endsWith("/definition.json")) {
+                            // Read the file contents
+                            fileInfo.async("string").then(contents => {
+                                // Get the actions
+                                let def = JSON.parse(contents);
+                                let actions = def?.properties?.definition?.actions || {};
+
+                                // Parse the variables
+                                for (let i = 0; i < variables.length; i++) {
+                                    let variable = variables[i];
+
+                                    // Ensure the variable exists for this action
+                                    if (actions[variable.action] && actions[variable.action].inputs?.variables) {
+                                        // Update the value
+                                        actions[variable.action].inputs.variables[0].value = variable.value;
+                                    }
+                                }
+
+                                // Update the file
+                                zipContents.file(fileInfo.name, JSON.stringify(def));
+
+                                // Resolve the request
+                                resolve(zipContents);
+                            });
+                        }
+                    });
+                }, reject);
+            }, reject);
         });
     }
 
@@ -208,6 +496,40 @@ export class Forms {
                 // Refresh the data
                 DataSource.RequestsList.refreshItem(item.Id).then(onUpdate);
             }
+        });
+    }
+
+    // Reads the flow definition for variables
+    private static readDefinitionFile(fileInfo: JSZip.JSZipObject): PromiseLike<IFlowAction[]> {
+        let variables: IFlowAction[] = [];
+
+        // Return a promise
+        return new Promise(resolve => {
+            // Read the file contents
+            fileInfo.async("string").then(contents => {
+                // Convert to an object
+                let def = JSON.parse(contents);
+
+                // Parse the actions
+                let actions = def?.properties?.definition?.actions || {};
+                for (let key in actions) {
+                    let action = actions[key];
+
+                    // Get the variable name
+                    let variable = (action?.inputs?.variables || [])[0];
+                    if (variable?.name) {
+                        variables.push({
+                            action: key,
+                            name: variable.name,
+                            type: variable.type,
+                            value: variable.value
+                        });
+                    }
+                }
+
+                // Resolve the request
+                resolve(variables);
+            });
         });
     }
 

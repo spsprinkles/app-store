@@ -11,6 +11,7 @@ export interface IAppStoreItem extends Types.SP.ListItemOData {
     AssociatedLists: string;
     Description: string;
     Developers: { results: { Id: number; EMail: string; Title: string }[] };
+    FlowData: string;
     Icon: string;
     Modified: string;
     MoreInfo?: Types.SP.FieldUrlValue;
