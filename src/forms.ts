@@ -123,6 +123,18 @@ export class Forms {
         LoadingDialog.setBody("This will close after the flow package is read...");
         LoadingDialog.show();
 
+        // Set the existing values
+        let selectedVars = [];
+        if (item.FlowData) {
+            let items: Components.IDropdownItem[] = JSON.parse(item.FlowData);
+            for (let i = 0; i < items.length; i++) {
+                let item = items[i];
+
+                // Add the selected variable
+                selectedVars.push(item.text);
+            }
+        }
+
         // Read the package
         Web(Strings.SourceUrl).getFileByServerRelativeUrl(fileInfo.ServerRelativeUrl).content().execute(data => {
             JSZip.loadAsync(data).then(zipContents => {
@@ -156,7 +168,8 @@ export class Forms {
                                     description: "Select the variables to customize for the package",
                                     type: Components.FormControlTypes.MultiDropdownCheckbox,
                                     required: true,
-                                    items
+                                    items,
+                                    value: selectedVars
                                 } as Components.IFormControlPropsMultiDropdownCheckbox]
                             });
 
