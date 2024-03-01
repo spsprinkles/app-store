@@ -130,7 +130,15 @@ export class DataSource {
 
     // Reference to the app items
     // This will include both the app catalog and app store items
-    static get AppItems(): IAppStoreItem[] { return this.List.Items.concat(this.AppCatalogItems); }
+    static get AppItems(): IAppStoreItem[] {
+        // See if this is an owner/admin
+        if (Security.IsAdmin || Security.IsManager) { return this.List.Items.concat(this.AppCatalogItems); }
+
+        // Filter for approved items
+        return this.List.Items.filter(item => {
+            return item.Status == "Approved";
+        }).concat(this.AppCatalogItems);
+    }
 
     // Filters
     private static _filtersAppType: Components.ICheckboxGroupItem[] = null;
