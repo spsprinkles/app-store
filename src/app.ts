@@ -486,59 +486,67 @@ export class App {
                             }
 
                             // See if this is a flow and the user can download
+                            let packages = [];
                             if (item.AppType == "Power Automate" && !Strings.IsFlow3) {
-                                let packageFile = null;
                                 if (item.AttachmentFiles?.results) {
+                                    let promises = [];
                                     for (let i = 0; i < item.AttachmentFiles.results.length; i++) {
-                                        if (item.AttachmentFiles.results[i].FileName.endsWith(".zip")) {
-                                            packageFile = item.AttachmentFiles.results[i];
-                                            break;
+                                        // See if this is a flow package
+                                        let promise = Forms.isFlowPackage(item.AttachmentFiles.results[i].ServerRelativeUrl);
+                                        promise.then((result) => {
+                                            if (result.isFlow) {
+                                                packages.push(result.url);
+                                            }
+                                        });
+                                        promises.push(promise);
+                                    }
+
+                                    // Wait for the promises to complete
+                                    Promise.all(promises).then(() => {
+                                        // See if a package exists
+                                        if (packages.length > 0) {
+                                            // Ensure this is the owner of the app or an admin
+                                            if (Security.IsAdmin || Security.IsManager || Security.IsDeveloper) {
+                                                // Add a button to customize the package
+                                                Components.Tooltip({
+                                                    el,
+                                                    content: "Click to allow users to generate a custom package.",
+                                                    btnProps: {
+                                                        className: "p-1 pe-2",
+                                                        iconType: Common.getIcon(24, 24, 'WindowEdit', 'icon-svg me-1'),
+                                                        text: "Customize Package",
+                                                        type: Components.ButtonTypes.OutlinePrimary,
+                                                        onClick: () => {
+                                                            // Show the form to customize the package
+                                                            Forms.customizeFlowPackage(item, packages[0], () => {
+                                                                // Refresh the table
+                                                                this._dashboard.refresh(DataSource.AppItems);
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                            }
+
+                                            // See if flow data exists
+                                            if (item.FlowData) {
+                                                // Add a button to generate a package
+                                                Components.Tooltip({
+                                                    el,
+                                                    content: "Click to generate a custom package.",
+                                                    btnProps: {
+                                                        className: "p-1 pe-2",
+                                                        iconType: Common.getIcon(22, 22, item.AppType + ' ' + column.title, 'icon-svg me-1'),
+                                                        text: "Generate Package",
+                                                        type: Components.ButtonTypes.OutlinePrimary,
+                                                        onClick: () => {
+                                                            // Show the form to generate the package
+                                                            Forms.generateFlow(item, packages[0]);
+                                                        }
+                                                    }
+                                                });
+                                            }
                                         }
-                                    }
-                                }
-
-                                // Ensure the package exists
-                                if (packageFile) {
-                                    // Ensure this is the owner of the app or an admin
-                                    if (Security.IsAdmin || Security.IsManager || Security.IsDeveloper) {
-                                        // Add a button to customize the package
-                                        Components.Tooltip({
-                                            el,
-                                            content: "Click to allow users to generate a custom package.",
-                                            btnProps: {
-                                                className: "p-1 pe-2",
-                                                iconType: Common.getIcon(24, 24, 'WindowEdit', 'icon-svg me-1'),
-                                                text: "Customize Package",
-                                                type: Components.ButtonTypes.OutlinePrimary,
-                                                onClick: () => {
-                                                    // Show the form to customize the package
-                                                    Forms.customizeFlowPackage(item, packageFile, () => {
-                                                        // Refresh the table
-                                                        this._dashboard.refresh(DataSource.AppItems);
-                                                    });
-                                                }
-                                            }
-                                        });
-                                    }
-
-                                    // See if flow data exists
-                                    if (item.FlowData) {
-                                        // Add a button to generate a package
-                                        Components.Tooltip({
-                                            el,
-                                            content: "Click to generate a custom package.",
-                                            btnProps: {
-                                                className: "p-1 pe-2",
-                                                iconType: Common.getIcon(22, 22, item.AppType + ' ' + column.title, 'icon-svg me-1'),
-                                                text: "Generate Package",
-                                                type: Components.ButtonTypes.OutlinePrimary,
-                                                onClick: () => {
-                                                    // Show the form to generate the package
-                                                    Forms.generateFlow(item, packageFile);
-                                                }
-                                            }
-                                        });
-                                    }
+                                    });
                                 }
                             }
                         }

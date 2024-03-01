@@ -455,6 +455,23 @@ export class Forms {
         });
     }
 
+    // Determines if package is a flow
+    static isFlowPackage(filePath: string): PromiseLike<{ url: string; isFlow: boolean }> {
+        // Return a promise
+        return new Promise(resolve => {
+            // See if this is not a zip file
+            if (!filePath.endsWith(".zip")) { resolve({ url: filePath, isFlow: false }); return; }
+
+            // Read the package
+            Web(Strings.SourceUrl).getFileByServerRelativeUrl(filePath).content().execute(data => {
+                JSZip.loadAsync(data).then(zipContents => {
+                    // See if this has a manifest file in the root
+                    resolve({ url: filePath, isFlow: zipContents.files["manifest.json"] ? true : false });
+                });
+            });
+        });
+    }
+
     // Determines if the image extension is valid
     private static isImageFile(fileName: string): boolean {
         let isValid = false;
