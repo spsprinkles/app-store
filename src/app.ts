@@ -129,7 +129,7 @@ export class App {
             // Render the Add button
             subNavItems.push(
                 {
-                    text: "Adds an item to the AppStore",
+                    text: "Adds an item to the " + Strings.ProjectName,
                     onRender: (el, item) => {
                         // Clear the existing button
                         el.innerHTML = "";
@@ -168,7 +168,7 @@ export class App {
         // Render the Add button
         subNavItems.push(
             {
-                text: "Request an App to be added to the AppStore",
+                text: "Request an App to be added to the " + Strings.ProjectName,
                 onRender: (el, item) => {
                     // Clear the existing button
                     el.innerHTML = "";
@@ -204,7 +204,7 @@ export class App {
         // Render the Add button
         subNavItems.push(
             {
-                text: "View app requests for the AppStore",
+                text: "View app requests for the " + Strings.ProjectName,
                 onRender: (el, item) => {
                     // Clear the existing button
                     el.innerHTML = "";
