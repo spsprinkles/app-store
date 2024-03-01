@@ -306,14 +306,14 @@ export class App {
 
                     // Set the brand
                     let brand = document.createElement("div");
-                    brand.className = "d-flex";
-                    brand.appendChild(Common.getIcon(32, 32, 'App Store', 'brand me-75'));
+                    brand.className = "d-flex align-items-center mb-1";
+                    brand.appendChild(Common.getIcon(44, 44, 'App Store', 'brand'));
                     brand.append(Strings.ProjectName);
                     props.brand = brand;
                 },
                 // Adjust the brand alignment
                 onRendered: (el) => {
-                    el.querySelector("nav div.container-fluid").classList.add("ps-3");
+                    el.querySelector("nav div.container-fluid a.navbar-brand").classList.add("p-0");
                     el.querySelector("nav div.container-fluid a.navbar-brand").classList.add("pe-none");
                 },
                 onSearchRendered: (el) => {
