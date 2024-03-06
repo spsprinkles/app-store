@@ -456,17 +456,19 @@ export class Forms {
     }
 
     // Determines if package is a flow
-    static isFlowPackage(filePath: string): PromiseLike<{ url: string; isFlow: boolean }> {
+    static isFlowPackage(attachment: Types.SP.Attachment): PromiseLike<{ attachment: Types.SP.Attachment; isFlow: boolean }> {
+        let filePath = attachment.ServerRelativeUrl;
+
         // Return a promise
         return new Promise(resolve => {
             // See if this is not a zip file
-            if (!filePath.endsWith(".zip")) { resolve({ url: filePath, isFlow: false }); return; }
+            if (!filePath.endsWith(".zip")) { resolve({ attachment, isFlow: false }); return; }
 
             // Read the package
             Web(Strings.SourceUrl).getFileByServerRelativeUrl(filePath).content().execute(data => {
                 JSZip.loadAsync(data).then(zipContents => {
                     // See if this has a manifest file in the root
-                    resolve({ url: filePath, isFlow: zipContents.files["manifest.json"] ? true : false });
+                    resolve({ attachment, isFlow: zipContents.files["manifest.json"] ? true : false });
                 });
             });
         });

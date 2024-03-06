@@ -1,5 +1,5 @@
 import { Dashboard } from "dattatable";
-import { Components, ContextInfo, ThemeManager } from "gd-sprest-bs";
+import { Components, ContextInfo, ThemeManager, Types } from "gd-sprest-bs";
 import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
 import { gearWideConnected } from "gd-sprest-bs/build/icons/svgs/gearWideConnected";
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
@@ -486,16 +486,16 @@ export class App {
                             }
 
                             // See if this is a flow and the user can download
-                            let packages = [];
+                            let packages: Types.SP.Attachment[] = [];
                             if (item.AppType == "Power Automate" && !Strings.IsFlow3) {
                                 if (item.AttachmentFiles?.results) {
                                     let promises = [];
                                     for (let i = 0; i < item.AttachmentFiles.results.length; i++) {
                                         // See if this is a flow package
-                                        let promise = Forms.isFlowPackage(item.AttachmentFiles.results[i].ServerRelativeUrl);
+                                        let promise = Forms.isFlowPackage(item.AttachmentFiles.results[i]);
                                         promise.then((result) => {
                                             if (result.isFlow) {
-                                                packages.push(result.url);
+                                                packages.push(result.attachment);
                                             }
                                         });
                                         promises.push(promise);
