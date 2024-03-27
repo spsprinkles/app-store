@@ -106,11 +106,14 @@ export class Forms {
         DataSource.List.editForm({
             itemId: item.Id,
             onCreateEditForm: props => { return this.configureForm(props); },
-            onUpdate: (item: IAppStoreItem) => {
+            onUpdate: (updatedItem: IAppStoreItem) => {
                 // Refresh the item
-                DataSource.List.refreshItem(item.Id).then(updatedItem => {
-                    // Add the developers
-                    this.addDevelopers(updatedItem).then(onUpdate);
+                DataSource.List.refreshItem(updatedItem.Id).then(refreshedItem => {
+                    // See if the item is approved
+                    if (item.Status != "Approved" && refreshedItem.Status == "Approved") {
+                        // Add the developers
+                        this.addDevelopers(refreshedItem).then(onUpdate);
+                    }
                 });
             },
             tabInfo: {
@@ -141,6 +144,7 @@ export class Forms {
                     },
                     {
                         title: "Template",
+                        fields: [],
                         onRendered: (el) => {
                             // Render the form
                             CreateTemplate.renderForm(el);
