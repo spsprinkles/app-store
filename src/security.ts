@@ -12,8 +12,8 @@ export class Security {
     // Admin
     private static _isAdmin: boolean = false;
     static get IsAdmin(): boolean { return this._isAdmin; }
-    private static _adminGroup: Types.SP.Group = null;
-    static get AdminGroup(): Types.SP.Group { return this._adminGroup; }
+    private static _adminGroup: Types.SP.GroupOData = null;
+    static get AdminGroup(): Types.SP.GroupOData { return this._adminGroup; }
 
     // Developers
     private static _isDeveloper: boolean = false;
@@ -25,8 +25,8 @@ export class Security {
         Title: Strings.SecurityGroups.Developers.Name,
         OnlyAllowMembersViewMembership: false
     };
-    private static _developerGroup: Types.SP.Group = null;
-    static get DeveloperGroup(): Types.SP.Group { return this._developerGroup; }
+    private static _developerGroup: Types.SP.GroupOData = null;
+    static get DeveloperGroup(): Types.SP.GroupOData { return this._developerGroup; }
 
     // Manager
     private static _isManager: boolean = false;
@@ -37,8 +37,8 @@ export class Security {
         Title: Strings.SecurityGroups.Managers.Name,
         OnlyAllowMembersViewMembership: false
     };
-    private static _managerGroup: Types.SP.Group = null;
-    static get ManagerGroup(): Types.SP.Group { return this._managerGroup; }
+    private static _managerGroup: Types.SP.GroupOData = null;
+    static get ManagerGroup(): Types.SP.GroupOData { return this._managerGroup; }
 
     // SecurityGroupUrl
     private static _securityGroupUrl = ContextInfo.webServerRelativeUrl + "/_layouts/15/people.aspx?MembershipGroupId=";
