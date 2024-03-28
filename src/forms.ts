@@ -111,8 +111,11 @@ export class Forms {
                 DataSource.List.refreshItem(updatedItem.Id).then(refreshedItem => {
                     // See if the item is approved
                     if (item.Status != "Approved" && refreshedItem.Status == "Approved") {
-                        // Add the developers
+                        // Add the developers and then call the update event
                         this.addDevelopers(refreshedItem).then(onUpdate);
+                    } else {
+                        // Call the update event
+                        onUpdate();
                     }
                 });
             },
