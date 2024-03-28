@@ -8,6 +8,7 @@ export const setContext = (context, envType?: number, sourceUrl?: string) => {
 
     // Update the properties
     Strings.IsClassic = envType == SPTypes.EnvironmentType.ClassicSharePoint;
+    Strings.IsFlow3 = ContextInfo.blockDownloadsExperienceEnabled ? true : false;
     Strings.SourceUrl = sourceUrl || ContextInfo.webServerRelativeUrl;
 }
 
@@ -26,6 +27,7 @@ const Strings = {
     DateFormat: "YYYY-MMM-DD",
     GlobalVariable: "AppStore",
     IsClassic: true,
+    IsFlow3: ContextInfo.blockDownloadsExperienceEnabled ? true : false,
     Lists: {
         Main: "App Store",
         Ratings: "App Ratings",
