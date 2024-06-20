@@ -11,6 +11,7 @@ export interface IAppStoreItem extends Types.SP.ListItemOData {
     AssociatedLists: string;
     Description: string;
     Developers: { results: { Id: number; Title: string }[] };
+    FlowData: string;
     Icon: string;
     Modified: string;
     MoreInfo?: Types.SP.FieldUrlValue;
@@ -185,7 +186,7 @@ export class DataSource {
                     Expand: ["Developers", "AttachmentFiles"],
                     GetAllItems: true,
                     OrderBy: ["Title"],
-                    Select: ["*", "Developers/Id", "Developers/Title",],
+                    Select: ["*", "Developers/Id", "Developers/Title", "FlowData"],
                     Top: 5000
                 },
                 onInitError: reject,
