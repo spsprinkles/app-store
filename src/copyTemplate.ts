@@ -286,7 +286,7 @@ export class CopyTemplate {
 
         // Set the header
         Modal.setHeader("Deploy Dataset: " + appItem.Title);
-        Modal.HeaderElement.prepend(Common.getIcon(28, 28, appItem.AppType + ' Template', 'icon-svg me-2'));
+        Modal.HeaderElement.prepend(Common.getIcon(28, 28, appItem.AppType + (appItem.AppType.startsWith('Power ') ? ' Template' : ''), 'icon-svg me-2'));
 
         // Render the form
         CopyTemplate.renderForm(Modal.BodyElement, appItem, listNames);
