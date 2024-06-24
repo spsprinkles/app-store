@@ -461,15 +461,16 @@ export class App {
                         className: "d-none",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             el.innerHTML = `<label>${column.title}:</label>`;
-                            // See if this is a power platform item
-                            if (item.AppType.startsWith('Power ')) {
+
+                            // See if this item has a SharePoint list associated with it
+                            if (item.AssociatedLists) {
                                 // Add a template button
                                 Components.Tooltip({
                                     el,
                                     content: "Deploy the dataset for this solution",
                                     btnProps: {
                                         className: "p-1 pe-2",
-                                        iconType: Common.getIcon(22, 22, item.AppType + ' ' + column.title, 'icon-svg me-1'),
+                                        iconType: Common.getIcon(22, 22, item.AppType + (item.AppType.startsWith('Power ') ? ' ' + column.title : ''), 'icon-svg me-1'),
                                         isDisabled: !(item.AssociatedLists),
                                         isSmall: true,
                                         text: column.name,
@@ -483,6 +484,9 @@ export class App {
                                         }
                                     }
                                 });
+
+                                // Ensure this column is displayed
+                                el.classList.remove("d-none");
                             }
 
                             // See if this is a flow and the user can download
@@ -505,6 +509,8 @@ export class App {
                                     Promise.all(promises).then(() => {
                                         // See if a package exists
                                         if (packages.length > 0) {
+                                            let showColumn = false;
+
                                             // Ensure this is the owner of the app or an admin
                                             if (Security.IsAdmin || Security.IsManager || Security.IsDeveloper) {
                                                 // Add a button to customize the package
@@ -525,6 +531,9 @@ export class App {
                                                         }
                                                     }
                                                 });
+
+                                                // Set the flag
+                                                showColumn = true;
                                             }
 
                                             // See if flow data exists
@@ -544,7 +553,13 @@ export class App {
                                                         }
                                                     }
                                                 });
+
+                                                // Set the flag
+                                                showColumn = true;
                                             }
+
+                                            // Show this column based on the flag
+                                            showColumn ? el.classList.remove("d-none") : null;
                                         }
                                     });
                                 }
