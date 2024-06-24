@@ -10,7 +10,7 @@ export interface IAppStoreWebPartProps {
 }
 
 // Reference the solution
-import "../../../../dist/app-store.min.js";
+import "main-lib";
 declare const AppStore: {
   description: string;
   getLogo: () => SVGImageElement;
