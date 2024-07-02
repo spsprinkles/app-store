@@ -125,48 +125,44 @@ export class App {
                     ]
                 }
             );
-
-            // Render the Add button
-            subNavItems.push(
-                {
-                    text: "Adds an item to the " + Strings.ProjectName,
-                    onRender: (el, item) => {
-                        // Clear the existing button
-                        el.innerHTML = "";
-                        // Create a span to wrap the icon in
-                        let span = document.createElement("span");
-                        span.className = "bg-white d-inline-flex ms-2 rounded";
-                        el.appendChild(span);
-
-                        // Render a tooltip
-                        Components.Tooltip({
-                            el: span,
-                            content: item.text,
-                            btnProps: {
-                                // Render the icon button
-                                className: "p-1 pe-2",
-                                iconClassName: "me-1",
-                                iconType: plusSquare,
-                                iconSize: 24,
-                                isSmall: true,
-                                text: "Add",
-                                type: Components.ButtonTypes.OutlineSecondary,
-                                onClick: () => {
-                                    // Show the new form
-                                    Forms.new(() => {
-                                        // Refresh the table
-                                        this._dashboard.refresh(DataSource.AppItems);
-                                    });
-                                }
-                            }
-                        });
-                    }
-                }
-            );
         }
 
         // Render the Add button
         subNavItems.push(
+            {
+                text: "Adds an item to the " + Strings.ProjectName,
+                onRender: (el, item) => {
+                    // Clear the existing button
+                    el.innerHTML = "";
+                    // Create a span to wrap the icon in
+                    let span = document.createElement("span");
+                    span.className = "bg-white d-inline-flex ms-2 rounded";
+                    el.appendChild(span);
+
+                    // Render a tooltip
+                    Components.Tooltip({
+                        el: span,
+                        content: item.text,
+                        btnProps: {
+                            // Render the icon button
+                            className: "p-1 pe-2",
+                            iconClassName: "me-1",
+                            iconType: plusSquare,
+                            iconSize: 24,
+                            isSmall: true,
+                            text: "Add",
+                            type: Components.ButtonTypes.OutlineSecondary,
+                            onClick: () => {
+                                // Show the new form
+                                Forms.new(() => {
+                                    // Refresh the table
+                                    this._dashboard.refresh(DataSource.AppItems);
+                                });
+                            }
+                        }
+                    });
+                }
+            },
             {
                 text: "Request an App to be added to the " + Strings.ProjectName,
                 onRender: (el, item) => {

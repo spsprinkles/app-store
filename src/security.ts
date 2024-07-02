@@ -68,12 +68,12 @@ export class Security {
                     {
                         listName: Strings.Lists.Main,
                         groupName: ListSecurityDefaultGroups.Visitors,
-                        permission: SPTypes.RoleType.Reader
+                        permission: SPTypes.RoleType.Contributor
                     },
                     {
                         listName: Strings.Lists.Main,
                         groupName: this._developerGroupInfo.Title,
-                        permission: SPTypes.RoleType.Reader
+                        permission: SPTypes.RoleType.Contributor
                     },
                     {
                         listName: Strings.Lists.Main,
@@ -88,12 +88,12 @@ export class Security {
                     {
                         listName: Strings.Lists.Ratings,
                         groupName: ListSecurityDefaultGroups.Visitors,
-                        permission: SPTypes.RoleType.Reader
+                        permission: SPTypes.RoleType.Contributor
                     },
                     {
                         listName: Strings.Lists.Ratings,
                         groupName: this._developerGroupInfo.Title,
-                        permission: SPTypes.RoleType.Reader
+                        permission: SPTypes.RoleType.Contributor
                     },
                     {
                         listName: Strings.Lists.Ratings,
