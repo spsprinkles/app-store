@@ -203,7 +203,7 @@ export class CreateTemplate {
                                 LoadingDialog.show();
 
                                 // Load the lists
-                                Web().Lists().execute(
+                                Web(ctrlWeb.getValue()).Lists().execute(
                                     // Success
                                     lists => {
                                         let items: Components.IDropdownItem[] = [];
