@@ -79,7 +79,7 @@ export class CreateTemplate {
                                 if (ct.Sealed) { continue; }
 
                                 // Skip the internal content types
-                                if (ct.Name != "Item") {
+                                if (ct.Name != "Document" && ct.Name != "Event" && ct.Name != "Item" && ct.Name != "Task") {
                                     // Add the content type
                                     cfgProps.ContentTypes.push({
                                         Name: ct.Name,
