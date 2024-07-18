@@ -48,42 +48,75 @@ export class CreateTemplate {
                             LoadingDialog.hide();
                         },
                         onInitialized: () => {
+                            let lookupFields: Types.SP.FieldLookup[] = [];
+
                             // Update the loading dialog
                             LoadingDialog.setBody("Analyzing the list information...");
 
                             // Create the configuration
                             let cfgProps: Helper.ISPConfigProps = {
+                                ContentTypes: [],
                                 ListCfg: [{
                                     ListInformation: {
-                                        BaseTemplate: list.ListInfo.BaseTemplate,
-                                        Title: dstListName,
                                         AllowContentTypes: list.ListInfo.AllowContentTypes,
+                                        BaseTemplate: list.ListInfo.BaseTemplate,
+                                        ContentTypesEnabled: list.ListInfo.ContentTypesEnabled,
+                                        Title: dstListName,
                                         Hidden: list.ListInfo.Hidden,
                                         NoCrawl: list.ListInfo.NoCrawl
                                     },
+                                    ContentTypes: [],
                                     CustomFields: [],
                                     ViewInformation: []
                                 }]
                             };
 
-                            // Parse the content type fields
-                            let lookupFields: Types.SP.FieldLookup[] = [];
-                            for (let i = 0; i < list.ListContentTypes[0].Fields.results.length; i++) {
-                                let fldInfo = list.ListContentTypes[0].Fields.results[i];
+                            // Parse the content types
+                            for (let i = 0; i < list.ListContentTypes.length; i++) {
+                                let ct = list.ListContentTypes[i];
 
-                                // Skip internal fields
-                                if (fldInfo.InternalName == "ContentType" || fldInfo.InternalName == "Title") { continue; }
+                                // Skip sealed content types
+                                if (ct.Sealed) { continue; }
 
-                                // See if this is a lookup field
-                                if (fldInfo.FieldTypeKind == SPTypes.FieldType.Lookup) {
-                                    // Add the field
-                                    lookupFields.push(fldInfo);
+                                // Skip the internal content types
+                                if (ct.Name != "Item") {
+                                    // Add the content type
+                                    cfgProps.ContentTypes.push({
+                                        Name: ct.Name,
+                                        ParentName: "Item"
+                                    });
                                 }
 
-                                // Add the field information
-                                cfgProps.ListCfg[0].CustomFields.push({
-                                    name: fldInfo.InternalName,
-                                    schemaXml: fldInfo.SchemaXml
+                                // Parse the content type fields
+                                let fieldRefs = [];
+                                for (let j = 0; j < ct.Fields.results.length; j++) {
+                                    let fldInfo = ct.Fields.results[j];
+
+                                    // Skip internal fields
+                                    if (fldInfo.InternalName == "ContentType" || fldInfo.InternalName == "Title") { continue; }
+
+                                    // Append the field ref
+                                    fieldRefs.push(fldInfo.InternalName);
+
+                                    // See if this is a lookup field
+                                    if (fldInfo.FieldTypeKind == SPTypes.FieldType.Lookup) {
+                                        // Add the field
+                                        lookupFields.push(fldInfo);
+                                    }
+
+                                    // Add the field information
+                                    cfgProps.ListCfg[0].CustomFields.push({
+                                        name: fldInfo.InternalName,
+                                        schemaXml: fldInfo.SchemaXml
+                                    });
+                                }
+
+                                // Add the list content type
+                                cfgProps.ListCfg[0].ContentTypes.push({
+                                    Name: ct.Name,
+                                    Description: ct.Description,
+                                    ParentName: ct.Name,
+                                    FieldRefs: fieldRefs
                                 });
                             }
 
@@ -174,9 +207,9 @@ export class CreateTemplate {
     }
 
     // Renders the footer
-    static renderFooter(el: HTMLElement, appItem: IAppStoreItem, clearFl:boolean = true) {
+    static renderFooter(el: HTMLElement, appItem: IAppStoreItem, clearFl: boolean = true) {
         // Clear the footer
-        if(clearFl) { while (el.firstChild) { el.removeChild(el.firstChild); } }
+        if (clearFl) { while (el.firstChild) { el.removeChild(el.firstChild); } }
 
         // Set the footer
         Components.TooltipGroup({
@@ -222,6 +255,11 @@ export class CreateTemplate {
 
                                         // Set the dropdowns
                                         ctrlLists.dropdown.setItems(items);
+
+                                        // Set the validation
+                                        ctrlLists.updateValidation(ctrlLists.el, {
+                                            isValid: true
+                                        });
 
                                         // Hide the loading dialog
                                         LoadingDialog.hide();
@@ -301,7 +339,7 @@ export class CreateTemplate {
     static renderForm(el: HTMLElement, webUrl?: string) {
         // Set the body
         el.innerHTML = `<label class="my-2">Use this form to add or update a list template for this app.`;
-        
+
         // Render a form
         this._form = Components.Form({
             el,
