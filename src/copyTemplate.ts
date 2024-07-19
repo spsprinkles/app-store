@@ -28,42 +28,72 @@ export class CopyTemplate {
                     reject("Error loading the list information. Please check your permission to the source list.");
                 },
                 onInitialized: () => {
+                    let lookupFields: Types.SP.FieldLookup[] = [];
+
                     // Update the loading dialog
                     LoadingDialog.setBody("Analyzing the list information...");
 
                     // Create the configuration
                     let cfgProps: Helper.ISPConfigProps = {
+                        ContentTypes: [],
                         ListCfg: [{
                             ListInformation: {
-                                BaseTemplate: list.ListInfo.BaseTemplate,
-                                Title: dstListName,
                                 AllowContentTypes: list.ListInfo.AllowContentTypes,
+                                BaseTemplate: list.ListInfo.BaseTemplate,
+                                ContentTypesEnabled: list.ListInfo.ContentTypesEnabled,
+                                Title: dstListName,
                                 Hidden: list.ListInfo.Hidden,
                                 NoCrawl: list.ListInfo.NoCrawl
                             },
+                            ContentTypes: [],
                             CustomFields: [],
                             ViewInformation: []
                         }]
                     };
 
-                    // Parse the content type fields
-                    let lookupFields: Types.SP.FieldLookup[] = [];
-                    for (let i = 0; i < list.ListContentTypes[0].Fields.results.length; i++) {
-                        let fldInfo = list.ListContentTypes[0].Fields.results[i];
+                    // Parse the content types
+                    for (let i = 0; i < list.ListContentTypes.length; i++) {
+                        let ct = list.ListContentTypes[i];
 
-                        // Skip internal fields
-                        if (fldInfo.InternalName == "ContentType" || fldInfo.InternalName == "Title") { continue; }
+                        // Skip sealed content types
+                        if (ct.Sealed) { continue; }
 
-                        // See if this is a lookup field
-                        if (fldInfo.FieldTypeKind == SPTypes.FieldType.Lookup) {
-                            // Add the field
-                            lookupFields.push(fldInfo);
+                        // Skip the internal content types
+                        if (ct.Name != "Document" && ct.Name != "Event" && ct.Name != "Item" && ct.Name != "Task") {
+                            // Add the content type
+                            cfgProps.ContentTypes.push({
+                                Name: ct.Name,
+                                ParentName: "Item"
+                            });
                         }
 
-                        // Add the field information
-                        cfgProps.ListCfg[0].CustomFields.push({
-                            name: fldInfo.InternalName,
-                            schemaXml: fldInfo.SchemaXml
+                        // Parse the content types
+                        let fieldRefs = [];
+                        for (let j = 0; j < ct.Fields.results.length; j++) {
+                            let fldInfo = ct.Fields.results[j];
+
+                            // Append the field ref
+                            fieldRefs.push(fldInfo.InternalName);
+
+                            // See if this is a lookup field
+                            if (fldInfo.FieldTypeKind == SPTypes.FieldType.Lookup) {
+                                // Add the field
+                                lookupFields.push(fldInfo);
+                            }
+
+                            // Add the field information
+                            cfgProps.ListCfg[0].CustomFields.push({
+                                name: fldInfo.InternalName,
+                                schemaXml: fldInfo.SchemaXml
+                            });
+                        }
+
+                        // Add the list content type
+                        cfgProps.ListCfg[0].ContentTypes.push({
+                            Name: ct.Name,
+                            Description: ct.Description,
+                            ParentName: ct.Name,
+                            FieldRefs: fieldRefs
                         });
                     }
 
@@ -94,47 +124,50 @@ export class CopyTemplate {
                         Helper.Executor(lookupFields, lookupField => {
                             // Return a promise
                             return new Promise(resolve => {
-                                // Get the lookup field source list
-                                Web(srcWebUrl).Lists().getById(lookupField.LookupList).execute(srcLookupList => {
-                                    // The lookup list template format will need to remove the app title for the destination list.
-                                    let dstLookupList = srcLookupList.Title.replace(appTitle, "").trim();
+                                // Ensure the list exists
+                                if (lookupField.LookupList) {
+                                    // Get the lookup field source list
+                                    Web(srcWebUrl).Lists().getById(lookupField.LookupList).execute(srcLookupList => {
+                                        // The lookup list template format will need to remove the app title for the destination list.
+                                        let dstLookupList = srcLookupList.Title.replace(appTitle, "").trim();
 
-                                    // Get the lookup list in the destination site
-                                    Web(dstWebUrl).Lists(dstLookupList).execute(dstList => {
-                                        // Get the context for the destination web
-                                        ContextInfo.getWeb(dstWebUrl).execute(contextInfo => {
-                                            // Update the field schema xml
-                                            let fieldDef = lookupField.SchemaXml.replace(`List="${lookupField.LookupList}"`, `List="{${dstList.Id}}"`);
-                                            Web(dstWebUrl, { requestDigest: contextInfo.GetContextWebInformation.FormDigestValue })
-                                                .Lists(dstListName).Fields(lookupField.InternalName).update({
-                                                    SchemaXml: fieldDef
-                                                }).execute(() => {
-                                                    // Updated the lookup list
-                                                    console.log(`Updated the lookup field '${lookupField.InternalName}' in lookup list successfully.`);
+                                        // Get the lookup list in the destination site
+                                        Web(dstWebUrl).Lists(dstLookupList).execute(dstList => {
+                                            // Get the context for the destination web
+                                            ContextInfo.getWeb(dstWebUrl).execute(contextInfo => {
+                                                // Update the field schema xml
+                                                let fieldDef = lookupField.SchemaXml.replace(`List="${lookupField.LookupList}"`, `List="{${dstList.Id}}"`);
+                                                Web(dstWebUrl, { requestDigest: contextInfo.GetContextWebInformation.FormDigestValue })
+                                                    .Lists(dstListName).Fields(lookupField.InternalName).update({
+                                                        SchemaXml: fieldDef
+                                                    }).execute(() => {
+                                                        // Updated the lookup list
+                                                        console.log(`Updated the lookup field '${lookupField.InternalName}' in lookup list successfully.`);
 
-                                                    // Check the next field
-                                                    resolve(null);
-                                                });
+                                                        // Check the next field
+                                                        resolve(null);
+                                                    });
+                                            });
+                                        }, () => {
+                                            // Error getting the lookup list
+                                            console.error(`Error getting the lookup list '${dstLookupList}' from web '${dstWebUrl}'.`);
+
+                                            // Check the next field
+                                            resolve(null);
                                         });
                                     }, () => {
                                         // Error getting the lookup list
-                                        console.error(`Error getting the lookup list '${dstLookupList}' from web '${dstWebUrl}'.`);
+                                        console.error(`Error getting the lookup list '${lookupField.LookupList}' from web '${srcWebUrl}'.`);
 
                                         // Check the next field
                                         resolve(null);
                                     });
-                                }, () => {
-                                    // Error getting the lookup list
-                                    console.error(`Error getting the lookup list '${lookupField.LookupList}' from web '${srcWebUrl}'.`);
-
+                                } else {
                                     // Check the next field
                                     resolve(null);
-                                });
+                                }
                             });
                         }).then(() => {
-                            // Hide the loading dialog
-                            LoadingDialog.hide();
-
                             // Resolve the request
                             resolve(dstListName);
                         });
@@ -170,9 +203,9 @@ export class CopyTemplate {
     }
 
     // Renders the footer
-    static renderFooter(el: HTMLElement, appItem: IAppStoreItem, listNames: string[], clearFl:boolean = true) {
+    static renderFooter(el: HTMLElement, appItem: IAppStoreItem, listNames: string[], clearFl: boolean = true) {
         // Clear the footer
-        if(clearFl) { while (el.firstChild) { el.removeChild(el.firstChild); } }
+        if (clearFl) { while (el.firstChild) { el.removeChild(el.firstChild); } }
 
         // Set the footer
         Components.TooltipGroup({
