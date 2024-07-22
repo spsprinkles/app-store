@@ -29,6 +29,7 @@ export class CopyTemplate {
                 },
                 onInitialized: () => {
                     let calcFields: Types.SP.Field[] = [];
+                    let fields: { [key: string]: boolean } = {};
                     let lookupFields: Types.SP.FieldLookup[] = [];
 
                     // Update the loading dialog
@@ -88,11 +89,15 @@ export class CopyTemplate {
                                 continue;
                             }
 
-                            // Add the field information
-                            cfgProps.ListCfg[0].CustomFields.push({
-                                name: fldInfo.InternalName,
-                                schemaXml: fldInfo.SchemaXml
-                            });
+                            // Ensure the field hasn't been added
+                            if (fields[fldInfo.InternalName] == null) {
+                                // Add the field information
+                                fields[fldInfo.InternalName] = true;
+                                cfgProps.ListCfg[0].CustomFields.push({
+                                    name: fldInfo.InternalName,
+                                    schemaXml: fldInfo.SchemaXml
+                                });
+                            }
                         }
 
                         // Add the list content type
@@ -106,11 +111,14 @@ export class CopyTemplate {
 
                     // Parse the calculated fields
                     for (let i = 0; i < calcFields.length; i++) {
-                        // Append the field
-                        cfgProps.ListCfg[0].CustomFields.push({
-                            name: calcFields[i].InternalName,
-                            schemaXml: calcFields[i].SchemaXml
-                        });
+                        if (fields[calcFields[i].InternalName] == null) {
+                            // Append the field
+                            fields[calcFields[i].InternalName] = true;
+                            cfgProps.ListCfg[0].CustomFields.push({
+                                name: calcFields[i].InternalName,
+                                schemaXml: calcFields[i].SchemaXml
+                            });
+                        }
                     }
 
                     // Parse the views
