@@ -10,14 +10,14 @@ export class CreateTemplate {
     private static _form: Components.IForm = null;
 
     // Method to copy the list
-    private static copyList(appTitle: string, srcWebUrl: string, srcList: Types.SP.List): PromiseLike<string> {
+    private static copyList(appItem: IAppStoreItem, srcWebUrl: string, srcList: Types.SP.List): PromiseLike<string> {
         // Show a loading dialog
         LoadingDialog.setHeader("Copying the List");
         LoadingDialog.setBody("Initializing the request...");
         LoadingDialog.show();
 
         // Set the destination list name
-        let dstListName = `${appTitle} ${srcList.Title}`;
+        let dstListName = `${appItem.Title} ${srcList.Title}`;
 
         // Return a promise
         return new Promise((resolve, reject) => {
@@ -136,6 +136,9 @@ export class CreateTemplate {
                             // Update the loading dialog
                             LoadingDialog.setBody("Creating the destination list...");
 
+                            // Save the configuration as a string
+                            let strConfig = JSON.stringify(cfgProps);
+
                             // Create the list
                             let cfg = Helper.SPConfig(cfgProps);
                             cfg.setWebUrl(web.ServerRelativeUrl);
@@ -152,7 +155,7 @@ export class CreateTemplate {
                                             // The lookup list will need to be copied first and should have the same
                                             // format of the template "[App Title] [List Title]"
                                             // Set the lookup list name to match
-                                            let dstLookupList = `${appTitle} ${srcLookupList.Title}`;
+                                            let dstLookupList = `${appItem.Title} ${srcLookupList.Title}`;
 
                                             // Get the lookup list in the destination site
                                             Web(web.ServerRelativeUrl).Lists(dstLookupList).execute(dstList => {
@@ -183,11 +186,14 @@ export class CreateTemplate {
                                         });
                                     });
                                 }).then(() => {
-                                    // Hide the loading dialog
-                                    LoadingDialog.hide();
+                                    // Update the list configuration
+                                    this.updateListConfiguration(appItem, dstListName, JSON.parse(strConfig)).then(() => {
+                                        // Hide the loading dialog
+                                        LoadingDialog.hide();
 
-                                    // Resolve the request
-                                    resolve(dstListName);
+                                        // Resolve the request
+                                        resolve(dstListName);
+                                    });
                                 });
                             });
                         }
@@ -299,20 +305,8 @@ export class CreateTemplate {
                                 let listData = formValues["SourceList"].data as Types.SP.List;
 
                                 // Copy the list
-                                this.copyList(appItem.Title, formValues["WebUrl"], listData).then(
+                                this.copyList(appItem, formValues["WebUrl"], listData).then(
                                     (listName: string) => {
-                                        // See if the associated list doesn't exist
-                                        let lists = (appItem.AssociatedLists || "").split('\n');
-                                        if (lists.indexOf(listName) < 0) {
-                                            // Append the list
-                                            lists.push(listName);
-
-                                            // Update the item
-                                            appItem.update({
-                                                AssociatedLists: lists.join('\n')
-                                            }).execute();
-                                        }
-
                                         // Update the validation
                                         ctrlLists.updateValidation(ctrlLists.el, {
                                             isValid: true,
@@ -362,6 +356,88 @@ export class CreateTemplate {
                     errorMessage: "A list is required"
                 }
             ]
+        });
+    }
+
+    // Updates the list configuration for the item
+    private static updateListConfiguration(appItem: IAppStoreItem, listName: string, cfg: Helper.ISPConfigProps): PromiseLike<void> {
+        // Return a promise
+        return new Promise(resolve => {
+            // See if the associated list doesn't exist
+            let associatedLists = (appItem.AssociatedLists || "").split('\n');
+            if (associatedLists.indexOf(listName) < 0) {
+                // Append the list
+                associatedLists.push(listName);
+            }
+
+            // Get the list configurations and append/replace it
+            let listCfg = appItem.ListConfigurations;
+            try {
+                // Get the configuration
+                let appConfig: Helper.ISPConfigProps = JSON.parse(listCfg);
+
+                // See if content types exist
+                if (cfg.ContentTypes?.length > 0) {
+                    // Ensure content types are defined
+                    appConfig.ContentTypes = appConfig.ContentTypes || [];
+
+                    // Parse the content types
+                    let newCTS = cfg.ContentTypes || [];
+                    for (let i = 0; i < newCTS.length; i++) {
+                        let foundFl = false;
+                        let newCT = newCTS[i];
+
+                        // Parse the app configuration
+                        for (let j = 0; j < appConfig.ContentTypes.length; j++) {
+                            let ct = appConfig.ContentTypes[j];
+
+                            // See if they match
+                            if (newCT.Name == ct.Name) {
+                                // Replace it
+                                appConfig.ContentTypes[j] = newCT;
+                                foundFl = true;
+                                break;
+                            }
+                        }
+
+                        // See if it wasn't found
+                        if (!foundFl) {
+                            // Append it
+                            appConfig.ContentTypes.push(newCT)
+                        }
+                    }
+                }
+
+                // Parse the lists
+                let foundFl = false;
+                for (let i = 0; i < appConfig.ListCfg.length; i++) {
+                    // See if this is the target list
+                    if (appConfig.ListCfg[i].ListInformation.Title == listName) {
+                        // Replace it
+                        appConfig.ListCfg[i] = cfg.ListCfg[0];
+                        foundFl = true;
+                        break;
+                    }
+                }
+
+                // See if it wasn't found
+                if (!foundFl) {
+                    // Append the configuration
+                    appConfig.ListCfg.push(cfg.ListCfg[0]);
+                }
+
+                // Set the configuration
+                listCfg = JSON.stringify(appConfig);
+            } catch {
+                // Set the configuration
+                listCfg = JSON.stringify(cfg);
+            }
+
+            // Update the item
+            appItem.update({
+                AssociatedLists: associatedLists.join('\n'),
+                ListConfigurations: listCfg
+            }).execute(resolve);
         });
     }
 }
