@@ -48,6 +48,7 @@ export class CreateTemplate {
                             LoadingDialog.hide();
                         },
                         onInitialized: () => {
+                            let calcFields: Types.SP.Field[] = [];
                             let lookupFields: Types.SP.FieldLookup[] = [];
 
                             // Update the loading dialog
@@ -61,7 +62,7 @@ export class CreateTemplate {
                                         AllowContentTypes: list.ListInfo.AllowContentTypes,
                                         BaseTemplate: list.ListInfo.BaseTemplate,
                                         ContentTypesEnabled: list.ListInfo.ContentTypesEnabled,
-                                        Title: dstListName,
+                                        Title: srcList.Title,
                                         Hidden: list.ListInfo.Hidden,
                                         NoCrawl: list.ListInfo.NoCrawl
                                     },
@@ -103,6 +104,12 @@ export class CreateTemplate {
                                         // Add the field
                                         lookupFields.push(fldInfo);
                                     }
+                                    // Else, see if this is a calculated field
+                                    else if (fldInfo.FieldTypeKind == SPTypes.FieldType.Calculated) {
+                                        // Add the field and continue the loop
+                                        calcFields.push(fldInfo);
+                                        continue;
+                                    }
 
                                     // Add the field information
                                     cfgProps.ListCfg[0].CustomFields.push({
@@ -117,6 +124,15 @@ export class CreateTemplate {
                                     Description: ct.Description,
                                     ParentName: ct.Name,
                                     FieldRefs: fieldRefs
+                                });
+                            }
+
+                            // Parse the calculated fields
+                            for (let i = 0; i < calcFields.length; i++) {
+                                // Append the field
+                                cfgProps.ListCfg[0].CustomFields.push({
+                                    name: calcFields[i].InternalName,
+                                    schemaXml: calcFields[i].SchemaXml
                                 });
                             }
 
@@ -138,6 +154,9 @@ export class CreateTemplate {
 
                             // Save the configuration as a string
                             let strConfig = JSON.stringify(cfgProps);
+
+                            // Update the list template name
+                            cfgProps.ListCfg[0].ListInformation.Title = dstListName;
 
                             // Create the list
                             let cfg = Helper.SPConfig(cfgProps);

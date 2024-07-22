@@ -11,7 +11,7 @@ export class CopyTemplate {
     private static _form: Components.IForm = null;
 
     // Method to copy the list
-    private static copyList(appTitle: string, srcListName: string, dstWebUrl: string, dstListName: string): PromiseLike<string> {
+    private static copyList(appItem: IAppStoreItem, srcListName: string, dstWebUrl: string, dstListName: string): PromiseLike<string> {
         // Return a promise
         return new Promise((resolve, reject) => {
             // Getting the source list information
@@ -28,6 +28,7 @@ export class CopyTemplate {
                     reject("Error loading the list information. Please check your permission to the source list.");
                 },
                 onInitialized: () => {
+                    let calcFields: Types.SP.Field[] = [];
                     let lookupFields: Types.SP.FieldLookup[] = [];
 
                     // Update the loading dialog
@@ -80,6 +81,12 @@ export class CopyTemplate {
                                 // Add the field
                                 lookupFields.push(fldInfo);
                             }
+                            // Else, see if this is a calculated field
+                            else if (fldInfo.FieldTypeKind == SPTypes.FieldType.Calculated) {
+                                // Add the field and continue the loop
+                                calcFields.push(fldInfo);
+                                continue;
+                            }
 
                             // Add the field information
                             cfgProps.ListCfg[0].CustomFields.push({
@@ -94,6 +101,15 @@ export class CopyTemplate {
                             Description: ct.Description,
                             ParentName: ct.Name,
                             FieldRefs: fieldRefs
+                        });
+                    }
+
+                    // Parse the calculated fields
+                    for (let i = 0; i < calcFields.length; i++) {
+                        // Append the field
+                        cfgProps.ListCfg[0].CustomFields.push({
+                            name: calcFields[i].InternalName,
+                            schemaXml: calcFields[i].SchemaXml
                         });
                     }
 
@@ -129,7 +145,7 @@ export class CopyTemplate {
                                     // Get the lookup field source list
                                     Web(srcWebUrl).Lists().getById(lookupField.LookupList).execute(srcLookupList => {
                                         // The lookup list template format will need to remove the app title for the destination list.
-                                        let dstLookupList = srcLookupList.Title.replace(appTitle, "").trim();
+                                        let dstLookupList = srcLookupList.Title.replace(appItem.Title, "").trim();
 
                                         // Get the lookup list in the destination site
                                         Web(dstWebUrl).Lists(dstLookupList).execute(dstList => {
@@ -239,7 +255,7 @@ export class CopyTemplate {
                                                 let dstListName = listName.replace(appItem.Title, "").trim();
 
                                                 // Copy the list
-                                                this.copyList(appItem.Title, listName, dstWebUrl, dstListName).then(
+                                                this.copyList(appItem, listName, dstWebUrl, dstListName).then(
                                                     () => {
                                                         // Copy the next list
                                                         resolve(null);
