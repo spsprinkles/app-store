@@ -14,7 +14,7 @@
   "externals": {
     "main-lib": {
       "globalName": "main-lib",
-      "path": "../dist/app-store.min.js"
+      "path": "../dist/app-store.js"
     }
   },
   "localizedResources": {
