@@ -48,7 +48,8 @@ export class CreateTemplate {
                             LoadingDialog.hide();
                         },
                         onInitialized: () => {
-                            let calcFields: { [key: string]: { fields: string[]; schemaXML: string } } = {};
+                            let calcFields: Types.SP.Field[] = [];
+                            let calcFieldsNew: { [key: string]: { fields: string[]; schemaXML: string } } = {};
                             let fields: { [key: string]: boolean } = {};
                             let lookupFields: Types.SP.FieldLookup[] = [];
 
@@ -145,8 +146,20 @@ export class CreateTemplate {
                             }
 
                             // Parse the calculated fields
+                            for (let i = 0; i < calcFields.length; i++) {
+                                if (fields[calcFields[i].InternalName] == null) {
+                                    // Append the field
+                                    fields[calcFields[i].InternalName] = true;
+                                    cfgProps.ListCfg[0].CustomFields.push({
+                                        name: calcFields[i].InternalName,
+                                        schemaXml: calcFields[i].SchemaXml
+                                    });
+                                }
+                            }
+
+                            // Parse the calculated fields
                             let calcFieldRefs: string[] = [];
-                            for (let key in calcFields) {
+                            for (let key in calcFieldsNew) {
                                 // See if the array is empty
                                 if (calcFieldRefs.length == 0) {
                                     // Add the first field
@@ -155,20 +168,20 @@ export class CreateTemplate {
                                 }
 
                                 // Parse the dependent fields
-                                let idx = calcFields[key].fields.length;
-                                for (let i = 0; i < calcFields[key].fields.length; i++) {
-                                    let field = calcFields[key].fields[i];
+                                let idx = calcFieldsNew[key].fields.length;
+                                for (let i = 0; i < calcFieldsNew[key].fields.length; i++) {
+                                    let field = calcFieldsNew[key].fields[i];
 
                                     // Get the index of the field
                                     let fldIdx = calcFieldRefs.indexOf(field);
-                                    if (fldIdx < idx) {
+                                    if (fldIdx >= 0 && fldIdx < idx) {
                                         // Update the index
                                         idx = fldIdx;
                                     }
                                 }
 
                                 // See if the idx exists
-                                if (idx < calcFields[key].fields.length) {
+                                if (idx < calcFieldsNew[key].fields.length) {
                                     // Insert the field
                                     calcFieldRefs.splice(idx, 0, key);
                                 } else {
@@ -183,12 +196,14 @@ export class CreateTemplate {
 
                                 // Ensure the field hasn't been added
                                 if (fields[fieldName] == null) {
+                                    /*
                                     // Append the field
                                     fields[fieldName] = true;
                                     cfgProps.ListCfg[0].CustomFields.push({
                                         name: fieldName,
-                                        schemaXml: calcFields[fieldName].schemaXML
+                                        schemaXml: calcFieldsNew[fieldName].schemaXML
                                     });
+                                    */
                                 }
                             }
 
