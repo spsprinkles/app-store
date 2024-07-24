@@ -107,18 +107,6 @@ export class CreateTemplate {
                                     }
                                     // Else, see if this is a calculated field
                                     else if (fldInfo.FieldTypeKind == SPTypes.FieldType.Calculated) {
-                                        // Read the schema xml
-                                        let parser = new DOMParser();
-                                        let xml = parser.parseFromString(fldInfo.SchemaXml, "text/xml");
-
-                                        // Get the field references
-                                        let fields = [];
-                                        let fieldRefs = xml.querySelector("FieldRefs");
-                                        for (let k = 0; k < fieldRefs.children.length; k++) {
-                                            // Append the field reference
-                                            fields.push(fieldRefs.children[k].getAttribute("Name"));
-                                        }
-
                                         // Add the field and continue the loop
                                         calcFields.push(fldInfo);
                                         continue;
