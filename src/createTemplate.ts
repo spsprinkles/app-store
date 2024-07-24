@@ -121,7 +121,7 @@ export class CreateTemplate {
                                         }
 
                                         // Add the field and continue the loop
-                                        calcFields[fldInfo.InternalName] = { fields, schemaXML: fldInfo.SchemaXml };
+                                        calcFields.push(fldInfo);
                                         continue;
                                     }
 
