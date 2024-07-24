@@ -49,7 +49,6 @@ export class CreateTemplate {
                         },
                         onInitialized: () => {
                             let calcFields: Types.SP.Field[] = [];
-                            let calcFieldsNew: { [key: string]: { fields: string[]; schemaXML: string } } = {};
                             let fields: { [key: string]: boolean } = {};
                             let lookupFields: Types.SP.FieldLookup[] = [];
 
@@ -154,56 +153,6 @@ export class CreateTemplate {
                                         name: calcFields[i].InternalName,
                                         schemaXml: calcFields[i].SchemaXml
                                     });
-                                }
-                            }
-
-                            // Parse the calculated fields
-                            let calcFieldRefs: string[] = [];
-                            for (let key in calcFieldsNew) {
-                                // See if the array is empty
-                                if (calcFieldRefs.length == 0) {
-                                    // Add the first field
-                                    calcFieldRefs.push(key);
-                                    continue;
-                                }
-
-                                // Parse the dependent fields
-                                let idx = calcFieldsNew[key].fields.length;
-                                for (let i = 0; i < calcFieldsNew[key].fields.length; i++) {
-                                    let field = calcFieldsNew[key].fields[i];
-
-                                    // Get the index of the field
-                                    let fldIdx = calcFieldRefs.indexOf(field);
-                                    if (fldIdx >= 0 && fldIdx < idx) {
-                                        // Update the index
-                                        idx = fldIdx;
-                                    }
-                                }
-
-                                // See if the idx exists
-                                if (idx < calcFieldsNew[key].fields.length) {
-                                    // Insert the field
-                                    calcFieldRefs.splice(idx, 0, key);
-                                } else {
-                                    // Append the field
-                                    calcFieldRefs.push(key);
-                                }
-                            }
-
-                            // Parse the calculated fields
-                            for (let i = 0; i < calcFieldRefs.length; i++) {
-                                let fieldName = calcFieldRefs[i];
-
-                                // Ensure the field hasn't been added
-                                if (fields[fieldName] == null) {
-                                    /*
-                                    // Append the field
-                                    fields[fieldName] = true;
-                                    cfgProps.ListCfg[0].CustomFields.push({
-                                        name: fieldName,
-                                        schemaXml: calcFieldsNew[fieldName].schemaXML
-                                    });
-                                    */
                                 }
                             }
 
