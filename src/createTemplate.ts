@@ -94,11 +94,11 @@ export class CreateTemplate {
                                 for (let j = 0; j < ct.Fields.results.length; j++) {
                                     let fldInfo = ct.Fields.results[j];
 
-                                    // Skip internal fields
-                                    if (fldInfo.InternalName == "ContentType" || fldInfo.InternalName == "Title") { continue; }
-
                                     // Append the field ref
                                     fieldRefs.push(fldInfo.InternalName);
+
+                                    // Skip internal fields
+                                    if (fldInfo.InternalName == "ContentType" || fldInfo.InternalName == "Title") { continue; }
 
                                     // See if this is a lookup field
                                     if (fldInfo.FieldTypeKind == SPTypes.FieldType.Lookup) {
@@ -147,6 +147,25 @@ export class CreateTemplate {
                             // Parse the views
                             for (let i = 0; i < list.ListViews.length; i++) {
                                 let viewInfo = list.ListViews[i];
+
+                                // Parse the fields
+                                for (let j = 0; j < viewInfo.ViewFields.Items.results.length; j++) {
+                                    let viewField = viewInfo.ViewFields.Items.results[j];
+
+                                    // Ensure the field exists
+                                    if (fields[viewField] == null) {
+                                        // Get the field and ensure it exists
+                                        let field = list.getField(viewField);
+                                        if (field) {
+                                            // Append the field
+                                            fields[viewField] = true;
+                                            cfgProps.ListCfg[0].CustomFields.push({
+                                                name: field.InternalName,
+                                                schemaXml: field.SchemaXml
+                                            });
+                                        }
+                                    }
+                                }
 
                                 // Add the view
                                 cfgProps.ListCfg[0].ViewInformation.push({
