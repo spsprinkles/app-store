@@ -133,18 +133,6 @@ export class CreateTemplate {
                                 });
                             }
 
-                            // Parse the calculated fields
-                            for (let i = 0; i < calcFields.length; i++) {
-                                if (fields[calcFields[i].InternalName] == null) {
-                                    // Append the field
-                                    fields[calcFields[i].InternalName] = true;
-                                    cfgProps.ListCfg[0].CustomFields.push({
-                                        name: calcFields[i].InternalName,
-                                        schemaXml: calcFields[i].SchemaXml
-                                    });
-                                }
-                            }
-
                             // Parse the views
                             for (let i = 0; i < list.ListViews.length; i++) {
                                 let viewInfo = list.ListViews[i];
@@ -157,13 +145,24 @@ export class CreateTemplate {
                                     if (fields[viewField] == null) {
                                         // Get the field and ensure it exists
                                         let field = list.getField(viewField);
-                                        if (field) {
+
+                                        // See if this is a calculated field
+                                        if (field.FieldTypeKind == SPTypes.FieldType.Calculated) {
+                                            // Add the field and continue the loop
+                                            calcFields.push(field);
+                                        } else if (field) {
                                             // Append the field
                                             fields[viewField] = true;
                                             cfgProps.ListCfg[0].CustomFields.push({
                                                 name: field.InternalName,
                                                 schemaXml: field.SchemaXml
                                             });
+
+                                            // See if this is a lookup field
+                                            if (field.FieldTypeKind == SPTypes.FieldType.Lookup) {
+                                                // Add the field
+                                                lookupFields.push(field);
+                                            }
                                         }
                                     }
                                 }
@@ -175,6 +174,18 @@ export class CreateTemplate {
                                     ViewFields: viewInfo.ViewFields.Items.results,
                                     ViewQuery: viewInfo.ViewQuery
                                 });
+                            }
+
+                            // Parse the calculated fields
+                            for (let i = 0; i < calcFields.length; i++) {
+                                if (fields[calcFields[i].InternalName] == null) {
+                                    // Append the field
+                                    fields[calcFields[i].InternalName] = true;
+                                    cfgProps.ListCfg[0].CustomFields.push({
+                                        name: calcFields[i].InternalName,
+                                        schemaXml: calcFields[i].SchemaXml
+                                    });
+                                }
                             }
 
                             // Update the loading dialog
@@ -242,6 +253,15 @@ export class CreateTemplate {
                                         resolve(dstListName);
                                     });
                                 });
+                            }, (err) => {
+                                // Show an error dialog
+                                console.log(err);
+                                Modal.setHeader("Error Creating List");
+                                Modal.setBody("There was an error creating the list.");
+                                Modal.show();
+
+                                // Hide the loading dialog
+                                LoadingDialog.hide();
                             });
                         }
                     });
