@@ -100,13 +100,8 @@ export class CreateTemplate {
                                     // Skip internal fields
                                     if (fldInfo.InternalName == "ContentType" || fldInfo.InternalName == "Title") { continue; }
 
-                                    // See if this is a lookup field
-                                    if (fldInfo.FieldTypeKind == SPTypes.FieldType.Lookup) {
-                                        // Add the field
-                                        lookupFields.push(fldInfo);
-                                    }
-                                    // Else, see if this is a calculated field
-                                    else if (fldInfo.FieldTypeKind == SPTypes.FieldType.Calculated) {
+                                    // See if this is a calculated field
+                                    if (fldInfo.FieldTypeKind == SPTypes.FieldType.Calculated) {
                                         // Add the field and continue the loop
                                         calcFields.push(fldInfo);
                                         continue;
@@ -120,6 +115,12 @@ export class CreateTemplate {
                                             name: fldInfo.InternalName,
                                             schemaXml: fldInfo.SchemaXml
                                         });
+
+                                        // See if this is a lookup field
+                                        if (fldInfo.FieldTypeKind == SPTypes.FieldType.Lookup) {
+                                            // Add the field
+                                            lookupFields.push(fldInfo);
+                                        }
                                     }
                                 }
 
