@@ -91,8 +91,8 @@ export class CreateTemplate {
 
                                 // Parse the content type fields
                                 let fieldRefs = [];
-                                for (let j = 0; j < ct.Fields.results.length; j++) {
-                                    let fldInfo = list.getField(ct.Fields.results[j].InternalName);
+                                for (let j = 0; j < ct.FieldLinks.results.length; j++) {
+                                    let fldInfo = list.getField(ct.FieldLinks.results[j].FieldInternalName);
 
                                     // Append the field ref
                                     fieldRefs.push(fldInfo.InternalName);
@@ -139,20 +139,17 @@ export class CreateTemplate {
 
                                 // Parse the fields
                                 for (let j = 0; j < viewInfo.ViewFields.Items.results.length; j++) {
-                                    let viewField = viewInfo.ViewFields.Items.results[j];
+                                    let field = list.getField(viewInfo.ViewFields.Items.results[j]);
 
                                     // Ensure the field exists
-                                    if (fields[viewField] == null) {
-                                        // Get the field and ensure it exists
-                                        let field = list.getField(viewField);
-
+                                    if (fields[field.InternalName] == null) {
                                         // See if this is a calculated field
                                         if (field.FieldTypeKind == SPTypes.FieldType.Calculated) {
                                             // Add the field and continue the loop
                                             calcFields.push(field);
-                                        } else if (field) {
+                                        } else {
                                             // Append the field
-                                            fields[viewField] = true;
+                                            fields[field.InternalName] = true;
                                             cfgProps.ListCfg[0].CustomFields.push({
                                                 name: field.InternalName,
                                                 schemaXml: field.SchemaXml
@@ -178,12 +175,14 @@ export class CreateTemplate {
 
                             // Parse the calculated fields
                             for (let i = 0; i < calcFields.length; i++) {
-                                if (fields[calcFields[i].InternalName] == null) {
+                                let calcField = calcFields[i];
+
+                                if (fields[calcField.InternalName] == null) {
                                     // Append the field
-                                    fields[calcFields[i].InternalName] = true;
+                                    fields[calcField.InternalName] = true;
                                     cfgProps.ListCfg[0].CustomFields.push({
-                                        name: calcFields[i].InternalName,
-                                        schemaXml: calcFields[i].SchemaXml
+                                        name: calcField.InternalName,
+                                        schemaXml: calcField.SchemaXml
                                     });
                                 }
                             }
