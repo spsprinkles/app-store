@@ -92,7 +92,7 @@ export class CreateTemplate {
                                 // Parse the content type fields
                                 let fieldRefs = [];
                                 for (let j = 0; j < ct.Fields.results.length; j++) {
-                                    let fldInfo = ct.Fields.results[j];
+                                    let fldInfo = list.getField(ct.Fields.results[j].InternalName);
 
                                     // Append the field ref
                                     fieldRefs.push(fldInfo.InternalName);
