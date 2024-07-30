@@ -322,9 +322,9 @@ export class App {
             },
             table: {
                 rows: DataSource.AppItems,
-                dtProps: {
-                    dom: 'rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',
-                    columnDefs: [
+                onRendering: dtProps => {
+                    // Set the column defs
+                    dtProps.columnDefs = [
                         {
                             "targets": '_all',
                             "orderable": false,
@@ -333,23 +333,32 @@ export class App {
                             "targets": [0, 8, 9],
                             "searchable": false
                         }
-                    ],
-                    drawCallback: function (settings) {
+                    ];
+
+                    // Default order
+                    dtProps.order = [[1, "asc"]];
+
+                    // Update the paging
+                    dtProps.lengthMenu = [5, 10, 20, 50];
+                    dtProps.pageLength = 10;
+
+                    // Override the way the rows are rendered
+                    dtProps.drawCallback = (settings) => {
                         let api = new jQuery.fn.dataTable.Api(settings) as any;
                         let div = api.table().container() as HTMLDivElement;
                         let header = api.table().header() as HTMLTableElement;
                         let table = api.table().node() as HTMLTableElement;
-                        div.querySelector(".dataTables_info").classList.add("text-center");
-                        div.querySelector(".dataTables_length").classList.add("pt-2");
-                        div.querySelector(".dataTables_paginate").classList.add("pt-03");
+                        div.querySelector(".dt-info").classList.add("text-center");
+                        div.querySelector(".dt-length").classList.add("pt-2");
+                        div.querySelector(".dt-paging").classList.add("pt-03");
+                        div.querySelector("colgroup").remove();
                         header.classList.add("d-flex");
                         header.classList.add("d-none");
                         table.classList.add("cards");
-                    },
-                    lengthMenu: [5, 10, 20, 50],
-                    // Order by the 1st column by default; ascending
-                    order: [[1, "asc"]],
-                    pageLength: 10
+                    };
+
+                    // Return the properties
+                    return dtProps;
                 },
                 columns: [
                     {
