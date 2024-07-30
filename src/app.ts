@@ -468,7 +468,7 @@ export class App {
                             el.innerHTML = `<label>${column.title}:</label>`;
 
                             // See if this item has a SharePoint list associated with it
-                            if (item.AssociatedLists) {
+                            if (item.ListConfigurations) {
                                 // Add a template button
                                 Components.Tooltip({
                                     el,
@@ -476,16 +476,12 @@ export class App {
                                     btnProps: {
                                         className: "p-1 pe-2",
                                         iconType: Common.getIcon(22, 22, item.AppType + (item.AppType.startsWith('Power ') ? ' ' + column.title : ''), 'icon-svg me-1'),
-                                        isDisabled: !(item.AssociatedLists),
                                         isSmall: true,
                                         text: column.name,
                                         type: Components.ButtonTypes.OutlinePrimary,
                                         onClick: () => {
-                                            // Get the list templates associated w/ this item
-                                            let listNames = (item.AssociatedLists || "").trim().split('\n');
-
                                             // Display the copy list modal
-                                            CopyTemplate.renderModal(item, listNames);
+                                            CopyTemplate.renderModal(item, item.ListConfigurations);
                                         }
                                     }
                                 });

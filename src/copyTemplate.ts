@@ -11,192 +11,59 @@ export class CopyTemplate {
     private static _form: Components.IForm = null;
 
     // Method to copy the list
-    private static copyList(appItem: IAppStoreItem, srcListName: string, dstWebUrl: string, dstListName: string): PromiseLike<string> {
+    private static copyList(cfgProps: Helper.ISPConfigProps, webUrl: string): PromiseLike<List[]> {
         // Return a promise
         return new Promise((resolve, reject) => {
-            // Getting the source list information
-            LoadingDialog.setBody("Loading source list...");
+            // Create the configuration
+            let cfg = Helper.SPConfig(cfgProps);
 
-            // Get the list information
-            let srcWebUrl = getListTemplateUrl();
-            var list = new List({
-                listName: srcListName,
-                webUrl: srcWebUrl,
-                itemQuery: { Filter: "Id eq 0" },
-                onInitError: () => {
-                    // Reject the request
-                    reject("Error loading the list information. Please check your permission to the source list.");
-                },
-                onInitialized: () => {
-                    let calcFields: Types.SP.Field[] = [];
-                    let fields: { [key: string]: boolean } = {};
-                    let lookupFields: Types.SP.FieldLookup[] = [];
+            // Update the loading dialog
+            LoadingDialog.setBody("Deleting the existing lists...");
 
-                    // Update the loading dialog
-                    LoadingDialog.setBody("Analyzing the list information...");
+            // Uninstall the solution
+            cfg.uninstall().then(() => {
+                // Install the solution
+                cfg.install().then(() => {
+                    let lists: List[] = [];
 
-                    // Create the configuration
-                    let cfgProps: Helper.ISPConfigProps = {
-                        ContentTypes: [],
-                        ListCfg: [{
-                            ListInformation: {
-                                AllowContentTypes: list.ListInfo.AllowContentTypes,
-                                BaseTemplate: list.ListInfo.BaseTemplate,
-                                ContentTypesEnabled: list.ListInfo.ContentTypesEnabled,
-                                Title: dstListName,
-                                Hidden: list.ListInfo.Hidden,
-                                NoCrawl: list.ListInfo.NoCrawl
-                            },
-                            ContentTypes: [],
-                            CustomFields: [],
-                            ViewInformation: []
-                        }]
-                    };
+                    // Parse the lists
+                    Helper.Executor(cfgProps.ListCfg, listCfg => {
+                        // Return a promise
+                        return new Promise(resolve => {
+                            // Test the list
+                            this.testList(listCfg, webUrl).then(list => {
+                                // Append the list
+                                lists.push(list);
 
-                    // Parse the content types
-                    for (let i = 0; i < list.ListContentTypes.length; i++) {
-                        let ct = list.ListContentTypes[i];
-
-                        // Skip sealed content types
-                        if (ct.Sealed) { continue; }
-
-                        // Skip the internal content types
-                        if (ct.Name != "Document" && ct.Name != "Event" && ct.Name != "Item" && ct.Name != "Task") {
-                            // Add the content type
-                            cfgProps.ContentTypes.push({
-                                Name: ct.Name,
-                                ParentName: "Item"
+                                // Check the next list
+                                resolve(null);
                             });
-                        }
-
-                        // Parse the content types
-                        let fieldRefs = [];
-                        for (let j = 0; j < ct.Fields.results.length; j++) {
-                            let fldInfo = ct.Fields.results[j];
-
-                            // Append the field ref
-                            fieldRefs.push(fldInfo.InternalName);
-
-                            // See if this is a lookup field
-                            if (fldInfo.FieldTypeKind == SPTypes.FieldType.Lookup) {
-                                // Add the field
-                                lookupFields.push(fldInfo);
-                            }
-                            // Else, see if this is a calculated field
-                            else if (fldInfo.FieldTypeKind == SPTypes.FieldType.Calculated) {
-                                // Add the field and continue the loop
-                                calcFields.push(fldInfo);
-                                continue;
-                            }
-
-                            // Ensure the field hasn't been added
-                            if (fields[fldInfo.InternalName] == null) {
-                                // Add the field information
-                                fields[fldInfo.InternalName] = true;
-                                cfgProps.ListCfg[0].CustomFields.push({
-                                    name: fldInfo.InternalName,
-                                    schemaXml: fldInfo.SchemaXml
-                                });
-                            }
-                        }
-
-                        // Add the list content type
-                        cfgProps.ListCfg[0].ContentTypes.push({
-                            Name: ct.Name,
-                            Description: ct.Description,
-                            ParentName: ct.Name,
-                            FieldRefs: fieldRefs
                         });
-                    }
-
-                    // Parse the calculated fields
-                    for (let i = 0; i < calcFields.length; i++) {
-                        if (fields[calcFields[i].InternalName] == null) {
-                            // Append the field
-                            fields[calcFields[i].InternalName] = true;
-                            cfgProps.ListCfg[0].CustomFields.push({
-                                name: calcFields[i].InternalName,
-                                schemaXml: calcFields[i].SchemaXml
-                            });
-                        }
-                    }
-
-                    // Parse the views
-                    for (let i = 0; i < list.ListViews.length; i++) {
-                        let viewInfo = list.ListViews[i];
-
-                        // Add the view
-                        cfgProps.ListCfg[0].ViewInformation.push({
-                            Default: true,
-                            ViewName: viewInfo.Title,
-                            ViewFields: viewInfo.ViewFields.Items.results,
-                            ViewQuery: viewInfo.ViewQuery
-                        });
-                    }
-
-                    // Update the loading dialog
-                    LoadingDialog.setBody("Creating the destination list...");
-
-                    // Create the list
-                    let cfg = Helper.SPConfig(cfgProps);
-                    cfg.setWebUrl(dstWebUrl);
-                    cfg.install().then(() => {
-                        // Update the loading dialog
-                        LoadingDialog.setBody("Validating the lookup field(s)...");
-
-                        // Parse the lookup fields
-                        Helper.Executor(lookupFields, lookupField => {
-                            // Return a promise
-                            return new Promise(resolve => {
-                                // Ensure the list exists
-                                if (lookupField.LookupList) {
-                                    // Get the lookup field source list
-                                    Web(srcWebUrl).Lists().getById(lookupField.LookupList).execute(srcLookupList => {
-                                        // The lookup list template format will need to remove the app title for the destination list.
-                                        let dstLookupList = srcLookupList.Title.replace(appItem.Title, "").trim();
-
-                                        // Get the lookup list in the destination site
-                                        Web(dstWebUrl).Lists(dstLookupList).execute(dstList => {
-                                            // Get the context for the destination web
-                                            ContextInfo.getWeb(dstWebUrl).execute(contextInfo => {
-                                                // Update the field schema xml
-                                                let fieldDef = lookupField.SchemaXml.replace(`List="${lookupField.LookupList}"`, `List="{${dstList.Id}}"`);
-                                                Web(dstWebUrl, { requestDigest: contextInfo.GetContextWebInformation.FormDigestValue })
-                                                    .Lists(dstListName).Fields(lookupField.InternalName).update({
-                                                        SchemaXml: fieldDef
-                                                    }).execute(() => {
-                                                        // Updated the lookup list
-                                                        console.log(`Updated the lookup field '${lookupField.InternalName}' in lookup list successfully.`);
-
-                                                        // Check the next field
-                                                        resolve(null);
-                                                    });
-                                            });
-                                        }, () => {
-                                            // Error getting the lookup list
-                                            console.error(`Error getting the lookup list '${dstLookupList}' from web '${dstWebUrl}'.`);
-
-                                            // Check the next field
-                                            resolve(null);
-                                        });
-                                    }, () => {
-                                        // Error getting the lookup list
-                                        console.error(`Error getting the lookup list '${lookupField.LookupList}' from web '${srcWebUrl}'.`);
-
-                                        // Check the next field
-                                        resolve(null);
-                                    });
-                                } else {
-                                    // Check the next field
-                                    resolve(null);
-                                }
-                            });
-                        }).then(() => {
-                            // Resolve the request
-                            resolve(dstListName);
-                        });
+                    }, reject).then(() => {
+                        // Resolve the request
+                        resolve(lists);
                     });
-                }
+                }, reject);
+            });
+        });
+    }
+
+    // Fixes the lookup fields
+    private static testList(listCfg: Helper.ISPCfgListInfo, webUrl: string): PromiseLike<List> {
+        // Update the loading dialog
+        LoadingDialog.setBody("Validating the lookup field(s)...");
+
+        // Return a promise
+        return new Promise((resolve, reject) => {
+            // Create the list
+            let list = new List({
+                listName: listCfg.ListInformation.Title,
+                webUrl,
+                onInitialized: () => {
+                    // Resolve the list
+                    resolve(list);
+                },
+                onInitError: reject
             });
         });
     }
@@ -226,8 +93,28 @@ export class CopyTemplate {
         });
     }
 
+    // Installs the configuration
+    static installConfiguration(cfg: Helper.ISPConfigProps, webUrl: string): PromiseLike<List[]> {
+        // Show a loading dialog
+        LoadingDialog.setHeader("Creating the List");
+        LoadingDialog.setBody("Initializing the request...");
+        LoadingDialog.show();
+
+        // Return a promise
+        return new Promise(resolve => {
+            // Create the list(s)
+            this.copyList(cfg, webUrl).then(lists => {
+                // Hide the dialog
+                LoadingDialog.hide();
+
+                // Resolve the request
+                resolve(lists);
+            });
+        });
+    }
+
     // Renders the footer
-    static renderFooter(el: HTMLElement, appItem: IAppStoreItem, listNames: string[], clearFl: boolean = true) {
+    static renderFooter(el: HTMLElement, cfg: Helper.ISPConfigProps, clearFl: boolean = true) {
         // Clear the footer
         if (clearFl) { while (el.firstChild) { el.removeChild(el.firstChild); } }
 
@@ -250,42 +137,10 @@ export class CopyTemplate {
                                 this.hasAccess(dstWebUrl).then(
                                     // Has access to copy templates
                                     () => {
-                                        // Show a loading dialog
-                                        LoadingDialog.setHeader("Copying the List");
-                                        LoadingDialog.setBody("Initializing the request...");
-                                        LoadingDialog.show();
-
-                                        // Parse the lists to copy
-                                        Helper.Executor(listNames, listName => {
-                                            // Return a promise
-                                            return new Promise(resolve => {
-                                                // Set the destination list name
-                                                let dstListName = listName.replace(appItem.Title, "").trim();
-
-                                                // Copy the list
-                                                this.copyList(appItem, listName, dstWebUrl, dstListName).then(
-                                                    () => {
-                                                        // Copy the next list
-                                                        resolve(null);
-                                                    },
-                                                    err => {
-                                                        // Show the error message
-                                                        ctrlWeb.updateValidation(ctrlWeb.el, {
-                                                            isValid: false,
-                                                            invalidMessage: err
-                                                        });
-                                                    }
-                                                );
-                                            });
-                                        }).then(() => {
-                                            // Hide the dialog
-                                            LoadingDialog.hide();
-
-                                            // Update the validation
-                                            ctrlWeb.updateValidation(ctrlWeb.el, {
-                                                isValid: true,
-                                                validMessage: "List copied successfully"
-                                            });
+                                        // Install the configuration
+                                        this.installConfiguration(cfg, dstWebUrl).then(lists => {
+                                            // Show the results
+                                            this.showResults(cfg, lists);
                                         });
                                     },
 
@@ -310,9 +165,9 @@ export class CopyTemplate {
     }
 
     // Renders the main form
-    static renderForm(el: HTMLElement, appItem: IAppStoreItem, listNames: string[]) {
+    static renderForm(el: HTMLElement, appItem: IAppStoreItem, cfgProps: Helper.ISPConfigProps) {
         // Get the list templates associated w/ this item
-        if (listNames.length > 0) {
+        if (cfgProps && cfgProps.ListCfg.length > 0) {
             // Set the body
             el.innerHTML = `<label class="mb-2">This will create the list(s) required for this app in the web specified.</label>`;
 
@@ -337,7 +192,7 @@ export class CopyTemplate {
     }
 
     // Renders the modal
-    static renderModal(appItem: IAppStoreItem, listNames: string[] = [], webUrl: string = ContextInfo.webServerRelativeUrl) {
+    static renderModal(appItem: IAppStoreItem, listCfg: string) {
         // Clear the modal
         Modal.clear();
 
@@ -345,11 +200,94 @@ export class CopyTemplate {
         Modal.setHeader("Deploy Dataset: " + appItem.Title);
         Modal.HeaderElement.prepend(Common.getIcon(28, 28, appItem.AppType + (appItem.AppType.startsWith('Power ') ? ' Template' : ''), 'icon-svg me-2'));
 
+        let cfgProps: Helper.ISPConfigProps = null;
+        try {
+            // Get the configurations
+            cfgProps = JSON.parse(listCfg);
+        } catch { }
+
         // Render the form
-        CopyTemplate.renderForm(Modal.BodyElement, appItem, listNames);
+        CopyTemplate.renderForm(Modal.BodyElement, appItem, cfgProps);
 
         // Render the footer
-        CopyTemplate.renderFooter(Modal.FooterElement, appItem, listNames);
+        CopyTemplate.renderFooter(Modal.FooterElement, cfgProps);
+
+        // Show the modal
+        Modal.show();
+    }
+
+    // Shows the results of the copy
+    static showResults(cfg: Helper.ISPConfigProps, lists: List[], showDeleteFl: boolean = false) {
+        // Clear the modal
+        Modal.clear();
+
+        // Set the header
+        Modal.setHeader("Create Lists");
+
+        // Set the body
+        Modal.setBody("Click on the link(s) below to access the list settings for validation.");
+
+        // Parse the lists
+        let items: Components.IListGroupItem[] = null;
+        for (let i = 0; i < lists.length; i++) {
+            let list = lists[i];
+
+            // Add the list links
+            items.push({
+                data: list,
+                content: Components.ButtonGroup({
+                    buttonType: Components.ButtonTypes.OutlinePrimary,
+                    isSmall: true,
+                    buttons: [
+                        {
+                            text: "List",
+                            onClick: () => {
+                                // Go to the list
+                                window.open(list.ListUrl, "_blank");
+                            }
+                        },
+                        {
+                            className: "ms-2",
+                            text: "List Settings",
+                            onClick: () => {
+                                // Go to the list
+                                window.open(list.ListSettingsUrl, "_blank");
+                            }
+                        }
+                    ]
+                }).el
+            })
+        }
+
+        Components.ListGroup({
+            el: Modal.BodyElement,
+            items
+        });
+
+        // See if we are deleting the list
+        if (showDeleteFl) {
+            // Render a delete button
+            Components.Tooltip({
+                el: Modal.FooterElement,
+                content: "Click to delete the test lists.",
+                btnProps: {
+                    text: "Delete Lists",
+                    type: Components.ButtonTypes.OutlineDanger,
+                    onClick: () => {
+                        // Show a loading dialog
+                        LoadingDialog.setHeader("Deleteing List(s)");
+                        LoadingDialog.setBody("This will close after the lists are removed...");
+                        LoadingDialog.show();
+
+                        // Uninstall the configuration
+                        Helper.SPConfig(cfg).uninstall().then(() => {
+                            // Hide the loading dialog
+                            LoadingDialog.hide();
+                        });
+                    }
+                }
+            });
+        }
 
         // Show the modal
         Modal.show();

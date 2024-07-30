@@ -8,7 +8,6 @@ import Strings from "./strings";
  */
 export interface IAppStoreItem extends Types.SP.ListItemOData {
     AppType: string;
-    AssociatedLists: string;
     Description: string;
     Developers: { results: { Id: number; Title: string }[] };
     FlowData: string;
