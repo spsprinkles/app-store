@@ -175,7 +175,11 @@ export class CreateTemplate {
 
                                 // Add the view
                                 cfgProps.ListCfg[0].ViewInformation.push({
-                                    Default: true,
+                                    Default: viewInfo.DefaultView,
+                                    Hidden: viewInfo.Hidden,
+                                    JSLink: viewInfo.JSLink,
+                                    RowLimit: viewInfo.RowLimit,
+                                    Tabular: viewInfo.TabularView,
                                     ViewName: viewInfo.Title,
                                     ViewFields: viewInfo.ViewFields.Items.results,
                                     ViewQuery: viewInfo.ViewQuery
