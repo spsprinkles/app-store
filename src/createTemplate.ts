@@ -178,11 +178,32 @@ export class CreateTemplate {
                                 let calcField = calcFields[i];
 
                                 if (fields[calcField.InternalName] == null) {
+                                    let parser = new DOMParser();
+                                    let schemaXml = parser.parseFromString(calcField.SchemaXml, "application/xml");
+
+                                    // Get the formula
+                                    let formula = schemaXml.querySelector("Formula");
+
+                                    // Parse the field refs
+                                    let fieldRefs = schemaXml.querySelectorAll("FieldRef");
+                                    for (let j = 0; j < fieldRefs.length; j++) {
+                                        let fieldRef = fieldRefs[j].getAttribute("Name");
+
+                                        // Ensure the field exists
+                                        let field = list.getField(fieldRef);
+                                        if (field) {
+                                            // Calculated formulas are supposed to contain the display name
+                                            // Replace any instance of the internal field w/ the correct format
+                                            let regexp = new RegExp(fieldRef, "g");
+                                            formula.innerHTML = formula.innerHTML.replace(regexp, "[" + field.Title + "]");
+                                        }
+                                    }
+
                                     // Append the field
                                     fields[calcField.InternalName] = true;
                                     cfgProps.ListCfg[0].CustomFields.push({
                                         name: calcField.InternalName,
-                                        schemaXml: calcField.SchemaXml
+                                        schemaXml: schemaXml.querySelector("Field").outerHTML
                                     });
                                 }
                             }
