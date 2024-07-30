@@ -1,17 +1,17 @@
 import { List, LoadingDialog, Modal } from "dattatable";
-import { Components, ContextInfo, Helper, SPTypes, Types, Web } from "gd-sprest-bs";
+import { Components, Helper, SPTypes, Web } from "gd-sprest-bs";
 import * as Common from "./common";
 import { IAppStoreItem } from "./ds";
-import { getListTemplateUrl } from "./strings";
+import { ReadAppLists } from "./readAppLists";
 
 /**
- * Copy Templates
+ * Create App Lists
  */
-export class CopyTemplate {
+export class CreateAppLists {
     private static _form: Components.IForm = null;
 
-    // Method to copy the list
-    private static copyList(cfgProps: Helper.ISPConfigProps, webUrl: string): PromiseLike<List[]> {
+    // Method to create the lists
+    private static createLists(cfgProps: Helper.ISPConfigProps, webUrl: string): PromiseLike<List[]> {
         // Return a promise
         return new Promise((resolve, reject) => {
             // Create the configuration
@@ -103,64 +103,13 @@ export class CopyTemplate {
         // Return a promise
         return new Promise(resolve => {
             // Create the list(s)
-            this.copyList(cfg, webUrl).then(lists => {
+            this.createLists(cfg, webUrl).then(lists => {
                 // Hide the dialog
                 LoadingDialog.hide();
 
                 // Resolve the request
                 resolve(lists);
             });
-        });
-    }
-
-    // Renders the footer
-    static renderFooter(el: HTMLElement, cfg: Helper.ISPConfigProps, clearFl: boolean = true) {
-        // Clear the footer
-        if (clearFl) { while (el.firstChild) { el.removeChild(el.firstChild); } }
-
-        // Set the footer
-        Components.TooltipGroup({
-            el,
-            tooltips: [
-                {
-                    content: "Copy the associated lists to the destination web",
-                    btnProps: {
-                        text: "Start Copy",
-                        type: Components.ButtonTypes.OutlinePrimary,
-                        onClick: () => {
-                            // Validate the form
-                            if (this._form.isValid()) {
-                                let ctrlWeb = this._form.getControl("WebUrl");
-                                let dstWebUrl = ctrlWeb.getValue();
-
-                                // Ensure the user has access to the destination web
-                                this.hasAccess(dstWebUrl).then(
-                                    // Has access to copy templates
-                                    () => {
-                                        // Install the configuration
-                                        this.installConfiguration(cfg, dstWebUrl).then(lists => {
-                                            // Show the results
-                                            this.showResults(cfg, lists);
-                                        });
-                                    },
-
-                                    // Error accessing the web
-                                    err => {
-                                        // Hide the dialog
-                                        LoadingDialog.hide();
-
-                                        // Set the validation
-                                        ctrlWeb.updateValidation(ctrlWeb.el, {
-                                            invalidMessage: err,
-                                            isValid: false
-                                        });
-                                    }
-                                );
-                            }
-                        }
-                    }
-                }
-            ]
         });
     }
 
@@ -207,10 +156,52 @@ export class CopyTemplate {
         } catch { }
 
         // Render the form
-        CopyTemplate.renderForm(Modal.BodyElement, appItem, cfgProps);
+        this.renderForm(Modal.BodyElement, appItem, cfgProps);
 
-        // Render the footer
-        CopyTemplate.renderFooter(Modal.FooterElement, cfgProps);
+        // Set the footer
+        Components.TooltipGroup({
+            el: Modal.FooterElement,
+            tooltips: [
+                {
+                    content: "Copy the associated lists to the destination web",
+                    btnProps: {
+                        text: "Start Copy",
+                        type: Components.ButtonTypes.OutlinePrimary,
+                        onClick: () => {
+                            // Validate the form
+                            if (this._form.isValid()) {
+                                let ctrlWeb = this._form.getControl("WebUrl");
+                                let dstWebUrl = ctrlWeb.getValue();
+
+                                // Ensure the user has access to the destination web
+                                this.hasAccess(dstWebUrl).then(
+                                    // Has access to copy templates
+                                    () => {
+                                        // Install the configuration
+                                        this.installConfiguration(cfgProps, dstWebUrl).then(lists => {
+                                            // Show the results
+                                            this.showResults(cfgProps, lists);
+                                        });
+                                    },
+
+                                    // Error accessing the web
+                                    err => {
+                                        // Hide the dialog
+                                        LoadingDialog.hide();
+
+                                        // Set the validation
+                                        ctrlWeb.updateValidation(ctrlWeb.el, {
+                                            invalidMessage: err,
+                                            isValid: false
+                                        });
+                                    }
+                                );
+                            }
+                        }
+                    }
+                }
+            ]
+        });
 
         // Show the modal
         Modal.show();

@@ -1,13 +1,14 @@
-import { List, LoadingDialog, Modal } from "dattatable";
+import { List, LoadingDialog } from "dattatable";
 import { Components, Helper, SPTypes, Types, Web } from "gd-sprest-bs";
 import { IAppStoreItem } from "./ds";
 import { getListTemplateUrl } from "./strings";
-import { CopyTemplate } from "./copyTemplate";
+import { CreateAppLists } from "./createAppLists";
 
 /**
- * Create Templates
+ * Read App Lists
+ * Reads an existing solution's list and generates a configuration for it.
  */
-export class CreateTemplate {
+export class ReadAppLists {
     private static _form: Components.IForm = null;
 
     // Method to create the list configuration
@@ -33,7 +34,7 @@ export class CreateTemplate {
                 // Generate the list configuration
                 this.generateListConfiguration(srcWebUrl, srcList).then(listCfg => {
                     // Test the configuration
-                    CopyTemplate.installConfiguration(listCfg.cfg, web.ServerRelativeUrl).then(lists => {
+                    CreateAppLists.installConfiguration(listCfg.cfg, web.ServerRelativeUrl).then(lists => {
                         // Convert the configuration to a string
                         let strConfig = JSON.stringify(listCfg.cfg);
 
@@ -43,7 +44,7 @@ export class CreateTemplate {
                             LoadingDialog.hide();
 
                             // Show the results
-                            CopyTemplate.showResults(listCfg.cfg, lists, true);
+                            CreateAppLists.showResults(listCfg.cfg, lists, true);
                         });
                     });
                 });

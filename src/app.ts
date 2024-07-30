@@ -5,7 +5,7 @@ import { gearWideConnected } from "gd-sprest-bs/build/icons/svgs/gearWideConnect
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
 import * as jQuery from "jquery";
 import * as Common from "./common";
-import { CopyTemplate } from "./copyTemplate";
+import { CreateAppLists } from "./createAppLists";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Forms } from "./forms";
 import { InstallationModal } from "./install";
@@ -481,7 +481,7 @@ export class App {
                                         type: Components.ButtonTypes.OutlinePrimary,
                                         onClick: () => {
                                             // Display the copy list modal
-                                            CopyTemplate.renderModal(item, item.ListConfigurations);
+                                            CreateAppLists.renderModal(item, item.ListConfigurations);
                                         }
                                     }
                                 });

@@ -4,7 +4,7 @@ import * as jQuery from "jquery";
 import * as JSZip from "jszip";
 import * as moment from "moment";
 import * as Common from "./common";
-import { CreateTemplate } from "./createTemplate";
+import { ReadAppLists } from "./readAppLists";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Security } from "./security";
 import Strings from "./strings";
@@ -296,10 +296,10 @@ export class Forms {
                         fields: [],
                         onRendered: (el) => {
                             // Render the form
-                            CreateTemplate.renderForm(el);
+                            ReadAppLists.renderForm(el);
 
                             // Render the footer
-                            CreateTemplate.renderFooter(el, item, false);
+                            ReadAppLists.renderFooter(el, item, false);
                         }
                     }
                 ]
