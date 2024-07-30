@@ -351,7 +351,7 @@ export class App {
                         div.querySelector(".dt-info").classList.add("text-center");
                         div.querySelector(".dt-length").classList.add("pt-2");
                         div.querySelector(".dt-paging").classList.add("pt-03");
-                        div.querySelector("colgroup").remove();
+                        div.querySelector("colgroup")?.remove();
                         header.classList.add("d-flex");
                         header.classList.add("d-none");
                         table.classList.add("cards");
