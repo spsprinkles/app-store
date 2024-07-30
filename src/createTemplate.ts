@@ -94,8 +94,17 @@ export class CreateTemplate {
                                 for (let j = 0; j < ct.FieldLinks.results.length; j++) {
                                     let fldInfo = list.getField(ct.FieldLinks.results[j].Name);
 
-                                    // Append the field ref
-                                    fieldRefs.push(fldInfo.InternalName);
+                                    // See if this is a lookup field
+                                    if (fldInfo.FieldTypeKind == SPTypes.FieldType.Lookup) {
+                                        // Ensure this isn't an associated lookup field
+                                        if ((fldInfo as Types.SP.FieldLookup).IsDependentLookup != true) {
+                                            // Append the field ref
+                                            fieldRefs.push(fldInfo.InternalName);
+                                        }
+                                    } else {
+                                        // Append the field ref
+                                        fieldRefs.push(fldInfo.InternalName);
+                                    }
 
                                     // Skip internal fields
                                     if (fldInfo.InternalName == "ContentType" || fldInfo.InternalName == "Title") { continue; }
