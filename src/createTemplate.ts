@@ -178,6 +178,8 @@ export class CreateTemplate {
                                     Default: viewInfo.DefaultView,
                                     Hidden: viewInfo.Hidden,
                                     JSLink: viewInfo.JSLink,
+                                    MobileDefaultView: viewInfo.MobileDefaultView,
+                                    MobileView: viewInfo.MobileView,
                                     RowLimit: viewInfo.RowLimit,
                                     Tabular: viewInfo.TabularView,
                                     ViewName: viewInfo.Title,
