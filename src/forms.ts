@@ -296,7 +296,7 @@ export class Forms {
                         fields: [],
                         onRendered: (el) => {
                             // Render the form
-                            ReadAppLists.renderForm(el);
+                            ReadAppLists.renderForm(el, item);
 
                             // Render the footer
                             ReadAppLists.renderFooter(el, item, false);

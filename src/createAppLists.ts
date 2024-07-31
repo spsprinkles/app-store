@@ -1,8 +1,7 @@
-import { List, LoadingDialog, Modal } from "dattatable";
+import { CanvasForm, List, LoadingDialog, Modal } from "dattatable";
 import { Components, Helper, SPTypes, Web } from "gd-sprest-bs";
 import * as Common from "./common";
 import { IAppStoreItem } from "./ds";
-import { ReadAppLists } from "./readAppLists";
 
 /**
  * Create App Lists
@@ -15,7 +14,7 @@ export class CreateAppLists {
         // Return a promise
         return new Promise((resolve, reject) => {
             // Create the configuration
-            let cfg = Helper.SPConfig(cfgProps);
+            let cfg = Helper.SPConfig(cfgProps, webUrl);
 
             // Update the loading dialog
             LoadingDialog.setBody("Deleting the existing lists...");
@@ -39,7 +38,7 @@ export class CreateAppLists {
                                 resolve(null);
                             });
                         });
-                    }, reject).then(() => {
+                    }).then(() => {
                         // Resolve the request
                         resolve(lists);
                     });
@@ -51,7 +50,7 @@ export class CreateAppLists {
     // Fixes the lookup fields
     private static testList(listCfg: Helper.ISPCfgListInfo, webUrl: string): PromiseLike<List> {
         // Update the loading dialog
-        LoadingDialog.setBody("Validating the lookup field(s)...");
+        LoadingDialog.setBody("Validating the list configuration");
 
         // Return a promise
         return new Promise((resolve, reject) => {
@@ -180,7 +179,7 @@ export class CreateAppLists {
                                         // Install the configuration
                                         this.installConfiguration(cfgProps, dstWebUrl).then(lists => {
                                             // Show the results
-                                            this.showResults(cfgProps, lists);
+                                            this.showResults(cfgProps, dstWebUrl, lists);
                                         });
                                     },
 
@@ -208,18 +207,18 @@ export class CreateAppLists {
     }
 
     // Shows the results of the copy
-    static showResults(cfg: Helper.ISPConfigProps, lists: List[], showDeleteFl: boolean = false) {
+    static showResults(cfgProps: Helper.ISPConfigProps, webUrl: string, lists: List[], showDeleteFl: boolean = false) {
         // Clear the modal
-        Modal.clear();
+        CanvasForm.clear();
 
         // Set the header
-        Modal.setHeader("Create Lists");
+        CanvasForm.setHeader("Create Lists");
 
         // Set the body
-        Modal.setBody("Click on the link(s) below to access the list settings for validation.");
+        CanvasForm.setBody("Click on the link(s) below to access the list settings for validation.");
 
         // Parse the lists
-        let items: Components.IListGroupItem[] = null;
+        let items: Components.IListGroupItem[] = [];
         for (let i = 0; i < lists.length; i++) {
             let list = lists[i];
 
@@ -251,15 +250,21 @@ export class CreateAppLists {
         }
 
         Components.ListGroup({
-            el: Modal.BodyElement,
+            el: CanvasForm.BodyElement,
             items
         });
 
         // See if we are deleting the list
         if (showDeleteFl) {
+            // Add the footer
+            let footer = document.createElement("div");
+            footer.classList.add("d-flex");
+            footer.classList.add("justify-content-end");
+            CanvasForm.BodyElement.appendChild(footer);
+
             // Render a delete button
             Components.Tooltip({
-                el: Modal.FooterElement,
+                el: footer,
                 content: "Click to delete the test lists.",
                 btnProps: {
                     text: "Delete Lists",
@@ -271,9 +276,10 @@ export class CreateAppLists {
                         LoadingDialog.show();
 
                         // Uninstall the configuration
-                        Helper.SPConfig(cfg).uninstall().then(() => {
-                            // Hide the loading dialog
+                        Helper.SPConfig(cfgProps, webUrl).uninstall().then(() => {
+                            // Hide the dialogs
                             LoadingDialog.hide();
+                            CanvasForm.hide();
                         });
                     }
                 }
@@ -281,6 +287,6 @@ export class CreateAppLists {
         }
 
         // Show the modal
-        Modal.show();
+        CanvasForm.show();
     }
 }

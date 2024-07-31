@@ -1,6 +1,6 @@
 import { List, LoadingDialog } from "dattatable";
 import { Components, Helper, SPTypes, Types, Web } from "gd-sprest-bs";
-import { IAppStoreItem } from "./ds";
+import { DataSource, IAppStoreItem } from "./ds";
 import { getListTemplateUrl } from "./strings";
 import { CreateAppLists } from "./createAppLists";
 
@@ -33,18 +33,18 @@ export class ReadAppLists {
 
                 // Generate the list configuration
                 this.generateListConfiguration(srcWebUrl, srcList).then(listCfg => {
+                    // Save a copy of the configuration
+                    let strConfig = JSON.stringify(listCfg.cfg);
+
                     // Test the configuration
                     CreateAppLists.installConfiguration(listCfg.cfg, web.ServerRelativeUrl).then(lists => {
-                        // Convert the configuration to a string
-                        let strConfig = JSON.stringify(listCfg.cfg);
-
                         // Update the list configuration
                         this.updateListConfiguration(appItem, srcList.Title, JSON.parse(strConfig)).then(() => {
                             // Hide the loading dialog
                             LoadingDialog.hide();
 
                             // Show the results
-                            CreateAppLists.showResults(listCfg.cfg, lists, true);
+                            CreateAppLists.showResults(listCfg.cfg, web.ServerRelativeUrl, lists, true);
                         });
                     });
                 });
@@ -76,7 +76,6 @@ export class ReadAppLists {
                 onInitError: () => {
                     // Reject the request
                     reject("Error loading the list information. Please check your permission to the source list.");
-                    LoadingDialog.hide();
                 },
                 onInitialized: () => {
                     let calcFields: Types.SP.Field[] = [];
@@ -215,6 +214,9 @@ export class ReadAppLists {
                         });
                     }
 
+                    // Update the loading dialog
+                    LoadingDialog.setBody("Analyzing the lookup fields...");
+
                     // Parse the lookup fields
                     Helper.Executor(lookupFields, lookupField => {
                         // Skip the field, if it was already added
@@ -304,14 +306,42 @@ export class ReadAppLists {
 
     // Renders the footer
     static renderFooter(el: HTMLElement, appItem: IAppStoreItem, clearFl: boolean = true) {
-        // Clear the footer
-        if (clearFl) { while (el.firstChild) { el.removeChild(el.firstChild); } }
-
         // Set the footer
         Components.TooltipGroup({
             el,
             className: "float-end",
             tooltips: [
+                {
+                    content: "Clears the list templates for this item.",
+                    btnProps: {
+                        text: "Clear Configuration",
+                        type: Components.ButtonTypes.OutlinePrimary,
+                        isDisabled: appItem.ListConfigurations ? false : true,
+                        onClick: () => {
+                            // Show a loading dialog
+                            LoadingDialog.setHeader("Clearing Configuration");
+                            LoadingDialog.setBody("The list configurations are being removed...");
+                            LoadingDialog.show();
+
+                            // Clear the value in the item
+                            appItem.update({
+                                ListConfigurations: null
+                            }).execute(() => {
+                                // Refresh the item
+                                DataSource.refresh(appItem.Id).then((item: IAppStoreItem) => {
+                                    // Refresh the form
+                                    this.renderForm(el, item);
+
+                                    // Refresh the footer
+                                    this.renderFooter(el, item, false);
+
+                                    // Hide the loading dialog
+                                    LoadingDialog.hide();
+                                });
+                            })
+                        }
+                    }
+                },
                 {
                     content: "Load the lists from the source web",
                     btnProps: {
@@ -404,30 +434,69 @@ export class ReadAppLists {
     }
 
     // Renders the main form
-    static renderForm(el: HTMLElement, webUrl?: string) {
+    static renderForm(el: HTMLElement, appItem: IAppStoreItem, webUrl?: string) {
+        // Clear the form
+        while (el.firstChild) { el.removeChild(el.firstChild); }
+
+        // Render the current lists in the configuration
+        try {
+            // Get the configuration
+            let appConfig: Helper.ISPConfigProps = JSON.parse(appItem.ListConfigurations);
+            if (appConfig && appConfig.ListCfg.length > 0) {
+                let items: Components.IListGroupItem[] = [];
+
+                // Parse the list configurations
+                for (let i = 0; i < appConfig.ListCfg.length; i++) {
+                    // Add the item
+                    items.push({
+                        content: appConfig.ListCfg[i].ListInformation.Title,
+                        badge: i == 0 ? null : {
+                            content: "Move Up",
+                            onClick: () => {
+
+                            }
+                        }
+                    });
+                }
+
+                // Add a label for the list
+                el.innerHTML = `<label class="my-2">
+                    Below are the current lists associated with this solution.
+                    ${items.length > 1 ? "Order matters when using lookup fields. Use the arrows to reorder the lists accordingly." : ""}
+                </label>`;
+
+                // Render the list
+                Components.ListGroup({
+                    el,
+                    items
+                });
+            }
+        } catch { }
+
         // Set the body
-        el.innerHTML = `<label class="my-2">Use this form to add or update a list template for this app.`;
+        el.innerHTML += `<label class="my-2">Use this form to add or update a list template for this app.</label>`;
 
         // Render a form
         this._form = Components.Form({
             el,
+            className: "mt-3",
             controls: [
                 {
                     name: "WebUrl",
-                    title: "Source Web Url",
+                    label: "Source Web Url:",
                     type: Components.FormControlTypes.TextField,
-                    description: "The source web containing the list",
+                    description: "The source web url containing the lists to import.",
                     required: true,
-                    errorMessage: "A relative web url is required (Ex. /sites/dev)",
+                    errorMessage: "A relative web url is required. (Ex. /sites/dev)",
                     value: webUrl
                 },
                 {
                     name: "SourceList",
-                    title: "Select a List",
+                    label: "Select a List:",
                     type: Components.FormControlTypes.Dropdown,
-                    description: "Select a list to copy",
+                    description: "Select a list to import.",
                     required: true,
-                    errorMessage: "A list is required"
+                    errorMessage: "A list is required."
                 }
             ]
         });
@@ -438,12 +507,12 @@ export class ReadAppLists {
         // Return a promise
         return new Promise(resolve => {
             // Get the list configurations and append/replace it
-            let listCfg = appItem.ListConfigurations;
+            let listCfg: string = null;
 
             // Converting string to object may fail
             try {
-                // Get the configuration
-                let appConfig: Helper.ISPConfigProps = JSON.parse(listCfg);
+                // Get the app configuration
+                let appConfig: Helper.ISPConfigProps = JSON.parse(appItem.ListConfigurations);
 
                 // See if content types exist
                 if (cfg.ContentTypes?.length > 0) {

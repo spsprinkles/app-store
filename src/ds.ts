@@ -245,9 +245,21 @@ export class DataSource {
         });
     }
 
+    // Refreshes the data source
+    static refresh(itemId?: number): PromiseLike<IAppStoreItem | IAppStoreItem[]> {
+        // See if an item id was provided
+        if (itemId > 0) {
+            // Refresh the item
+            return this.List.refreshItem(itemId);
+        } else {
+            // Refresh the data source
+            return this.List.refresh();
+        }
+    }
+
     // Requests List
-    private static _requestsList: List<IRatingItem> = null;
-    static get RequestsList(): List<IRatingItem> { return this._requestsList; }
+    private static _requestsList: List<IRequestItem> = null;
+    static get RequestsList(): List<IRequestItem> { return this._requestsList; }
     private static initRequestsList(): PromiseLike<void> {
         // Return a promise
         return new Promise((resolve, reject) => {
