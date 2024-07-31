@@ -277,7 +277,17 @@ export class Forms {
                 tabs: [
                     {
                         title: "App Details",
-                        excludeFields: ["Attachments"]
+                        excludeFields: [
+                            "Attachments", "ScreenShot1", "ScreenShot2", "ScreenShot3",
+                            "ScreenShot4", "ScreenShot5", "VideoURL"
+                        ]
+                    },
+                    {
+                        title: "Screen Shots",
+                        fields: [
+                            "ScreenShot1", "ScreenShot2", "ScreenShot3",
+                            "ScreenShot4", "ScreenShot5", "VideoURL"
+                        ],
                     },
                     {
                         title: "Attachments",
@@ -514,7 +524,17 @@ export class Forms {
                 tabs: [
                     {
                         title: "App Details",
-                        excludeFields: ["Attachments"]
+                        excludeFields: [
+                            "Attachments", "ScreenShot1", "ScreenShot2", "ScreenShot3",
+                            "ScreenShot4", "ScreenShot5", "VideoURL"
+                        ]
+                    },
+                    {
+                        title: "Screen Shots",
+                        fields: [
+                            "ScreenShot1", "ScreenShot2", "ScreenShot3",
+                            "ScreenShot4", "ScreenShot5", "VideoURL"
+                        ],
                     },
                     {
                         title: "Attachments",
