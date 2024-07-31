@@ -343,6 +343,34 @@ export class ReadAppLists {
                     }
                 },
                 {
+                    content: "Tests the configuration by creating them in a sub-web.",
+                    btnProps: {
+                        text: "Test Configuration",
+                        type: Components.ButtonTypes.OutlinePrimary,
+                        isDisabled: appItem.ListConfigurations ? false : true,
+                        onClick: () => {
+                            let dstWebUrl = getListTemplateUrl();
+
+                            // Show a loading dialog
+                            LoadingDialog.setHeader("Testing Configuration");
+                            LoadingDialog.setBody("The lists are being created...");
+                            LoadingDialog.show();
+
+                            // Get the configuration
+                            let cfg = JSON.parse(appItem.ListConfigurations);
+
+                            // Test the configuration
+                            CreateAppLists.installConfiguration(cfg, dstWebUrl).then(lists => {
+                                // Hide the loading dialog
+                                LoadingDialog.hide();
+
+                                // Show the results
+                                CreateAppLists.showResults(cfg, dstWebUrl, lists, true);
+                            })
+                        }
+                    }
+                },
+                {
                     content: "Load the lists from the source web",
                     btnProps: {
                         text: "Load Lists",
