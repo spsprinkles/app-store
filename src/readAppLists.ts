@@ -484,43 +484,15 @@ export class ReadAppLists {
         // Clear the form
         while (el.firstChild) { el.removeChild(el.firstChild); }
 
-        // Render the current lists in the configuration
-        try {
-            // Get the configuration
-            let appConfig: Helper.ISPConfigProps = JSON.parse(appItem.ListConfigurations);
-            if (appConfig && appConfig.ListCfg.length > 0) {
-                let items: Components.IListGroupItem[] = [];
-
-                // Parse the list configurations
-                for (let i = 0; i < appConfig.ListCfg.length; i++) {
-                    // Add the item
-                    items.push({
-                        content: appConfig.ListCfg[i].ListInformation.Title,
-                        badge: i == 0 ? null : {
-                            content: "Move Up",
-                            onClick: () => {
-
-                            }
-                        }
-                    });
-                }
-
-                // Add a label for the list
-                el.innerHTML = `<label class="my-2">
-                    Below are the current lists associated with this solution.
-                    ${items.length > 1 ? "Order matters when using lookup fields. Use the arrows to reorder the lists accordingly." : ""}
-                </label>`;
-
-                // Render the list
-                Components.ListGroup({
-                    el,
-                    items
-                });
-            }
-        } catch { }
+        // Render the existing list configuration
+        let elListCfg = document.createElement("div");
+        el.appendChild(elListCfg);
+        this.renderListConfiguration(elListCfg, appItem, webUrl);
 
         // Set the body
-        el.innerHTML += `<label class="my-2">Use this form to add or update a list template for this app.</label>`;
+        let label = document.createElement("label");
+        label.classList.add("my-2");
+        el.appendChild(label);
 
         // Render a form
         this._form = Components.Form({
@@ -546,6 +518,80 @@ export class ReadAppLists {
                 }
             ]
         });
+    }
+
+    private static renderListConfiguration(el: HTMLElement, appItem: IAppStoreItem, webUrl?: string, newAppConfig?: Helper.ISPConfigProps) {
+        // Clear the element
+        while (el.firstChild) { el.removeChild(el.firstChild); }
+
+        // Render the current lists in the configuration
+        try {
+            // Get the configuration
+            let appConfig: Helper.ISPConfigProps = newAppConfig || JSON.parse(appItem.ListConfigurations);
+            if (appConfig && appConfig.ListCfg.length > 0) {
+                let items: Components.IListGroupItem[] = [];
+
+                // Parse the list configurations
+                for (let i = 0; i < appConfig.ListCfg.length; i++) {
+                    // Add the item
+                    items.push({
+                        data: i,
+                        content: appConfig.ListCfg[i].ListInformation.Title,
+                        badge: i == 0 ? null : {
+                            content: "Move Up",
+                            onClick: () => {
+                                // Get the item
+                                let item = appConfig.ListCfg.splice(i, 1)[0];
+
+                                // Insert it back in
+                                appConfig.ListCfg.splice(i - 1, 0, item);
+
+                                // Render the list configuration
+                                this.renderListConfiguration(el, appItem, webUrl, appConfig);
+                            }
+                        }
+                    });
+                }
+
+                // Add a label for the list
+                el.innerHTML = `<label class="my-2">
+                            Below are the current lists associated with this solution.
+                            ${items.length > 1 ? "Order matters when using lookup fields. Use the arrows to reorder the lists accordingly." : ""}
+                        </label>`;
+
+                // Render the list
+                Components.ListGroup({
+                    el,
+                    items
+                });
+
+                // Add a save button
+                let elSaveButton = document.createElement("div");
+                newAppConfig ? null : elSaveButton.classList.add("d-none");
+                elSaveButton.classList.add("mt-2");
+                elSaveButton.classList.add("d-flex");
+                elSaveButton.classList.add("justify-content-end");
+                el.appendChild(elSaveButton);
+                Components.Button({
+                    el: elSaveButton,
+                    isSmall: true,
+                    text: "Update Configuration",
+                    onClick: () => {
+                        // Update the item
+                        appItem.update({ ListConfigurations: JSON.stringify(appConfig) }).execute(() => {
+                            // Update the item
+                            DataSource.refresh(appItem.Id).then((item: IAppStoreItem) => {
+                                // Refresh the form
+                                this.renderForm(el.parentElement, item, webUrl);
+
+                                // Refresh the footer
+                                this.renderFooter(el.parentElement, item, webUrl);
+                            });
+                        });
+                    }
+                });
+            }
+        } catch { }
     }
 
     // Updates the list configuration for the item
