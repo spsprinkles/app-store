@@ -299,7 +299,7 @@ export class Forms {
                             ReadAppLists.renderForm(el, item);
 
                             // Render the footer
-                            ReadAppLists.renderFooter(el, item, false);
+                            ReadAppLists.renderFooter(el, item);
                         }
                     }
                 ]

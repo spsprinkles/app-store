@@ -17,13 +17,19 @@ export class CreateAppLists {
             let cfg = Helper.SPConfig(cfgProps, webUrl);
 
             // Update the loading dialog
-            LoadingDialog.setBody("Deleting the existing lists...");
+            LoadingDialog.setBody("Deleting the existing list(s)...");
 
             // Uninstall the solution
             cfg.uninstall().then(() => {
+                // Update the loading dialog
+                LoadingDialog.setBody("Creating the list(s)...");
+
                 // Install the solution
                 cfg.install().then(() => {
                     let lists: List[] = [];
+
+                    // Update the loading dialog
+                    LoadingDialog.setBody("Validating the list(s)...");
 
                     // Parse the lists
                     Helper.Executor(cfgProps.ListCfg, listCfg => {
@@ -225,28 +231,32 @@ export class CreateAppLists {
             // Add the list links
             items.push({
                 data: list,
-                content: Components.ButtonGroup({
-                    buttonType: Components.ButtonTypes.OutlinePrimary,
-                    isSmall: true,
-                    buttons: [
-                        {
-                            text: "List",
-                            onClick: () => {
-                                // Go to the list
-                                window.open(list.ListUrl, "_blank");
-                            }
-                        },
-                        {
-                            className: "ms-2",
-                            text: "List Settings",
-                            onClick: () => {
-                                // Go to the list
-                                window.open(list.ListSettingsUrl, "_blank");
-                            }
+                onRender: (el, item) => {
+                    // Render the list view button
+                    Components.Button({
+                        el,
+                        isSmall: true,
+                        text: list.ListName,
+                        type: Components.ButtonTypes.OutlinePrimary,
+                        onClick: () => {
+                            // Go to the list
+                            window.open(list.ListUrl, "_blank");
                         }
-                    ]
-                }).el
-            })
+                    });
+
+                    // Render the list settings button
+                    Components.Button({
+                        el,
+                        isSmall: true,
+                        text: "List Settings",
+                        type: Components.ButtonTypes.OutlinePrimary,
+                        onClick: () => {
+                            // Go to the list
+                            window.open(list.ListSettingsUrl, "_blank");
+                        }
+                    });
+                }
+            });
         }
 
         Components.ListGroup({

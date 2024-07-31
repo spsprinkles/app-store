@@ -12,53 +12,61 @@ export class ReadAppLists {
     private static _form: Components.IForm = null;
 
     // Method to create the list configuration
-    private static createListConfiguration(appItem: IAppStoreItem, srcWebUrl: string, srcList: Types.SP.List) {
+    private static createListConfiguration(appItem: IAppStoreItem, srcWebUrl: string, srcList: Types.SP.List): PromiseLike<void> {
         // Show a loading dialog
         LoadingDialog.setHeader("Copying the List");
         LoadingDialog.setBody("Initializing the request...");
         LoadingDialog.show();
 
-        // Ensure the user has the correct permissions to create the list
-        let dstWebUrl = getListTemplateUrl();
-        Web(dstWebUrl).query({ Expand: ["EffectiveBasePermissions"] }).execute(
-            // Exists
-            web => {
-                // Ensure the user doesn't have permission to manage lists
-                if (!Helper.hasPermissions(web.EffectiveBasePermissions, [SPTypes.BasePermissionTypes.ManageLists])) {
-                    // Reject the request
-                    console.error("You do not have permission to copy templates on this web.");
-                    LoadingDialog.hide();
-                    return;
-                }
+        // Return a promise
+        return new Promise(resolve => {
+            // Ensure the user has the correct permissions to create the list
+            let dstWebUrl = getListTemplateUrl();
+            Web(dstWebUrl).query({ Expand: ["EffectiveBasePermissions"] }).execute(
+                // Exists
+                web => {
+                    // Ensure the user doesn't have permission to manage lists
+                    if (!Helper.hasPermissions(web.EffectiveBasePermissions, [SPTypes.BasePermissionTypes.ManageLists])) {
+                        // Resolve the request
+                        console.error("You do not have permission to copy templates on this web.");
+                        LoadingDialog.hide();
+                        resolve();
+                        return;
+                    }
 
-                // Generate the list configuration
-                this.generateListConfiguration(srcWebUrl, srcList).then(listCfg => {
-                    // Save a copy of the configuration
-                    let strConfig = JSON.stringify(listCfg.cfg);
+                    // Generate the list configuration
+                    this.generateListConfiguration(srcWebUrl, srcList).then(listCfg => {
+                        // Save a copy of the configuration
+                        let strConfig = JSON.stringify(listCfg.cfg);
 
-                    // Test the configuration
-                    CreateAppLists.installConfiguration(listCfg.cfg, web.ServerRelativeUrl).then(lists => {
-                        // Update the list configuration
-                        this.updateListConfiguration(appItem, srcList.Title, JSON.parse(strConfig)).then(() => {
-                            // Hide the loading dialog
-                            LoadingDialog.hide();
+                        // Test the configuration
+                        CreateAppLists.installConfiguration(listCfg.cfg, web.ServerRelativeUrl).then(lists => {
+                            // Update the list configuration
+                            this.updateListConfiguration(appItem, srcList.Title, JSON.parse(strConfig)).then(() => {
+                                // Hide the loading dialog
+                                LoadingDialog.hide();
 
-                            // Show the results
-                            CreateAppLists.showResults(listCfg.cfg, web.ServerRelativeUrl, lists, true);
+                                // Show the results
+                                CreateAppLists.showResults(listCfg.cfg, web.ServerRelativeUrl, lists, true);
+
+                                // Resolve the request
+                                resolve();
+                            });
                         });
                     });
-                });
-            },
+                },
 
-            // Doesn't exist
-            () => {
-                // Hide the loading dialog
-                LoadingDialog.hide();
+                // Doesn't exist
+                () => {
+                    // Hide the loading dialog
+                    LoadingDialog.hide();
 
-                // Reject the request
-                console.error("Error getting the target web. You may not have permissions or it doesn't exist.");
-            }
-        );
+                    // Resolve the request
+                    console.error("Error getting the target web. You may not have permissions or it doesn't exist.");
+                    resolve();
+                }
+            );
+        });
     }
 
     // Generates the list configuration
@@ -305,7 +313,7 @@ export class ReadAppLists {
     }
 
     // Renders the footer
-    static renderFooter(el: HTMLElement, appItem: IAppStoreItem, clearFl: boolean = true) {
+    static renderFooter(el: HTMLElement, appItem: IAppStoreItem, webUrl?: string) {
         // Set the footer
         Components.TooltipGroup({
             el,
@@ -330,10 +338,10 @@ export class ReadAppLists {
                                 // Refresh the item
                                 DataSource.refresh(appItem.Id).then((item: IAppStoreItem) => {
                                     // Refresh the form
-                                    this.renderForm(el, item);
+                                    this.renderForm(el, item, webUrl);
 
                                     // Refresh the footer
-                                    this.renderFooter(el, item, false);
+                                    this.renderFooter(el, item, webUrl);
 
                                     // Hide the loading dialog
                                     LoadingDialog.hide();
@@ -449,10 +457,20 @@ export class ReadAppLists {
                                 let formValues = this._form.getValues();
 
                                 // Set the list name
+                                let webUrl: string = formValues["WebUrl"];
                                 let listData = formValues["SourceList"].data as Types.SP.List;
 
                                 // Copy the list
-                                this.createListConfiguration(appItem, formValues["WebUrl"], listData);
+                                this.createListConfiguration(appItem, webUrl, listData).then(() => {
+                                    // Refresh the item
+                                    DataSource.refresh(appItem.Id).then((item: IAppStoreItem) => {
+                                        // Refresh the form
+                                        this.renderForm(el, item, webUrl);
+
+                                        // Refresh the footer
+                                        this.renderFooter(el, item, webUrl);
+                                    });
+                                });
                             }
                         }
                     }
