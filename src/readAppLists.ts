@@ -123,7 +123,7 @@ export class ReadAppLists {
                         // Parse the content type fields
                         let fieldRefs = [];
                         for (let j = 0; j < ct.FieldLinks.results.length; j++) {
-                            let fldInfo = list.getField(ct.FieldLinks.results[j].Name);
+                            let fldInfo: Types.SP.Field = list.getField(ct.FieldLinks.results[j].Name);
 
                             // See if this is a lookup field
                             if (fldInfo.FieldTypeKind == SPTypes.FieldType.Lookup) {
@@ -144,23 +144,20 @@ export class ReadAppLists {
                             if (fldInfo.FieldTypeKind == SPTypes.FieldType.Calculated) {
                                 // Add the field and continue the loop
                                 calcFields.push(fldInfo);
-                                continue;
                             }
-
-                            // Ensure the field hasn't been added
-                            if (fields[fldInfo.InternalName] == null) {
+                            // Else, see if this is a lookup field
+                            else if (fldInfo.FieldTypeKind == SPTypes.FieldType.Lookup) {
+                                // Add the field
+                                lookupFields.push(fldInfo);
+                            }
+                            // Else, ensure the field hasn't been added
+                            else if (fields[fldInfo.InternalName] == null) {
                                 // Add the field information
                                 fields[fldInfo.InternalName] = true;
                                 cfgProps.ListCfg[0].CustomFields.push({
                                     name: fldInfo.InternalName,
                                     schemaXml: fldInfo.SchemaXml
                                 });
-
-                                // See if this is a lookup field
-                                if (fldInfo.FieldTypeKind == SPTypes.FieldType.Lookup) {
-                                    // Add the field
-                                    lookupFields.push(fldInfo);
-                                }
                             }
                         }
 
@@ -187,6 +184,11 @@ export class ReadAppLists {
                                 if (field.FieldTypeKind == SPTypes.FieldType.Calculated) {
                                     // Add the field and continue the loop
                                     calcFields.push(field);
+                                }
+                                // Else, see if this is a lookup field
+                                else if (field.FieldTypeKind == SPTypes.FieldType.Lookup) {
+                                    // Add the field
+                                    lookupFields.push(field);
                                 } else {
                                     // Append the field
                                     fields[field.InternalName] = true;
@@ -194,12 +196,6 @@ export class ReadAppLists {
                                         name: field.InternalName,
                                         schemaXml: field.SchemaXml
                                     });
-
-                                    // See if this is a lookup field
-                                    if (field.FieldTypeKind == SPTypes.FieldType.Lookup) {
-                                        // Add the field
-                                        lookupFields.push(field);
-                                    }
                                 }
                             }
                         }
@@ -219,45 +215,87 @@ export class ReadAppLists {
                         });
                     }
 
-                    // Parse the calculated fields
-                    for (let i = 0; i < calcFields.length; i++) {
-                        let calcField = calcFields[i];
+                    // Parse the lookup fields
+                    Helper.Executor(lookupFields, lookupField => {
+                        // Skip the field, if it was already added
+                        if (fields[lookupField.InternalName]) { return; }
 
-                        if (fields[calcField.InternalName] == null) {
-                            let parser = new DOMParser();
-                            let schemaXml = parser.parseFromString(calcField.SchemaXml, "application/xml");
+                        // Return a promise
+                        return new Promise((resolve) => {
+                            // Get the lookup list
+                            Web(srcWebUrl).Lists().getById(lookupField.LookupList).execute(
+                                list => {
+                                    // Add the lookup list field
+                                    fields[lookupField.InternalName] = true;
+                                    cfgProps.ListCfg[0].CustomFields.push({
+                                        description: lookupField.Description,
+                                        fieldRef: lookupField.PrimaryFieldId,
+                                        hidden: lookupField.Hidden,
+                                        id: lookupField.Id,
+                                        indexed: lookupField.Indexed,
+                                        listName: list.Title,
+                                        multi: lookupField.AllowMultipleValues,
+                                        name: lookupField.InternalName,
+                                        readOnly: lookupField.ReadOnlyField,
+                                        relationshipBehavior: lookupField.RelationshipDeleteBehavior,
+                                        required: lookupField.Required,
+                                        showField: lookupField.LookupField,
+                                        title: lookupField.Title,
+                                        type: Helper.SPCfgFieldType.Lookup
+                                    } as Helper.IFieldInfoLookup);
 
-                            // Get the formula
-                            let formula = schemaXml.querySelector("Formula");
+                                    // Check the next field
+                                    resolve(null);
+                                },
 
-                            // Parse the field refs
-                            let fieldRefs = schemaXml.querySelectorAll("FieldRef");
-                            for (let j = 0; j < fieldRefs.length; j++) {
-                                let fieldRef = fieldRefs[j].getAttribute("Name");
-
-                                // Ensure the field exists
-                                let field = list.getField(fieldRef);
-                                if (field) {
-                                    // Calculated formulas are supposed to contain the display name
-                                    // Replace any instance of the internal field w/ the correct format
-                                    let regexp = new RegExp(fieldRef, "g");
-                                    formula.innerHTML = formula.innerHTML.replace(regexp, "[" + field.Title + "]");
+                                err => {
+                                    // Broken lookup field, don't add it
+                                    console.log("Error trying to find lookup list for field '" + lookupField.InternalName + "' with id: " + lookupField.LookupList);
+                                    resolve(null);
                                 }
+                            )
+                        });
+                    }).then(() => {
+                        // Parse the calculated fields
+                        for (let i = 0; i < calcFields.length; i++) {
+                            let calcField = calcFields[i];
+
+                            if (fields[calcField.InternalName] == null) {
+                                let parser = new DOMParser();
+                                let schemaXml = parser.parseFromString(calcField.SchemaXml, "application/xml");
+
+                                // Get the formula
+                                let formula = schemaXml.querySelector("Formula");
+
+                                // Parse the field refs
+                                let fieldRefs = schemaXml.querySelectorAll("FieldRef");
+                                for (let j = 0; j < fieldRefs.length; j++) {
+                                    let fieldRef = fieldRefs[j].getAttribute("Name");
+
+                                    // Ensure the field exists
+                                    let field = list.getField(fieldRef);
+                                    if (field) {
+                                        // Calculated formulas are supposed to contain the display name
+                                        // Replace any instance of the internal field w/ the correct format
+                                        let regexp = new RegExp(fieldRef, "g");
+                                        formula.innerHTML = formula.innerHTML.replace(regexp, "[" + field.Title + "]");
+                                    }
+                                }
+
+                                // Append the field
+                                fields[calcField.InternalName] = true;
+                                cfgProps.ListCfg[0].CustomFields.push({
+                                    name: calcField.InternalName,
+                                    schemaXml: schemaXml.querySelector("Field").outerHTML
+                                });
                             }
-
-                            // Append the field
-                            fields[calcField.InternalName] = true;
-                            cfgProps.ListCfg[0].CustomFields.push({
-                                name: calcField.InternalName,
-                                schemaXml: schemaXml.querySelector("Field").outerHTML
-                            });
                         }
-                    }
 
-                    // Resolve the request
-                    resolve({
-                        cfg: cfgProps,
-                        lookupFields
+                        // Resolve the request
+                        resolve({
+                            cfg: cfgProps,
+                            lookupFields
+                        });
                     });
                 }
             });
