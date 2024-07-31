@@ -19,7 +19,7 @@ export class ReadAppLists {
         LoadingDialog.show();
 
         // Return a promise
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             // Ensure the user has the correct permissions to create the list
             let dstWebUrl = getListTemplateUrl();
             Web(dstWebUrl).query({ Expand: ["EffectiveBasePermissions"] }).execute(
@@ -39,21 +39,24 @@ export class ReadAppLists {
                         // Save a copy of the configuration
                         let strConfig = JSON.stringify(listCfg.cfg);
 
-                        // Test the configuration
-                        CreateAppLists.installConfiguration(listCfg.cfg, web.ServerRelativeUrl).then(lists => {
-                            // Update the list configuration
-                            this.updateListConfiguration(appItem, srcList.Title, JSON.parse(strConfig)).then(() => {
-                                // Hide the loading dialog
-                                LoadingDialog.hide();
+                        // Validate the lookup fields
+                        this.validateLookups(srcWebUrl, web.ServerRelativeUrl, listCfg.lookupFields).then(() => {
+                            // Test the configuration
+                            CreateAppLists.installConfiguration(listCfg.cfg, web.ServerRelativeUrl).then(lists => {
+                                // Update the list configuration
+                                this.updateListConfiguration(appItem, srcList.Title, JSON.parse(strConfig)).then(() => {
+                                    // Hide the loading dialog
+                                    LoadingDialog.hide();
 
-                                // Show the results
-                                CreateAppLists.showResults(listCfg.cfg, web.ServerRelativeUrl, lists, true);
+                                    // Show the results
+                                    CreateAppLists.showResults(listCfg.cfg, web.ServerRelativeUrl, lists, true);
 
-                                // Resolve the request
-                                resolve();
-                            });
-                        });
-                    });
+                                    // Resolve the request
+                                    resolve();
+                                }, reject);
+                            }, reject);
+                        }, reject);
+                    }, reject);
                 },
 
                 // Doesn't exist
@@ -470,6 +473,28 @@ export class ReadAppLists {
                                         // Refresh the footer
                                         this.renderFooter(el, item, webUrl);
                                     });
+                                }, err => {
+                                    // Log the error
+                                    console.log("Error creating the configuration", err);
+
+                                    // Show the error if it's a string
+                                    let ctrl = this._form.getControl("SourceList");
+                                    if (typeof (err) === "string") {
+                                        // Update the validation
+                                        ctrl.updateValidation(ctrl.el, {
+                                            isValid: false,
+                                            invalidMessage: err
+                                        });
+                                    } else {
+                                        // Update the validation
+                                        ctrl.updateValidation(ctrl.el, {
+                                            isValid: false,
+                                            invalidMessage: "Error creating the configuration. Check the console log for details."
+                                        });
+                                    }
+
+                                    // Hide the loading dialog
+                                    LoadingDialog.hide();
                                 });
                             }
                         }
@@ -543,7 +568,7 @@ export class ReadAppLists {
                                 // Get the item
                                 let item = appConfig.ListCfg.splice(i, 1)[0];
 
-                                // Insert it back in
+                                // Move the item up one spot in the array
                                 appConfig.ListCfg.splice(i - 1, 0, item);
 
                                 // Render the list configuration
@@ -581,11 +606,13 @@ export class ReadAppLists {
                         appItem.update({ ListConfigurations: JSON.stringify(appConfig) }).execute(() => {
                             // Update the item
                             DataSource.refresh(appItem.Id).then((item: IAppStoreItem) => {
+                                let elParent = el.parentElement;
+
                                 // Refresh the form
-                                this.renderForm(el.parentElement, item, webUrl);
+                                this.renderForm(elParent, item, webUrl);
 
                                 // Refresh the footer
-                                this.renderFooter(el.parentElement, item, webUrl);
+                                this.renderFooter(elParent, item, webUrl);
                             });
                         });
                     }
@@ -665,6 +692,28 @@ export class ReadAppLists {
 
             // Update the item
             appItem.update({ ListConfigurations: listCfg }).execute(resolve);
+        });
+    }
+
+    // Validates the lookup fields
+    private static validateLookups(srcUrl: string, dstUrl: string, lookups: Types.SP.FieldLookup[]) {
+        // Parse the lookup fields
+        return Helper.Executor(lookups, lookup => {
+            // Return a promise
+            return new Promise((resolve, reject) => {
+                // Get the source list
+                Web(srcUrl).Lists().getById(lookup.LookupList).execute(list => {
+                    // Ensure the list exists in the destination
+                    Web(dstUrl).Lists(list.Title).execute(resolve, () => {
+                        // Reject the reqeust
+                        reject("Lookup list for field '" + lookup.InternalName + "' does not exist in the configuration. Please add the lists in the appropriate order.");
+                    });
+
+                }, () => {
+                    // Reject the reqeust
+                    reject("Lookup list for field '" + lookup.InternalName + "' does not exist in the source web. Please review the source list for any issues.");
+                });
+            });
         });
     }
 }

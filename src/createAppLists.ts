@@ -49,7 +49,7 @@ export class CreateAppLists {
                         resolve(lists);
                     });
                 }, reject);
-            });
+            }, reject);
         });
     }
 
@@ -106,7 +106,7 @@ export class CreateAppLists {
         LoadingDialog.show();
 
         // Return a promise
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             // Create the list(s)
             this.createLists(cfg, webUrl).then(lists => {
                 // Hide the dialog
@@ -114,7 +114,7 @@ export class CreateAppLists {
 
                 // Resolve the request
                 resolve(lists);
-            });
+            }, reject);
         });
     }
 
