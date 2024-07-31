@@ -9,6 +9,7 @@ import { CreateAppLists } from "./createAppLists";
  * Reads an existing solution's list and generates a configuration for it.
  */
 export class ReadAppLists {
+    private static _elListCfg: HTMLElement = null;
     private static _form: Components.IForm = null;
 
     // Method to create the list configuration
@@ -317,9 +318,17 @@ export class ReadAppLists {
 
     // Renders the footer
     static renderFooter(el: HTMLElement, appItem: IAppStoreItem, webUrl?: string) {
+        // See if the footer exists
+        let elFooter = el.querySelector("#footer");
+        if (elFooter) {
+            // Remove the element
+            elFooter.parentElement.removeChild(elFooter);
+        }
+
         // Set the footer
         Components.TooltipGroup({
             el,
+            id: "footer",
             className: "float-end",
             tooltips: [
                 {
@@ -340,8 +349,8 @@ export class ReadAppLists {
                             }).execute(() => {
                                 // Refresh the item
                                 DataSource.refresh(appItem.Id).then((item: IAppStoreItem) => {
-                                    // Refresh the form
-                                    this.renderForm(el, item, webUrl);
+                                    // Refresh the list configuration
+                                    this.renderListConfiguration(item, webUrl);
 
                                     // Refresh the footer
                                     this.renderFooter(el, item, webUrl);
@@ -468,7 +477,7 @@ export class ReadAppLists {
                                     // Refresh the item
                                     DataSource.refresh(appItem.Id).then((item: IAppStoreItem) => {
                                         // Refresh the form
-                                        this.renderForm(el, item, webUrl);
+                                        this.renderListConfiguration(item, webUrl);
 
                                         // Refresh the footer
                                         this.renderFooter(el, item, webUrl);
@@ -510,9 +519,10 @@ export class ReadAppLists {
         while (el.firstChild) { el.removeChild(el.firstChild); }
 
         // Render the existing list configuration
-        let elListCfg = document.createElement("div");
-        el.appendChild(elListCfg);
-        this.renderListConfiguration(elListCfg, appItem, webUrl);
+        this._elListCfg = document.createElement("div");
+        this._elListCfg.id = "list-cfg";
+        el.appendChild(this._elListCfg);
+        this.renderListConfiguration(appItem, webUrl);
 
         // Set the body
         let label = document.createElement("label");
@@ -545,9 +555,9 @@ export class ReadAppLists {
         });
     }
 
-    private static renderListConfiguration(el: HTMLElement, appItem: IAppStoreItem, webUrl?: string, newAppConfig?: Helper.ISPConfigProps) {
+    private static renderListConfiguration(appItem: IAppStoreItem, webUrl?: string, newAppConfig?: Helper.ISPConfigProps) {
         // Clear the element
-        while (el.firstChild) { el.removeChild(el.firstChild); }
+        while (this._elListCfg.firstChild) { this._elListCfg.removeChild(this._elListCfg.firstChild); }
 
         // Render the current lists in the configuration
         try {
@@ -572,21 +582,21 @@ export class ReadAppLists {
                                 appConfig.ListCfg.splice(i - 1, 0, item);
 
                                 // Render the list configuration
-                                this.renderListConfiguration(el, appItem, webUrl, appConfig);
+                                this.renderListConfiguration(appItem, webUrl, appConfig);
                             }
                         }
                     });
                 }
 
                 // Add a label for the list
-                el.innerHTML = `<label class="my-2">
+                this._elListCfg.innerHTML = `<label class="my-2">
                             Below are the current lists associated with this solution.
                             ${items.length > 1 ? "Order matters when using lookup fields. Use the arrows to reorder the lists accordingly." : ""}
                         </label>`;
 
                 // Render the list
                 Components.ListGroup({
-                    el,
+                    el: this._elListCfg,
                     items
                 });
 
@@ -596,7 +606,7 @@ export class ReadAppLists {
                 elSaveButton.classList.add("mt-2");
                 elSaveButton.classList.add("d-flex");
                 elSaveButton.classList.add("justify-content-end");
-                el.appendChild(elSaveButton);
+                this._elListCfg.appendChild(elSaveButton);
                 Components.Button({
                     el: elSaveButton,
                     isSmall: true,
@@ -606,13 +616,11 @@ export class ReadAppLists {
                         appItem.update({ ListConfigurations: JSON.stringify(appConfig) }).execute(() => {
                             // Update the item
                             DataSource.refresh(appItem.Id).then((item: IAppStoreItem) => {
-                                let elParent = el.parentElement;
-
                                 // Refresh the form
-                                this.renderForm(elParent, item, webUrl);
+                                this.renderListConfiguration(item, webUrl);
 
                                 // Refresh the footer
-                                this.renderFooter(elParent, item, webUrl);
+                                this.renderFooter(this._elListCfg.parentElement, item, webUrl);
                             });
                         });
                     }
