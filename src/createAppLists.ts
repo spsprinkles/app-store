@@ -294,6 +294,7 @@ export class CreateAppLists {
             let footer = document.createElement("div");
             footer.classList.add("d-flex");
             footer.classList.add("justify-content-end");
+            footer.classList.add("mt-2");
             CanvasForm.BodyElement.appendChild(footer);
 
             // Render a delete button
