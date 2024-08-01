@@ -571,18 +571,45 @@ export class ReadAppLists {
                     // Add the item
                     items.push({
                         data: i,
+                        className: "d-flex justify-content-between",
                         content: appConfig.ListCfg[i].ListInformation.Title,
-                        badge: i == 0 ? null : {
-                            content: "Move Up",
-                            onClick: () => {
-                                // Get the item
-                                let item = appConfig.ListCfg.splice(i, 1)[0];
+                        onRender: (el, item) => {
+                            // Add the badges
+                            let elBadges = document.createElement("div");
+                            el.appendChild(elBadges);
 
-                                // Move the item up one spot in the array
-                                appConfig.ListCfg.splice(i - 1, 0, item);
+                            // Append a badge to remove the item
+                            Components.Badge({
+                                el: elBadges,
+                                content: "Delete",
+                                type: Components.BadgeTypes.Danger,
+                                onClick: () => {
+                                    // Remove the item
+                                    appConfig.ListCfg.splice(i, 1);
 
-                                // Render the list configuration
-                                this.renderListConfiguration(appItem, webUrl, appConfig);
+                                    // Render the list configuration
+                                    this.renderListConfiguration(appItem, webUrl, appConfig);
+                                }
+                            });
+
+                            // See if this is not the first item
+                            if (i > 0) {
+                                // Add a badge to move this item up
+                                Components.Badge({
+                                    el: elBadges,
+                                    className: "ms-2",
+                                    content: "Move Up",
+                                    onClick: () => {
+                                        // Get the item
+                                        let item = appConfig.ListCfg.splice(i, 1)[0];
+
+                                        // Move the item up one spot in the array
+                                        appConfig.ListCfg.splice(i - 1, 0, item);
+
+                                        // Render the list configuration
+                                        this.renderListConfiguration(appItem, webUrl, appConfig);
+                                    }
+                                });
                             }
                         }
                     });
