@@ -735,7 +735,7 @@ export class ReadAppLists {
         // Parse the lookup fields
         return Helper.Executor(lookups, lookup => {
             // Ensure this lookup isn't to the source list
-            if (srcList.Id == lookup.LookupList) { return; }
+            if (lookup.LookupList?.indexOf(srcList.Id) >= 0) { return; }
 
             // Return a promise
             return new Promise((resolve, reject) => {
