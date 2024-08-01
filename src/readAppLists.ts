@@ -41,7 +41,7 @@ export class ReadAppLists {
                         let strConfig = JSON.stringify(listCfg.cfg);
 
                         // Validate the lookup fields
-                        this.validateLookups(srcWebUrl, web.ServerRelativeUrl, listCfg.lookupFields).then(() => {
+                        this.validateLookups(srcWebUrl, web.ServerRelativeUrl, srcList, listCfg.lookupFields).then(() => {
                             // Test the configuration
                             CreateAppLists.installConfiguration(listCfg.cfg, web.ServerRelativeUrl).then(lists => {
                                 // Update the list configuration
@@ -731,9 +731,12 @@ export class ReadAppLists {
     }
 
     // Validates the lookup fields
-    private static validateLookups(srcUrl: string, dstUrl: string, lookups: Types.SP.FieldLookup[]) {
+    private static validateLookups(srcUrl: string, dstUrl: string, srcList: Types.SP.List, lookups: Types.SP.FieldLookup[]) {
         // Parse the lookup fields
         return Helper.Executor(lookups, lookup => {
+            // Ensure this lookup isn't to the source list
+            if (srcList.Id == lookup.LookupList) { return; }
+
             // Return a promise
             return new Promise((resolve, reject) => {
                 // Get the source list

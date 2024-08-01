@@ -278,14 +278,14 @@ export class Forms {
                     {
                         title: "App Details",
                         excludeFields: [
-                            "Attachments", "ScreenShot1", "ScreenShot2", "ScreenShot3",
+                            "Attachments", "Icon", "ScreenShot1", "ScreenShot2", "ScreenShot3",
                             "ScreenShot4", "ScreenShot5", "VideoURL"
                         ]
                     },
                     {
                         title: "Screen Shots",
                         fields: [
-                            "ScreenShot1", "ScreenShot2", "ScreenShot3",
+                            "Icon", "ScreenShot1", "ScreenShot2", "ScreenShot3",
                             "ScreenShot4", "ScreenShot5", "VideoURL"
                         ],
                     },
@@ -525,14 +525,14 @@ export class Forms {
                     {
                         title: "App Details",
                         excludeFields: [
-                            "Attachments", "ScreenShot1", "ScreenShot2", "ScreenShot3",
+                            "Attachments", "Icon", "ScreenShot1", "ScreenShot2", "ScreenShot3",
                             "ScreenShot4", "ScreenShot5", "VideoURL"
                         ]
                     },
                     {
                         title: "Screen Shots",
                         fields: [
-                            "ScreenShot1", "ScreenShot2", "ScreenShot3",
+                            "Icon", "ScreenShot1", "ScreenShot2", "ScreenShot3",
                             "ScreenShot4", "ScreenShot5", "VideoURL"
                         ],
                     },
