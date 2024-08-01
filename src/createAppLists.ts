@@ -17,7 +17,7 @@ export class CreateAppLists {
             let cfg = Helper.SPConfig(cfgProps, webUrl);
 
             // Update the loading dialog
-            LoadingDialog.setBody("Deleting the existing list(s)...");
+            LoadingDialog.setBody("Creating the list(s)...");
 
             // Install the solution
             cfg.install().then(() => {
