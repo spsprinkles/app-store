@@ -13,6 +13,21 @@ export class CreateAppLists {
     private static createLists(cfgProps: Helper.ISPConfigProps, webUrl: string): PromiseLike<List[]> {
         // Return a promise
         return new Promise((resolve, reject) => {
+            // Initialize the logging form
+            this.initLoggingForm();
+
+            // Set the log event
+            cfgProps.onLogMessage = msg => {
+                // Append the message
+                let elMessage = document.createElement("p");
+                elMessage.innerHTML = msg;
+                CanvasForm.BodyElement.appendChild(elMessage);
+
+                // Focus on the message
+                elMessage.focus();
+                elMessage.scrollIntoView();
+            };
+
             // Create the configuration
             let cfg = Helper.SPConfig(cfgProps, webUrl);
 
@@ -45,6 +60,21 @@ export class CreateAppLists {
                 });
             }, reject);
         });
+    }
+
+    // Initializes the logging form
+    private static initLoggingForm() {
+        // Clear the canvas form
+        CanvasForm.clear();
+
+        // Set the size
+        CanvasForm.setSize(Components.OffcanvasSize.Medium2);
+
+        // Set the header
+        CanvasForm.setHeader("Create List Logging");
+
+        // Show the logging
+        CanvasForm.show();
     }
 
     // Fixes the lookup fields
