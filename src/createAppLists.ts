@@ -19,36 +19,30 @@ export class CreateAppLists {
             // Update the loading dialog
             LoadingDialog.setBody("Deleting the existing list(s)...");
 
-            // Uninstall the solution
-            cfg.uninstall().then(() => {
+            // Install the solution
+            cfg.install().then(() => {
+                let lists: List[] = [];
+
                 // Update the loading dialog
-                LoadingDialog.setBody("Creating the list(s)...");
+                LoadingDialog.setBody("Validating the list(s)...");
 
-                // Install the solution
-                cfg.install().then(() => {
-                    let lists: List[] = [];
+                // Parse the lists
+                Helper.Executor(cfgProps.ListCfg, listCfg => {
+                    // Return a promise
+                    return new Promise(resolve => {
+                        // Test the list
+                        this.testList(listCfg, webUrl).then(list => {
+                            // Append the list
+                            lists.push(list);
 
-                    // Update the loading dialog
-                    LoadingDialog.setBody("Validating the list(s)...");
-
-                    // Parse the lists
-                    Helper.Executor(cfgProps.ListCfg, listCfg => {
-                        // Return a promise
-                        return new Promise(resolve => {
-                            // Test the list
-                            this.testList(listCfg, webUrl).then(list => {
-                                // Append the list
-                                lists.push(list);
-
-                                // Check the next list
-                                resolve(null);
-                            });
+                            // Check the next list
+                            resolve(null);
                         });
-                    }).then(() => {
-                        // Resolve the request
-                        resolve(lists);
                     });
-                }, reject);
+                }).then(() => {
+                    // Resolve the request
+                    resolve(lists);
+                });
             }, reject);
         });
     }
