@@ -4,7 +4,7 @@ import * as jQuery from "jquery";
 import * as JSZip from "jszip";
 import * as moment from "moment";
 import * as Common from "./common";
-import { CreateTemplate } from "./createTemplate";
+import { ReadAppLists } from "./readAppLists";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Security } from "./security";
 import Strings from "./strings";
@@ -277,7 +277,17 @@ export class Forms {
                 tabs: [
                     {
                         title: "App Details",
-                        excludeFields: ["Attachments"]
+                        excludeFields: [
+                            "Attachments", "Icon", "ScreenShot1", "ScreenShot2", "ScreenShot3",
+                            "ScreenShot4", "ScreenShot5", "VideoURL"
+                        ]
+                    },
+                    {
+                        title: "Screen Shots",
+                        fields: [
+                            "Icon", "ScreenShot1", "ScreenShot2", "ScreenShot3",
+                            "ScreenShot4", "ScreenShot5", "VideoURL"
+                        ],
                     },
                     {
                         title: "Attachments",
@@ -296,10 +306,10 @@ export class Forms {
                         fields: [],
                         onRendered: (el) => {
                             // Render the form
-                            CreateTemplate.renderForm(el);
+                            ReadAppLists.renderForm(el, item);
 
                             // Render the footer
-                            CreateTemplate.renderFooter(el, item, false);
+                            ReadAppLists.renderFooter(el, item);
                         }
                     }
                 ]
@@ -514,7 +524,17 @@ export class Forms {
                 tabs: [
                     {
                         title: "App Details",
-                        excludeFields: ["Attachments"]
+                        excludeFields: [
+                            "Attachments", "Icon", "ScreenShot1", "ScreenShot2", "ScreenShot3",
+                            "ScreenShot4", "ScreenShot5", "VideoURL"
+                        ]
+                    },
+                    {
+                        title: "Screen Shots",
+                        fields: [
+                            "Icon", "ScreenShot1", "ScreenShot2", "ScreenShot3",
+                            "ScreenShot4", "ScreenShot5", "VideoURL"
+                        ],
                     },
                     {
                         title: "Attachments",
