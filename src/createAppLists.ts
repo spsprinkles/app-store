@@ -271,6 +271,7 @@ export class CreateAppLists {
                     // Render the list settings button
                     Components.Button({
                         el,
+                        className: "ms-2",
                         isSmall: true,
                         text: "List Settings",
                         type: Components.ButtonTypes.OutlinePrimary,
@@ -306,7 +307,7 @@ export class CreateAppLists {
                     type: Components.ButtonTypes.OutlineDanger,
                     onClick: () => {
                         // Show a loading dialog
-                        LoadingDialog.setHeader("Deleteing List(s)");
+                        LoadingDialog.setHeader("Deleting List(s)");
                         LoadingDialog.setBody("This will close after the lists are removed...");
                         LoadingDialog.show();
 
