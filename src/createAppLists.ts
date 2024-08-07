@@ -17,10 +17,11 @@ export class CreateAppLists {
             this.initLoggingForm();
 
             // Set the log event
-            cfgProps.onLogMessage = msg => {
+            cfgProps.onLogMessage = (msg, isError) => {
                 // Append the message
                 let elMessage = document.createElement("p");
                 elMessage.innerHTML = msg;
+                isError ? elMessage.style.color = "red" : null;
                 CanvasForm.BodyElement.appendChild(elMessage);
 
                 // Focus on the message
@@ -66,6 +67,9 @@ export class CreateAppLists {
     private static initLoggingForm() {
         // Clear the canvas form
         CanvasForm.clear();
+
+        // Disable auto-close
+        CanvasForm.setAutoClose(false);
 
         // Set the size
         CanvasForm.setSize(Components.OffcanvasSize.Medium2);
