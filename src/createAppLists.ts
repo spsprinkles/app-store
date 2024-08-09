@@ -63,44 +63,6 @@ export class CreateAppLists {
         });
     }
 
-    // Initializes the logging form
-    private static initLoggingForm() {
-        // Clear the canvas form
-        CanvasForm.clear();
-
-        // Disable auto-close
-        CanvasForm.setAutoClose(false);
-
-        // Set the size
-        CanvasForm.setSize(Components.OffcanvasSize.Medium2);
-
-        // Set the header
-        CanvasForm.setHeader("Create List Logging");
-
-        // Show the logging
-        CanvasForm.show();
-    }
-
-    // Fixes the lookup fields
-    private static testList(listCfg: Helper.ISPCfgListInfo, webUrl: string): PromiseLike<List> {
-        // Update the loading dialog
-        LoadingDialog.setBody("Validating the list configuration");
-
-        // Return a promise
-        return new Promise((resolve, reject) => {
-            // Create the list
-            let list = new List({
-                listName: listCfg.ListInformation.Title,
-                webUrl,
-                onInitialized: () => {
-                    // Resolve the list
-                    resolve(list);
-                },
-                onInitError: reject
-            });
-        });
-    }
-
     // Checks if the user has access to the destination web
     private static hasAccess(webUrl): PromiseLike<void> {
         // Return a promise
@@ -124,6 +86,24 @@ export class CreateAppLists {
                 }
             );
         });
+    }
+
+    // Initializes the logging form
+    private static initLoggingForm() {
+        // Clear the canvas form
+        CanvasForm.clear();
+
+        // Disable auto-close
+        CanvasForm.setAutoClose(false);
+
+        // Set the size
+        CanvasForm.setSize(Components.OffcanvasSize.Medium2);
+
+        // Set the header
+        CanvasForm.setHeader("Create List Logging");
+
+        // Show the logging
+        CanvasForm.show();
     }
 
     // Installs the configuration
@@ -328,5 +308,25 @@ export class CreateAppLists {
 
         // Show the modal
         CanvasForm.show();
+    }
+
+    // Fixes the lookup fields
+    private static testList(listCfg: Helper.ISPCfgListInfo, webUrl: string): PromiseLike<List> {
+        // Update the loading dialog
+        LoadingDialog.setBody("Validating the list configuration");
+
+        // Return a promise
+        return new Promise((resolve, reject) => {
+            // Create the list
+            let list = new List({
+                listName: listCfg.ListInformation.Title,
+                webUrl,
+                onInitialized: () => {
+                    // Resolve the list
+                    resolve(list);
+                },
+                onInitError: reject
+            });
+        });
     }
 }
