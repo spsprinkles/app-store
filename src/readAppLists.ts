@@ -36,21 +36,32 @@ export class ReadAppLists {
                     }
 
                     // Generate the list configuration
-                    ListConfig.generate(srcWebUrl, srcList).then(listCfg => {
+                    ListConfig.generate({
+                        showDialog: true,
+                        srcWebUrl,
+                        srcList
+                    }).then(srcListCfg => {
                         // Save a copy of the configuration
-                        let strConfig = JSON.stringify(listCfg.cfg);
+                        let strConfig = JSON.stringify(srcListCfg.cfg);
 
                         // Validate the lookup fields
-                        this.validateLookups(srcWebUrl, web.ServerRelativeUrl, srcList, listCfg.lookupFields).then(() => {
+                        ListConfig.validateLookups({
+                            cfg: srcListCfg.cfg,
+                            dstUrl: web.ServerRelativeUrl,
+                            lookupFields: srcListCfg.lookupFields,
+                            showDialog: true,
+                            srcList,
+                            srcWebUrl,
+                        }).then((listCfg) => {
                             // Test the configuration
-                            CreateAppLists.installConfiguration(listCfg.cfg, web.ServerRelativeUrl).then(lists => {
+                            CreateAppLists.installConfiguration(listCfg, web.ServerRelativeUrl).then(lists => {
                                 // Update the list configuration
                                 this.updateListConfiguration(appItem, srcList.Title, JSON.parse(strConfig)).then(() => {
                                     // Hide the loading dialog
                                     LoadingDialog.hide();
 
                                     // Show the results
-                                    CreateAppLists.showResults(listCfg.cfg, web.ServerRelativeUrl, lists, true);
+                                    CreateAppLists.showResults(listCfg, web.ServerRelativeUrl, lists, true);
 
                                     // Resolve the request
                                     resolve();
@@ -484,31 +495,6 @@ export class ReadAppLists {
 
             // Update the item
             appItem.update({ ListConfigurations: listCfg }).execute(resolve);
-        });
-    }
-
-    // Validates the lookup fields
-    private static validateLookups(srcUrl: string, dstUrl: string, srcList: Types.SP.List, lookups: Types.SP.FieldLookup[]) {
-        // Parse the lookup fields
-        return Helper.Executor(lookups, lookup => {
-            // Ensure this lookup isn't to the source list
-            if (lookup.LookupList?.indexOf(srcList.Id) >= 0) { return; }
-
-            // Return a promise
-            return new Promise((resolve, reject) => {
-                // Get the source list
-                Web(srcUrl).Lists().getById(lookup.LookupList).execute(list => {
-                    // Ensure the list exists in the destination
-                    Web(dstUrl).Lists(list.Title).execute(resolve, () => {
-                        // Reject the reqeust
-                        reject("Lookup list for field '" + lookup.InternalName + "' does not exist in the configuration. Please add the lists in the appropriate order.");
-                    });
-
-                }, () => {
-                    // Reject the reqeust
-                    reject("Lookup list for field '" + lookup.InternalName + "' does not exist in the source web. Please review the source list for any issues.");
-                });
-            });
         });
     }
 }
