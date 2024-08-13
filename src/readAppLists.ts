@@ -56,7 +56,7 @@ export class ReadAppLists {
                             // Test the configuration
                             CreateAppLists.installConfiguration(listCfg, web.ServerRelativeUrl).then(lists => {
                                 // Update the list configuration
-                                this.updateListConfiguration(appItem, srcList.Title, JSON.parse(strConfig)).then(() => {
+                                this.updateListConfiguration(appItem, JSON.parse(strConfig)).then(() => {
                                     // Hide the loading dialog
                                     LoadingDialog.hide();
 
@@ -425,76 +425,49 @@ export class ReadAppLists {
     }
 
     // Updates the list configuration for the item
-    private static updateListConfiguration(appItem: IAppStoreItem, listName: string, cfg: Helper.ISPConfigProps): PromiseLike<void> {
+    private static updateListConfiguration(appItem: IAppStoreItem, cfg: Helper.ISPConfigProps): PromiseLike<void> {
         // Return a promise
         return new Promise(resolve => {
             // Get the list configurations and append/replace it
-            let listCfg: string = null;
+            let listConfigs: string = null;
 
             // Converting string to object may fail
             try {
                 // Get the app configuration
                 let appConfig: Helper.ISPConfigProps = JSON.parse(appItem.ListConfigurations);
 
-                // See if content types exist
-                if (cfg.ContentTypes?.length > 0) {
-                    // Ensure content types are defined
-                    appConfig.ContentTypes = appConfig.ContentTypes || [];
+                // Parse the configurations
+                Helper.Executor(cfg.ListCfg, listCfg => {
+                    let listName = listCfg.ListInformation.Title;
 
-                    // Parse the content types
-                    let newCTS = cfg.ContentTypes || [];
-                    for (let i = 0; i < newCTS.length; i++) {
-                        let foundFl = false;
-                        let newCT = newCTS[i];
-
-                        // Parse the app configuration
-                        for (let j = 0; j < appConfig.ContentTypes.length; j++) {
-                            let ct = appConfig.ContentTypes[j];
-
-                            // See if they match
-                            if (newCT.Name == ct.Name) {
-                                // Replace it
-                                appConfig.ContentTypes[j] = newCT;
-                                foundFl = true;
-                                break;
-                            }
-                        }
-
-                        // See if it wasn't found
-                        if (!foundFl) {
-                            // Append it
-                            appConfig.ContentTypes.push(newCT)
+                    // Parse the lists
+                    let foundFl = false;
+                    for (let i = 0; i < appConfig.ListCfg.length; i++) {
+                        // See if this is the target list
+                        if (appConfig.ListCfg[i].ListInformation.Title == listName) {
+                            // Replace it
+                            appConfig.ListCfg[i] = listCfg;
+                            foundFl = true;
+                            break;
                         }
                     }
-                }
 
-                // Parse the lists
-                let foundFl = false;
-                for (let i = 0; i < appConfig.ListCfg.length; i++) {
-                    // See if this is the target list
-                    if (appConfig.ListCfg[i].ListInformation.Title == listName) {
-                        // Replace it
-                        appConfig.ListCfg[i] = cfg.ListCfg[0];
-                        foundFl = true;
-                        break;
+                    // See if it wasn't found
+                    if (!foundFl) {
+                        // Append the configuration
+                        appConfig.ListCfg.push(listCfg);
                     }
-                }
-
-                // See if it wasn't found
-                if (!foundFl) {
-                    // Append the configuration
-                    appConfig.ListCfg.push(cfg.ListCfg[0]);
-                }
-
-                // Set the configuration
-                listCfg = JSON.stringify(appConfig);
+                }).then(() => {
+                    // Set the configuration
+                    listConfigs = JSON.stringify(appConfig);
+                });
             } catch {
                 // Set the configuration
-                listCfg = JSON.stringify(cfg);
+                listConfigs = JSON.stringify(cfg);
             }
 
             // Update the item
-            appItem.update({ ListConfigurations: listCfg }).execute(resolve);
+            appItem.update({ ListConfigurations: listConfigs }).execute(resolve);
         });
     }
 }
