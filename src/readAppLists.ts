@@ -53,10 +53,10 @@ export class ReadAppLists {
                             // Save a copy of the configuration
                             let strConfig = JSON.stringify(listCfg);
 
-                            // Test the configuration
-                            CreateAppLists.installConfiguration(listCfg, web.ServerRelativeUrl, appItem.LookupListData).then(lists => {
-                                // Get the lookup list data
-                                this.getLookupData(includeLookupData, srcWebUrl, srcList, srcListCfg.lookupFields).then(lookupData => {
+                            // Get the lookup list data
+                            this.getLookupData(includeLookupData, srcWebUrl, srcList, srcListCfg.lookupFields).then(lookupData => {
+                                // Test the configuration
+                                CreateAppLists.installConfiguration(listCfg, web.ServerRelativeUrl, JSON.stringify(lookupData)).then(lists => {
                                     // Update the list configuration
                                     this.updateListConfiguration(appItem, JSON.parse(strConfig), lookupData).then(() => {
                                         // Hide the loading dialog
