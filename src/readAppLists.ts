@@ -1,4 +1,4 @@
-import { ListConfig, LoadingDialog } from "dattatable";
+import { ILookupData, ListConfig, LoadingDialog } from "dattatable";
 import { Components, Helper, SPTypes, Types, Web } from "gd-sprest-bs";
 import { DataSource, IAppStoreItem } from "./ds";
 import { getListTemplateUrl } from "./strings";
@@ -13,7 +13,7 @@ export class ReadAppLists {
     private static _form: Components.IForm = null;
 
     // Method to create the list configuration
-    private static createListConfiguration(appItem: IAppStoreItem, srcWebUrl: string, srcList: Types.SP.List): PromiseLike<void> {
+    private static createListConfiguration(appItem: IAppStoreItem, srcWebUrl: string, srcList: Types.SP.List, includeLookupData: boolean): PromiseLike<void> {
         // Show a loading dialog
         LoadingDialog.setHeader("Copying the List");
         LoadingDialog.setBody("Initializing the request...");
@@ -41,9 +41,6 @@ export class ReadAppLists {
                         srcWebUrl,
                         srcList
                     }).then(srcListCfg => {
-                        // Save a copy of the configuration
-                        let strConfig = JSON.stringify(srcListCfg.cfg);
-
                         // Validate the lookup fields
                         ListConfig.validateLookups({
                             cfg: srcListCfg.cfg,
@@ -53,19 +50,25 @@ export class ReadAppLists {
                             srcList,
                             srcWebUrl,
                         }).then((listCfg) => {
+                            // Save a copy of the configuration
+                            let strConfig = JSON.stringify(listCfg);
+
                             // Test the configuration
-                            CreateAppLists.installConfiguration(listCfg, web.ServerRelativeUrl).then(lists => {
-                                // Update the list configuration
-                                this.updateListConfiguration(appItem, JSON.parse(strConfig)).then(() => {
-                                    // Hide the loading dialog
-                                    LoadingDialog.hide();
+                            CreateAppLists.installConfiguration(listCfg, web.ServerRelativeUrl, appItem.LookupListData).then(lists => {
+                                // Get the lookup list data
+                                this.getLookupData(includeLookupData, srcWebUrl, srcList, srcListCfg.lookupFields).then(lookupData => {
+                                    // Update the list configuration
+                                    this.updateListConfiguration(appItem, JSON.parse(strConfig), lookupData).then(() => {
+                                        // Hide the loading dialog
+                                        LoadingDialog.hide();
 
-                                    // Show the results
-                                    CreateAppLists.showResults(listCfg, web.ServerRelativeUrl, lists, true);
+                                        // Show the results
+                                        CreateAppLists.showResults(listCfg, web.ServerRelativeUrl, lists, true);
 
-                                    // Resolve the request
-                                    resolve();
-                                }, reject);
+                                        // Resolve the request
+                                        resolve();
+                                    }, reject);
+                                });
                             }, reject);
                         }, reject);
                     }, reject);
@@ -81,6 +84,26 @@ export class ReadAppLists {
                     resolve();
                 }
             );
+        });
+    }
+
+    // Gets the lookup data
+    private static getLookupData(includeLookupData: boolean, srcWebUrl: string, srcList: Types.SP.List, lookupFields: Types.SP.FieldLookup[]): PromiseLike<ILookupData[]> {
+        // Return a promise
+        return new Promise((resolve, reject) => {
+            // See if we are not getting the lookup data
+            if (!includeLookupData) { resolve([]); return; }
+
+            // Get the lookup list data
+            ListConfig.generateLookupListData({
+                lookupFields,
+                srcList,
+                srcWebUrl,
+                showDialog: true
+            }).then(lookupData => {
+                // Resolve the request
+                resolve(lookupData);
+            }, reject);
         });
     }
 
@@ -113,7 +136,8 @@ export class ReadAppLists {
 
                             // Clear the value in the item
                             appItem.update({
-                                ListConfigurations: null
+                                ListConfigurations: null,
+                                LookupListData: null
                             }).execute(() => {
                                 // Refresh the item
                                 DataSource.refresh(appItem.Id).then((item: IAppStoreItem) => {
@@ -148,7 +172,7 @@ export class ReadAppLists {
                             let cfg = JSON.parse(appItem.ListConfigurations);
 
                             // Test the configuration
-                            CreateAppLists.installConfiguration(cfg, dstWebUrl).then(lists => {
+                            CreateAppLists.installConfiguration(cfg, dstWebUrl, appItem.LookupListData).then(lists => {
                                 // Hide the loading dialog
                                 LoadingDialog.hide();
 
@@ -239,9 +263,10 @@ export class ReadAppLists {
                                 // Set the list name
                                 let webUrl: string = formValues["WebUrl"];
                                 let listData = formValues["SourceList"].data as Types.SP.List;
+                                let includeLookupData = formValues["IncludeLookupListData"];
 
                                 // Copy the list
-                                this.createListConfiguration(appItem, webUrl, listData).then(() => {
+                                this.createListConfiguration(appItem, webUrl, listData, includeLookupData).then(() => {
                                     // Refresh the item
                                     DataSource.refresh(appItem.Id).then((item: IAppStoreItem) => {
                                         // Refresh the form
@@ -318,6 +343,13 @@ export class ReadAppLists {
                     description: "Select a list to import.",
                     required: true,
                     errorMessage: "A list is required."
+                },
+                {
+                    name: "IncludeLookupListData",
+                    label: "Include Lookup List Data:",
+                    type: Components.FormControlTypes.Switch,
+                    description: "Select this option to include the lookup list data.",
+                    value: true
                 }
             ]
         });
@@ -425,16 +457,17 @@ export class ReadAppLists {
     }
 
     // Updates the list configuration for the item
-    private static updateListConfiguration(appItem: IAppStoreItem, cfg: Helper.ISPConfigProps): PromiseLike<void> {
+    private static updateListConfiguration(appItem: IAppStoreItem, cfg: Helper.ISPConfigProps, lookupData: ILookupData[]): PromiseLike<void> {
         // Return a promise
         return new Promise(resolve => {
             // Get the list configurations and append/replace it
             let listConfigs: string = null;
+            let lookupListData: string = null;
 
             // Converting string to object may fail
             try {
                 // Get the app configuration
-                let appConfig: Helper.ISPConfigProps = JSON.parse(appItem.ListConfigurations);
+                let appConfig: Helper.ISPConfigProps = JSON.parse(appItem.ListConfigurations) || { ListCfg: [] };
 
                 // Parse the configurations
                 Helper.Executor(cfg.ListCfg, listCfg => {
@@ -457,17 +490,55 @@ export class ReadAppLists {
                         // Append the configuration
                         appConfig.ListCfg.push(listCfg);
                     }
-                }).then(() => {
-                    // Set the configuration
-                    listConfigs = JSON.stringify(appConfig);
                 });
+
+                // Set the configuration
+                listConfigs = JSON.stringify(appConfig);
             } catch {
                 // Set the configuration
                 listConfigs = JSON.stringify(cfg);
             }
 
+            // Convert string to object may fail
+            try {
+                // Get the current lookup data
+                let appLookupData: ILookupData[] = JSON.parse(appItem.LookupListData) || [];
+
+                // Parse the lookup data
+                Helper.Executor(lookupData, data => {
+                    let foundFl = false;
+
+                    // Parse the existing data
+                    for (let i = 0; i < appLookupData.length; i++) {
+                        let list = appLookupData[i];
+
+                        if (list.list == data.list) {
+                            // Replace the data
+                            appLookupData[i] = data;
+
+                            // Set the flag
+                        }
+                    }
+
+                    // See if it wasn't found
+                    if (!foundFl) {
+                        // Append the data
+                        appLookupData.push(data);
+                    }
+                });
+
+                // Set the data
+                lookupListData = JSON.stringify(appLookupData);
+            } catch {
+                // Set the lookup data
+                lookupListData = JSON.stringify(lookupData);
+            }
+
             // Update the item
-            appItem.update({ ListConfigurations: listConfigs }).execute(resolve);
+            appItem.update({
+                ListConfigurations: listConfigs,
+                LookupListData: lookupListData
+            }).execute(resolve);
         });
     }
 }

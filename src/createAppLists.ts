@@ -1,4 +1,4 @@
-import { CanvasForm, List, LoadingDialog, Modal } from "dattatable";
+import { CanvasForm, ILookupData, List, ListConfig, LoadingDialog, Modal } from "dattatable";
 import { Components, Helper, SPTypes, Web } from "gd-sprest-bs";
 import * as Common from "./common";
 import { IAppStoreItem } from "./ds";
@@ -10,7 +10,7 @@ export class CreateAppLists {
     private static _form: Components.IForm = null;
 
     // Method to create the lists
-    private static createLists(cfgProps: Helper.ISPConfigProps, webUrl: string): PromiseLike<List[]> {
+    private static createLists(cfgProps: Helper.ISPConfigProps, webUrl: string, lookupData: ILookupData[]): PromiseLike<List[]> {
         // Return a promise
         return new Promise((resolve, reject) => {
             // Initialize the logging form
@@ -56,8 +56,15 @@ export class CreateAppLists {
                         });
                     });
                 }).then(() => {
-                    // Resolve the request
-                    resolve(lists);
+                    // Create the lookup list data
+                    ListConfig.createLookupListData({
+                        lookupData,
+                        webUrl,
+                        showDialog: true
+                    }).then(() => {
+                        // Resolve the request
+                        resolve(lists);
+                    }, reject);
                 });
             }, reject);
         });
@@ -107,7 +114,7 @@ export class CreateAppLists {
     }
 
     // Installs the configuration
-    static installConfiguration(cfg: Helper.ISPConfigProps, webUrl: string): PromiseLike<List[]> {
+    static installConfiguration(cfg: Helper.ISPConfigProps, webUrl: string, strLookupData: string): PromiseLike<List[]> {
         // Show a loading dialog
         LoadingDialog.setHeader("Creating the List");
         LoadingDialog.setBody("Initializing the request...");
@@ -115,8 +122,13 @@ export class CreateAppLists {
 
         // Return a promise
         return new Promise((resolve, reject) => {
+            // Try to convert the data
+            let lookupData: ILookupData[] = null;
+            try { lookupData = JSON.parse(strLookupData); }
+            catch { lookupData = []; }
+
             // Create the list(s)
-            this.createLists(cfg, webUrl).then(lists => {
+            this.createLists(cfg, webUrl, lookupData).then(lists => {
                 // Hide the dialog
                 LoadingDialog.hide();
 
@@ -191,7 +203,7 @@ export class CreateAppLists {
                                     // Has access to copy templates
                                     () => {
                                         // Install the configuration
-                                        this.installConfiguration(cfgProps, dstWebUrl).then(lists => {
+                                        this.installConfiguration(cfgProps, dstWebUrl, appItem.LookupListData).then(lists => {
                                             // Show the results
                                             this.showResults(cfgProps, dstWebUrl, lists);
                                         });
