@@ -97,7 +97,7 @@ export class ReadAppLists {
             // Get the lookup list data
             ListConfig.generateLookupListData({
                 lookupFields,
-                srcList,
+                srcListId: srcList.Id,
                 srcWebUrl,
                 showDialog: true
             }).then(lookupData => {
