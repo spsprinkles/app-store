@@ -39,7 +39,7 @@ export class ReadAppLists {
                     ListConfig.generate({
                         showDialog: true,
                         srcWebUrl,
-                        srcList
+                        srcList: srcList.Title
                     }).then(srcListCfg => {
                         // Validate the lookup fields
                         ListConfig.validateLookups({
@@ -47,7 +47,7 @@ export class ReadAppLists {
                             dstUrl: web.ServerRelativeUrl,
                             lookupFields: srcListCfg.lookupFields,
                             showDialog: true,
-                            srcList,
+                            srcListId: srcList.Id,
                             srcWebUrl,
                         }).then((listCfg) => {
                             // Save a copy of the configuration
