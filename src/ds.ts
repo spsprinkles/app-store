@@ -15,6 +15,7 @@ export interface IAppStoreItem extends Types.SP.ListItemOData {
     Modified: string;
     MoreInfo?: Types.SP.FieldUrlValue;
     IsAppCatalogItem?: boolean;
+    ListTemplateUrl?: Types.SP.FieldUrlValue;
     Organization: string;
     Rating?: number;
     RatingCount?: number;

@@ -481,6 +481,23 @@ export class App {
                                 }
                             });
 
+                            // See if the list templates url exists
+                            if (item.ListTemplateUrl && item.ListTemplateUrl.Url) {
+                                // Add the link to the list templates
+                                tooltips.push({
+                                    content: "Link to the list templates associated with this solution.",
+                                    btnProps: {
+                                        className: "p-1 pe-2",
+                                        iconType: Common.getIcon(24, 24, '', 'icon-svg img-flip-x me-1'),
+                                        text: "List Templates",
+                                        onClick: () => {
+                                            // View the list templates
+                                            window.open(item.ListTemplateUrl.Url, "_blank");
+                                        }
+                                    }
+                                });
+                            }
+
                             // Add the Edit button tooltip if IsAdmin or IsManager or isDeveloper
                             if (Security.IsAdmin || Security.IsManager || Security.IsDeveloper) {
                                 // Add the edit button
