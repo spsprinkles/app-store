@@ -5,7 +5,6 @@ import { gearWideConnected } from "gd-sprest-bs/build/icons/svgs/gearWideConnect
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
 import * as jQuery from "jquery";
 import * as Common from "./common";
-import { CreateAppLists } from "./createAppLists";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Forms } from "./forms";
 import { InstallationModal } from "./install";
@@ -330,7 +329,7 @@ export class App {
                             "orderable": false,
                         },
                         {
-                            "targets": [0, 8, 9],
+                            "targets": [0, 7, 8],
                             "searchable": false
                         }
                     ];
@@ -461,113 +460,6 @@ export class App {
                         }
                     },
                     {
-                        name: "Deploy Dataset",
-                        title: "Template",
-                        className: "d-none",
-                        onRenderCell: (el, column, item: IAppStoreItem) => {
-                            el.innerHTML = `<label>${column.title}:</label>`;
-
-                            // See if this item has a SharePoint list associated with it
-                            if (item.ListConfigurations) {
-                                // Add a template button
-                                Components.Tooltip({
-                                    el,
-                                    content: "Deploy the dataset for this solution",
-                                    btnProps: {
-                                        className: "p-1 pe-2",
-                                        iconType: Common.getIcon(22, 22, item.AppType + (item.AppType.startsWith('Power ') ? ' ' + column.title : ''), 'icon-svg me-1'),
-                                        isSmall: true,
-                                        text: column.name,
-                                        type: Components.ButtonTypes.OutlinePrimary,
-                                        onClick: () => {
-                                            // Display the copy list modal
-                                            CreateAppLists.renderModal(item, item.ListConfigurations);
-                                        }
-                                    }
-                                });
-
-                                // Ensure this column is displayed
-                                el.classList.remove("d-none");
-                            }
-
-                            // See if this is a flow and the user can download
-                            let packages: Types.SP.Attachment[] = [];
-                            if (item.AppType == "Power Automate" && !Strings.IsFlow3) {
-                                if (item.AttachmentFiles?.results) {
-                                    let promises = [];
-                                    for (let i = 0; i < item.AttachmentFiles.results.length; i++) {
-                                        // See if this is a flow package
-                                        let promise = Forms.isFlowPackage(item.AttachmentFiles.results[i]);
-                                        promise.then((result) => {
-                                            if (result.isFlow) {
-                                                packages.push(result.attachment);
-                                            }
-                                        });
-                                        promises.push(promise);
-                                    }
-
-                                    // Wait for the promises to complete
-                                    Promise.all(promises).then(() => {
-                                        // See if a package exists
-                                        if (packages.length > 0) {
-                                            let showColumn = false;
-
-                                            // Ensure this is the owner of the app or an admin
-                                            if (Security.IsAdmin || Security.IsManager || Security.IsDeveloper) {
-                                                // Add a button to customize the package
-                                                Components.Tooltip({
-                                                    el,
-                                                    content: "Click to allow users to generate a custom package.",
-                                                    btnProps: {
-                                                        className: "p-1 pe-2",
-                                                        iconType: Common.getIcon(24, 24, 'WindowEdit', 'icon-svg me-1'),
-                                                        text: "Customize Package",
-                                                        type: Components.ButtonTypes.OutlinePrimary,
-                                                        onClick: () => {
-                                                            // Show the form to customize the package
-                                                            Forms.customizeFlowPackage(item, packages[0], () => {
-                                                                // Refresh the table
-                                                                this._dashboard.refresh(DataSource.AppItems);
-                                                            });
-                                                        }
-                                                    }
-                                                });
-
-                                                // Set the flag
-                                                showColumn = true;
-                                            }
-
-                                            // See if flow data exists
-                                            if (item.FlowData) {
-                                                // Add a button to generate a package
-                                                Components.Tooltip({
-                                                    el,
-                                                    content: "Click to generate a custom package.",
-                                                    btnProps: {
-                                                        className: "p-1 pe-2",
-                                                        iconType: Common.getIcon(22, 22, item.AppType + ' ' + column.title, 'icon-svg me-1'),
-                                                        text: "Generate Package",
-                                                        type: Components.ButtonTypes.OutlinePrimary,
-                                                        onClick: () => {
-                                                            // Show the form to generate the package
-                                                            Forms.generateFlow(item, packages[0]);
-                                                        }
-                                                    }
-                                                });
-
-                                                // Set the flag
-                                                showColumn = true;
-                                            }
-
-                                            // Show this column based on the flag
-                                            showColumn ? el.classList.remove("d-none") : null;
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    },
-                    {
                         className: "text-center",
                         name: "Actions",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
@@ -588,6 +480,23 @@ export class App {
                                     }
                                 }
                             });
+
+                            // See if the list templates url exists
+                            if (item.ListTemplateUrl && item.ListTemplateUrl.Url) {
+                                // Add the link to the list templates
+                                tooltips.push({
+                                    content: "Link to the list templates associated with this solution.",
+                                    btnProps: {
+                                        className: "p-1 pe-2",
+                                        iconType: Common.getIcon(24, 24, '', 'icon-svg img-flip-x me-1'),
+                                        text: "List Templates",
+                                        onClick: () => {
+                                            // View the list templates
+                                            window.open(item.ListTemplateUrl.Url, "_blank");
+                                        }
+                                    }
+                                });
+                            }
 
                             // Add the Edit button tooltip if IsAdmin or IsManager or isDeveloper
                             if (Security.IsAdmin || Security.IsManager || Security.IsDeveloper) {

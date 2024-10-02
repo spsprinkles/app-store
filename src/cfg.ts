@@ -24,6 +24,7 @@ export const Configuration = Helper.SPConfig({
                         "Developers",
                         "Organization",
                         "MoreInfo",
+                        "ListTemplateUrl",
                         "SupportURL",
                         "Icon",
                         "ScreenShot1",
@@ -78,19 +79,11 @@ export const Configuration = Helper.SPConfig({
                     notetype: SPTypes.FieldNoteType.TextOnly
                 } as Helper.IFieldInfoNote,
                 {
-                    name: "ListConfigurations",
-                    title: "List Configurations",
-                    type: Helper.SPCfgFieldType.Note,
-                    description: "The associated lists configurations for the app.",
-                    notetype: SPTypes.FieldNoteType.TextOnly
-                } as Helper.IFieldInfoNote,
-                {
-                    name: "LookupListData",
-                    title: "Lookup List Data",
-                    type: Helper.SPCfgFieldType.Note,
-                    description: "The associated lists configurations for the app.",
-                    notetype: SPTypes.FieldNoteType.TextOnly
-                } as Helper.IFieldInfoNote,
+                    name: "ListTemplateUrl",
+                    title: "List Template",
+                    type: Helper.SPCfgFieldType.Url,
+                    description: "A link to the list templates associated for this solution."
+                },
                 {
                     name: "MoreInfo",
                     title: "More Info",

@@ -12,11 +12,10 @@ export interface IAppStoreItem extends Types.SP.ListItemOData {
     Developers: { results: { Id: number; Title: string }[] };
     FlowData: string;
     Icon: string;
-    ListConfigurations: string;
-    LookupListData: string;
     Modified: string;
     MoreInfo?: Types.SP.FieldUrlValue;
     IsAppCatalogItem?: boolean;
+    ListTemplateUrl?: Types.SP.FieldUrlValue;
     Organization: string;
     Rating?: number;
     RatingCount?: number;
