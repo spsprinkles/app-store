@@ -4,7 +4,6 @@ import * as jQuery from "jquery";
 import * as JSZip from "jszip";
 import * as moment from "moment";
 import * as Common from "./common";
-import { ReadAppLists } from "./readAppLists";
 import { DataSource, IAppStoreItem } from "./ds";
 import { Security } from "./security";
 import Strings from "./strings";
@@ -299,17 +298,6 @@ export class Forms {
                                 listName: Strings.Lists.Main,
                                 itemId: item.Id
                             });
-                        }
-                    },
-                    {
-                        title: "Template",
-                        fields: [],
-                        onRendered: (el) => {
-                            // Render the form
-                            ReadAppLists.renderForm(el, item);
-
-                            // Render the footer
-                            ReadAppLists.renderFooter(el, item);
                         }
                     }
                 ]

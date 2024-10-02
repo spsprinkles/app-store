@@ -78,20 +78,6 @@ export const Configuration = Helper.SPConfig({
                     notetype: SPTypes.FieldNoteType.TextOnly
                 } as Helper.IFieldInfoNote,
                 {
-                    name: "ListConfigurations",
-                    title: "List Configurations",
-                    type: Helper.SPCfgFieldType.Note,
-                    description: "The associated lists configurations for the app.",
-                    notetype: SPTypes.FieldNoteType.TextOnly
-                } as Helper.IFieldInfoNote,
-                {
-                    name: "LookupListData",
-                    title: "Lookup List Data",
-                    type: Helper.SPCfgFieldType.Note,
-                    description: "The associated lists configurations for the app.",
-                    notetype: SPTypes.FieldNoteType.TextOnly
-                } as Helper.IFieldInfoNote,
-                {
                     name: "MoreInfo",
                     title: "More Info",
                     type: Helper.SPCfgFieldType.Url,
