@@ -3,7 +3,7 @@
   "solution": {
     "name": "solution-center",
     "id": "53ee91a7-1302-4b7b-8b93-d0e92057cd4c",
-    "version": "0.1.7.8",
+    "version": "0.1.7.9",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,

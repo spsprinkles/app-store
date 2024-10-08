@@ -27,11 +27,6 @@ const GlobalVariable = {
     description: Strings.ProjectDescription,
     getLogo: () => { return getIcon(28, 28, 'App Store', 'brand logo'); },
     render: (props: IProps) => {
-        // Show a loading dialog
-        LoadingDialog.setHeader("Loading Application");
-        LoadingDialog.setBody("This may take time based on the number of apps to load...");
-        LoadingDialog.show();
-
         // See if the page context exists
         if (props.context) {
             // Set the context
@@ -44,32 +39,38 @@ const GlobalVariable = {
         // Update the ProjectName from SPFx title field
         props.title ? Strings.ProjectName = props.title : null;
 
-        // Initialize the application
-        DataSource.init().then(
-            // Success
-            () => {
-                // Update the loading dialog
-                LoadingDialog.setHeader("Loading Theme");
+        // Show a loading dialog
+        LoadingDialog.setHeader("Loading Theme");
+        LoadingDialog.setBody("The application will load after the theme is loaded...");
+        LoadingDialog.show();
 
-                // Wait for the theme to be loaded
-                waitForTheme().then(() => {
+        // Wait for the theme to be loaded
+        waitForTheme().then(() => {
+            // Update the loading dialog
+            LoadingDialog.setHeader("Loading Application");
+            LoadingDialog.setBody("This may take time based on the number of apps to load...");
+
+            // Initialize the application
+            DataSource.init().then(
+                // Success
+                () => {
                     // Create the application
                     GlobalVariable.App = new App(props.el);
-                    
+
                     // Hide the loading dialog
                     LoadingDialog.hide();
-                });
-            },
+                },
 
-            // Error
-            () => {
-                // Display the install dialog
-                InstallationModal.show();
+                // Error
+                () => {
+                    // Display the install dialog
+                    InstallationModal.show();
 
-                // Hide the loading dialog
-                LoadingDialog.hide();
-            }
-        );
+                    // Hide the loading dialog
+                    LoadingDialog.hide();
+                }
+            );
+        });
     },
     setAppCatalogUrl: (url: string) => {
         // Set the app catalog url

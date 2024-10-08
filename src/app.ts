@@ -1,5 +1,5 @@
 import { Dashboard } from "dattatable";
-import { Components, ContextInfo, ThemeManager, Types } from "gd-sprest-bs";
+import { Components, ContextInfo, ThemeManager } from "gd-sprest-bs";
 import { filterSquare } from "gd-sprest-bs/build/icons/svgs/filterSquare";
 import { gearWideConnected } from "gd-sprest-bs/build/icons/svgs/gearWideConnected";
 import { plusSquare } from "gd-sprest-bs/build/icons/svgs/plusSquare";
@@ -24,6 +24,23 @@ export class App {
 
         // Render the dashboard
         this.render(el);
+    }
+
+    // Determines if the user is the owner of the item
+    private isOwner(item: IAppStoreItem): boolean {
+        // See if this is an admin
+        if (Security.IsAdmin) {
+            return true;
+        }
+
+        // Parse the developers
+        for (let i = 0; i < item.Developers.results.length; i++) {
+            // See if this is the user
+            if (item.Developers.results[i].Id == ContextInfo.userId) { return true; }
+        }
+
+        // Not an owner
+        return false;
     }
 
     // Renders the dashboard
@@ -436,15 +453,103 @@ export class App {
                     {
                         name: "MoreInfo",
                         title: "More Info",
+                        className: "d-none",
                         onRenderCell: (el, column, item: IAppStoreItem) => {
-                            el.innerHTML = `<label>${column.title}:</label>`;
+                            // Set the filter
                             el.setAttribute("data-filter", item.MoreInfo ? item.MoreInfo.Description : "");
+
+                            // Set the html
+                            el.innerHTML = `<label>${column.title}:</label><div class="d-flex flex-column shrink"></div>`;
+                            let elLinks: HTMLElement = el.querySelector(".d-flex");
+
+                            // See if this is from the app catalog
                             if (item.IsAppCatalogItem) {
-                                // Set the more info link
-                                el.innerHTML += `<a href="${DataSource.AppCatalogUrl}?app-id=${item.Id}" target="_blank">App Dashboard (Details)</a>`;
-                            } else {
+                                // Set the link to the app catalog
+                                Components.Button({
+                                    el: elLinks,
+                                    text: "App Dashboard (Details)",
+                                    type: Components.ButtonTypes.Link,
+                                    onClick: () => {
+                                        // Open the link
+                                        window.open(`${DataSource.AppCatalogUrl}?app-id=${item.Id}`, "_blank");
+                                    }
+                                });
+                            }
+
+                            // See if more info exists
+                            if (item.MoreInfo) {
                                 // Render the link
-                                item.MoreInfo ? el.innerHTML += `<a href="${item.MoreInfo.Url}" class="line-limit-1" target="_blank">${item.MoreInfo.Description}</a>` : el.innerHTML += "&nbsp;";
+                                Components.Button({
+                                    el: elLinks,
+                                    className: "line-limit-1",
+                                    text: item.MoreInfo.Description || "More Information",
+                                    type: Components.ButtonTypes.Link,
+                                    onClick: () => {
+                                        // Open the link
+                                        window.open(item.MoreInfo.Url, "_blank");
+                                    }
+                                });
+                            }
+
+                            // See if the list templates url exists
+                            if (item.ListTemplateUrl && item.ListTemplateUrl.Url) {
+                                // Add the link to the list templates
+                                Components.Button({
+                                    el: elLinks,
+                                    text: "List Templates",
+                                    type: Components.ButtonTypes.Link,
+                                    onClick: () => {
+                                        // Open the link
+                                        window.open(item.ListTemplateUrl.Url, "_blank");
+                                    }
+                                });
+                            }
+
+                            // See if attachments exist
+                            if (item.AttachmentFiles && item.AttachmentFiles.results.length > 0) {
+                                // Find the package
+                                for (let i = 0; i < item.AttachmentFiles.results.length; i++) {
+                                    // See if this is a flow package
+                                    let file = item.AttachmentFiles.results[i];
+                                    Forms.isFlowPackage(file).then(result => {
+                                        if (result.isFlow) {
+                                            // See if power automate config exists
+                                            if (item.FlowData) {
+                                                // Add the link generate a flow package
+                                                Components.Button({
+                                                    el: elLinks,
+                                                    text: "Generate Flow Package",
+                                                    type: Components.ButtonTypes.Link,
+                                                    onClick: () => {
+                                                        // Show the generate form
+                                                        Forms.generateFlow(item, result.attachment);
+                                                    }
+                                                });
+
+                                                // See if this is the owner
+                                                if (this.isOwner(item)) {
+                                                    // Add the link allow for customization of the flow package
+                                                    Components.Button({
+                                                        el: elLinks,
+                                                        text: "Customize Flow Variables",
+                                                        type: Components.ButtonTypes.Link,
+                                                        onClick: () => {
+                                                            // Show the generate form
+                                                            Forms.customizeFlowPackage(item, result.attachment, () => {
+                                                                // Refresh the item
+                                                                DataSource.List.refreshItem(item.Id).then(() => {
+                                                                    // Refresh the table
+                                                                    this._dashboard.refresh(DataSource.List.Items);
+                                                                });
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+
                             }
                         }
                     },
@@ -455,8 +560,22 @@ export class App {
                         onRenderCell: (el, column, item: IAppStoreItem) => {
                             el.innerHTML = `<label>${column.title}:</label>`;
                             el.setAttribute("data-filter", item.SupportURL ? item.SupportURL.Description : "");
-                            // Ensure a value exists
-                            item.SupportURL ? el.innerHTML += `<a href="${item.SupportURL.Url}" class="line-limit-1" target="_blank">${item.SupportURL.Description}</a>` : el.innerHTML += "&nbsp;";
+
+                            // See if the support url exists
+                            if (item.SupportURL) {
+                                // Add the support link
+                                Components.Button({
+                                    el,
+                                    className: "line-limit-1",
+                                    text: item.SupportURL.Description || "Click here for support",
+                                    type: Components.ButtonTypes.Link,
+                                    onClick: () => {
+                                        // Open the link
+                                        window.open(item.SupportURL.Url, "_blank");
+                                    }
+                                });
+
+                            }
                         }
                     },
                     {
@@ -480,23 +599,6 @@ export class App {
                                     }
                                 }
                             });
-
-                            // See if the list templates url exists
-                            if (item.ListTemplateUrl && item.ListTemplateUrl.Url) {
-                                // Add the link to the list templates
-                                tooltips.push({
-                                    content: "Link to the list templates associated with this solution.",
-                                    btnProps: {
-                                        className: "p-1 pe-2",
-                                        iconType: Common.getIcon(24, 24, '', 'icon-svg img-flip-x me-1'),
-                                        text: "List Templates",
-                                        onClick: () => {
-                                            // View the list templates
-                                            window.open(item.ListTemplateUrl.Url, "_blank");
-                                        }
-                                    }
-                                });
-                            }
 
                             // Add the Edit button tooltip if IsAdmin or IsManager or isDeveloper
                             if (Security.IsAdmin || Security.IsManager || Security.IsDeveloper) {
@@ -542,13 +644,14 @@ export class App {
                             ttg.el.addEventListener("click", (e) => {
                                 // Only grow/shrink if the click is outside the button group [::after]
                                 if (e.offsetX > ttg.el.offsetWidth) {
-                                    let hide = ttg.el.classList.contains(_class);
-                                    let tdHide = "td:nth-child(5), td:nth-child(6), td:nth-child(8)";
-                                    // Only show Templates for Power Platform items
-                                    ttg.el.dataset["ispowerplatform"] != undefined ? tdHide += ", td:nth-child(9)" : null;
                                     let tr = ttg.el.closest("tr");
 
-                                    if (hide) {
+                                    // Target elements to show/hide
+                                    let tdHide = "td:nth-child(5), td:nth-child(6), td:nth-child(7), td:nth-child(8)";
+
+                                    // See if we are expanding the item
+                                    let expand = ttg.el.classList.contains(_class);
+                                    if (expand) {
                                         // Remove the shrink class on title & description inner div
                                         jQuery("td:nth-child(2) :last-child, td:nth-child(4) :last-child", tr).removeClass(_class);
                                         // Show columns [nth-child() is not 0 index based]
