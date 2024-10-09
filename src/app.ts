@@ -325,8 +325,8 @@ export class App {
                 },
                 // Adjust the brand alignment
                 onRendered: (el) => {
-                    el.querySelector("nav div.container-fluid a.navbar-brand").classList.add("p-0");
-                    el.querySelector("nav div.container-fluid a.navbar-brand").classList.add("pe-none");
+                    el.querySelector("nav div.container-fluid .navbar-brand").classList.add("p-0");
+                    el.querySelector("nav div.container-fluid .navbar-brand").classList.add("pe-none");
                 },
                 onSearchRendered: (el) => {
                     el.setAttribute("placeholder", "Find an app");
